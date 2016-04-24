@@ -1,0 +1,43 @@
+<html lang="en" ng-app="myApp">
+
+<head>
+    <!--Hallo Wereld!-->
+    <!-- The css is copied into dist/css/app.css by the copy task -->
+    <link rel="stylesheet" href="css/app.css" />
+</head>
+
+<body ng-controller="gameListController as gameList">
+    <p>
+        Username: {{ gameList.user }}
+    </p>
+    
+    Joinable games:
+    <table>
+        <tr><td><b>Name</b></td><td><b>Players</b></td></tr>
+        <tr ng-repeat="game in gameList.games" ng-show="gameList.canJoinGame(game)">
+            <td>{{ game.title }}</td>
+            <td><text ng-repeat="player in game.players">{{ player }} </td>
+            <td><button ng-click="gameList.joinGame(game)">Join</button></td>
+                
+        </tr>
+    </table>
+    
+    All games:
+    <table>
+        <tr><td><b>Name</b></td><td><b>Players</b></td></tr>
+        <tr ng-repeat="game in gameList.games">
+            <td>{{ game.title }}</td>
+            <td> <text ng-repeat="player in game.players">{{ player }} </td>
+        </tr>
+    </table>  
+    
+    <p>
+        <b>New Game</b> <br>
+        Name: <input ng-model="html.nameInput"></input>
+        <button ng-click="gameList.newGame(html.nameInput)">Create Game</button>
+    </p>
+    
+    <script src="js/app.js"></script>
+</body>
+
+</html>

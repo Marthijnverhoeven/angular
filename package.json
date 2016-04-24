@@ -1,0 +1,30 @@
+{
+  "name": "mahjong",
+  "version": "0.0.1",
+  "description": "Mahjong in Angular",
+  "main": "app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Marthijnverhoeven/angular.git"
+  },
+  "author": "Marthijn Verhoeven",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Marthijnverhoeven/angular/issues"
+  },
+  "homepage": "https://github.com/Marthijnverhoeven/angular#readme",
+  "devDependencies": {
+    "angular": "^1.5.5",
+    "grunt": "^1.0.1",
+    "grunt-browserify": "^5.0.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-http-server": "^1.16.0"
+  },
+  "dependencies": {
+    "underscore": "latest"
+  }
+}
