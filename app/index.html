@@ -3,7 +3,7 @@
 <head>
     <!--Hallo Wereld!-->
     <!-- The css is copied into dist/css/app.css by the copy task -->
-    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="../node-modules/bootstrap/dist/css/bootstrap.css" />
 </head>
 
 <body ng-controller="gameListController as gameList">
@@ -12,7 +12,7 @@
     </p>
     
     Joinable games:
-    <table>
+    <table class="table">
         <tr><td><b>Name</b></td><td><b>Players</b></td></tr>
         <tr ng-repeat="game in gameList.games" ng-show="gameList.canJoinGame(game)">
             <td>{{ game.title }}</td>
@@ -23,7 +23,7 @@
     </table>
     
     All games:
-    <table>
+    <table class="table">
         <tr><td><b>Name</b></td><td><b>Players</b></td></tr>
         <tr ng-repeat="game in gameList.games">
             <td>{{ game.title }}</td>

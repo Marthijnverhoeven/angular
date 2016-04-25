@@ -1,0 +1,15 @@
+start Npm install karma --save-dev
+start Npm install mocha --save-dev
+start Npm install karma-mocha --save-dev
+start Npm install chai --save-dev
+start Npm install karma-chai --save-dev
+start Npm install sinon --save-dev
+start Npm install karma-sinon --save-dev
+start Npm install browserify --save-dev
+start Npm install karma-browserify --save-dev
+start Npm install browserify-istanbul --save-dev
+start Npm install browserify-shim --save-dev
+start Npm install grunt-karma --save-dev
+start Npm install karma-coverage --save-dev
+start Npm install angular-mocks --save-dev
+start Npm install karma-chrome-launcher --save-dev
