@@ -1,25 +1,26 @@
+/// <reference path="../ts/_all.ts" />
+
 namespace Application.Controllers
 {
-	export interface IGameListController
-	{
-		newGame(_title);
-		saveGame();
-		joinGame(game);
-		canJoinGame(game);
-	}
-	
 	export class GameListController
 	{
-		private games;
-		private game;
-		private user = 'Marthijn';
+		private games; // GameListService (GameFactory)
+		private game; // GameService
+		private user;
 		
-		constructor(private GameFactory, $scope)
-		{
+		constructor(private UserService, private GameFactory, private $scope)
+		{			
 			var self = this;
 			GameFactory.GET(function(games){
 				self.games = games;
 			});
+			this.user = this.UserService.user;
+		}
+		
+		public openGame(game: Application.Models.Game)
+		{
+			this.$scope.selected = game;
+			// this.GameService.openGame(game);
 		}
 		
 		public newGame(_title) {
