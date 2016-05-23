@@ -1,16 +1,57 @@
 var Application;
 (function (Application) {
+    var Models;
+    (function (Models) {
+        var Game = (function () {
+            function Game() {
+            }
+            return Game;
+        }());
+        Models.Game = Game;
+    })(Models = Application.Models || (Application.Models = {}));
+})(Application || (Application = {}));
+var Application;
+(function (Application) {
+    var Models;
+    (function (Models) {
+        var Tile = (function () {
+            function Tile() {
+            }
+            return Tile;
+        }());
+        Models.Tile = Tile;
+    })(Models = Application.Models || (Application.Models = {}));
+})(Application || (Application = {}));
+var Application;
+(function (Application) {
+    var Models;
+    (function (Models) {
+        var User = (function () {
+            function User() {
+            }
+            return User;
+        }());
+        Models.User = User;
+    })(Models = Application.Models || (Application.Models = {}));
+})(Application || (Application = {}));
+var Application;
+(function (Application) {
     var Controllers;
     (function (Controllers) {
         var GameListController = (function () {
-            function GameListController(GameFactory, $scope) {
+            function GameListController(UserService, GameFactory, $scope) {
+                this.UserService = UserService;
                 this.GameFactory = GameFactory;
-                this.user = 'Marthijn';
+                this.$scope = $scope;
                 var self = this;
                 GameFactory.GET(function (games) {
                     self.games = games;
                 });
+                this.user = this.UserService.user;
             }
+            GameListController.prototype.openGame = function (game) {
+                this.$scope.selected = game;
+            };
             GameListController.prototype.newGame = function (_title) {
                 var self = this;
                 self.GameFactory.POST({ title: _title, players: [self.user] });
@@ -48,8 +89,34 @@ var Application;
 })(Application || (Application = {}));
 var Application;
 (function (Application) {
+    var Controllers;
+    (function (Controllers) {
+        var GameController = (function () {
+            function GameController(UserService, TileService, $scope) {
+                this.UserService = UserService;
+                this.TileService = TileService;
+                this.$scope = $scope;
+                console.log('GameController');
+                console.log($scope);
+            }
+            GameController.prototype.currentGame = function () {
+                return this.$scope.selected;
+            };
+            GameController.prototype.matchesExist = function () {
+                var self = this;
+                self.TileService.matchesExist(self.game, function (err, res) {
+                });
+            };
+            return GameController;
+        }());
+        Controllers.GameController = GameController;
+    })(Controllers = Application.Controllers || (Application.Controllers = {}));
+})(Application || (Application = {}));
+var Application;
+(function (Application) {
     var Services;
     (function (Services) {
+        'use strict';
         var GameFactory = (function () {
             function GameFactory($timeout) {
                 this.$timeout = $timeout;
@@ -62,7 +129,6 @@ var Application;
                 var self = this;
                 self.$timeout(function () {
                     if (_.isFunction(id)) {
-                        console.log(self.games);
                         callBack = id;
                         return callBack(self.games);
                     }
@@ -73,6 +139,7 @@ var Application;
                 }, 1000);
             };
             GameFactory.prototype.PUT = function (game) {
+                throw new Error('NotImplementedError');
             };
             GameFactory.prototype.POST = function (game) {
                 var self = this;
@@ -86,6 +153,7 @@ var Application;
                 self.games.push(game);
             };
             GameFactory.prototype.DELETE = function (game) {
+                throw new Error('NotImplementedError');
             };
             return GameFactory;
         }());
@@ -94,10 +162,40 @@ var Application;
 })(Application || (Application = {}));
 var Application;
 (function (Application) {
+    var Services;
+    (function (Services) {
+        var GameService = (function () {
+            function GameService() {
+            }
+            return GameService;
+        }());
+        Services.GameService = GameService;
+    })(Services = Application.Services || (Application.Services = {}));
+})(Application || (Application = {}));
+var Application;
+(function (Application) {
+    var Services;
+    (function (Services) {
+        'use strict';
+        var UserService = (function () {
+            function UserService() {
+                this.user = { name: 'Marthijn' };
+            }
+            return UserService;
+        }());
+        Services.UserService = UserService;
+    })(Services = Application.Services || (Application.Services = {}));
+})(Application || (Application = {}));
+var Application;
+(function (Application) {
     'use strict';
     var mahjongMadness = angular.module('mahjongMadness', []);
     console.log('TEST');
     mahjongMadness.service('GameFactory', Application.Services.GameFactory);
+    mahjongMadness.service('TileService', Application.Services.TileService);
+    mahjongMadness.service('UserService', Application.Services.UserService);
+    mahjongMadness.service('GameService', Application.Services.GameService);
     mahjongMadness.controller('gameListController', Application.Controllers.GameListController);
+    mahjongMadness.controller('gameController', Application.Controllers.GameController);
 })(Application || (Application = {}));
 //# sourceMappingURL=app.js.map
