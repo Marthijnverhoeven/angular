@@ -4,7 +4,7 @@ namespace Application.Services
 	
 	export class UserService
 	{
-		public user : Application.Models.User = { name: 'Marthijn' };
+		public user : Application.Models.User = { name: 'Marthijn', id: '1' };
 		
 		constructor(private configuration : any)
 		{ }

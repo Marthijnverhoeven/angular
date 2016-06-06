@@ -72,46 +72,21 @@ var Application;
     var Controllers;
     (function (Controllers) {
         var GameListController = (function () {
-            function GameListController(UserService, GameListService, $scope) {
+            function GameListController(UserService, GameListService, $scope, $http) {
                 this.UserService = UserService;
                 this.GameListService = GameListService;
                 this.$scope = $scope;
-                this.games = [
-                    { game: "name" }
+                this.$http = $http;
+                this.allGames = [
+                    { "asd": "1", createdBy: { id: '1' } },
+                    { "asd": "a1", createdBy: { id: '1' } },
+                    { "asd": "a123d", createdBy: { id: '1' } },
+                    { "asd": "as124214d", createdBy: { id: '2' } },
                 ];
-                this.test = "test";
+                this.user = {
+                    id: '1'
+                };
             }
-            GameListController.prototype.myGames = function () {
-            };
-            GameListController.prototype.openGame = function (game) {
-                this.$scope.selected = game;
-            };
-            GameListController.prototype.newGame = function (_title) {
-                var self = this;
-            };
-            GameListController.prototype.saveGame = function () {
-                var self = this;
-                self.games.push(self.game);
-                self.game = null;
-            };
-            GameListController.prototype.joinGame = function (game) {
-                var self = this;
-                if (game.players.length != 4) {
-                    game.players.push(self.user);
-                }
-            };
-            GameListController.prototype.canJoinGame = function (game) {
-                var self = this;
-                if (game.players.length == 4) {
-                    return false;
-                }
-                for (var i = 0; i < game.players.length; i++) {
-                    if (game.players[i] == self.user) {
-                        return false;
-                    }
-                }
-                return true;
-            };
             return GameListController;
         }());
         Controllers.GameListController = GameListController;
@@ -133,7 +108,7 @@ var Application;
                 var self = this;
                 var url = 'https://mahjongmayhem.herokuapp.com/games/' + $stateParams.id + '/tiles';
                 $http.get(url).success(function (data) {
-                    console.log(data);
+                    console.log('gamecontroller retrieve ' + $stateParams.id, data);
                     self.tiles = data;
                 });
             }
@@ -294,7 +269,7 @@ var Application;
         var UserService = (function () {
             function UserService(configuration) {
                 this.configuration = configuration;
-                this.user = { name: 'Marthijn' };
+                this.user = { name: 'Marthijn', id: '1' };
             }
             UserService.prototype.authenticationUrl = function () {
                 var callback = encodeURIComponent(this.configuration.authCallback);
@@ -373,16 +348,28 @@ var Application;
             function OwnedGames() {
                 this.$inject = [];
             }
-            OwnedGames.prototype.filter = function (data) {
-                console.log(data);
-                return {
-                    data: data,
-                    bop: 'dota'
+            OwnedGames.prototype.filter = function () {
+                return function (games, userId) {
+                    console.error(userId);
+                    var filtered = [];
+                    if (userId) {
+                        for (var _i = 0, games_1 = games; _i < games_1.length; _i++) {
+                            var game = games_1[_i];
+                            console.error(game);
+                            if (game.createdBy.id === userId) {
+                                filtered.push(game);
+                            }
+                        }
+                    }
+                    return userId
+                        ? filtered
+                        : games;
                 };
             };
-            OwnedGames.prototype.Factory = function () {
-                var filter = this.filter;
-                filter['$inject'] = this.$inject;
+            OwnedGames.Factory = function () {
+                var instance = new OwnedGames();
+                var filter = instance.filter;
+                filter['$inject'] = [];
                 return filter;
             };
             return OwnedGames;
@@ -453,17 +440,25 @@ var Application;
                     url: "/games",
                     views: {
                         "viewSidePanel": { templateUrl: "partials/user.html" },
-                        "viewMainPanel": { templateUrl: "partials/gameList.html" }
-                    },
-                    controller: 'gameListController as gameList',
+                        "viewMainPanel": {
+                            templateUrl: "partials/gameList.html",
+                            controller: 'gameListController',
+                            controllerAs: 'gameList'
+                        }
+                    }
                 })
-                    .state('allGames.myGames', {
-                    url: "/me",
+                    .state('myGames', {
+                    url: "/games/me",
                     views: {
-                        "viewSidePanel": { templateUrl: "partials/user.html" },
-                        "viewMainPanel": { templateUrl: "partials/myGames.html" }
-                    },
-                    controllerAs: "gameListController as gameList"
+                        "viewSidePanel": {
+                            templateUrl: "partials/user.html"
+                        },
+                        "viewMainPanel": {
+                            templateUrl: "partials/mygames.html",
+                            controller: 'gameListController',
+                            controllerAs: 'gameList'
+                        }
+                    }
                 });
             };
             Router.Factory = function () {
@@ -504,7 +499,7 @@ var Application;
     mahjongMadness.constant('configuration', Application.Config.Configuration.Factory());
     mahjongMadness.directive('user', Application.Directive.UserDirective.Factory());
     mahjongMadness.directive('gameitem', Application.Directive.GameItemDirective.Factory());
-    mahjongMadness.filter('ownedGames', Application.Filter.OwnedGames);
+    mahjongMadness.filter('ownedGames', Application.Filter.OwnedGames.Factory());
     mahjongMadness.service('GameListService', Application.Services.GameListService);
     mahjongMadness.service('UserService', Application.Services.UserService);
     mahjongMadness.service('GameService', Application.Services.GameService);

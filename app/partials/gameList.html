@@ -1,3 +1,6 @@
-<div class="container">
-	<gameItem ng-repeat="game in gameList.games">
+<div>
+	<h3>All Games</h3>
+	<ul class="list-group">
+		<li class="list-group-item" ng-repeat="game in gameList.allGames">{{ game }}</li>
+	</ul>
 </div>

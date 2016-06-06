@@ -74,17 +74,25 @@ namespace Application.Config
 					url: "/games",
 					views: {
 						"viewSidePanel": { templateUrl: "partials/user.html" },
-						"viewMainPanel": { templateUrl: "partials/gameList.html" }
-					},
-					controller: 'gameListController as gameList',
-				}) 
-				.state('allGames.myGames', {
-					url: "/me",
+						"viewMainPanel": {
+							templateUrl: "partials/gameList.html",
+							controller: 'gameListController',
+							controllerAs: 'gameList'
+						}
+					}
+				})
+				.state('myGames', {
+					url: "/games/me",
 					views: {
-						"viewSidePanel": { templateUrl: "partials/user.html" },
-						"viewMainPanel": { templateUrl: "partials/myGames.html" }
-					},
-					controllerAs: "gameListController as gameList"
+						"viewSidePanel": {
+							templateUrl: "partials/user.html" 
+						},
+						"viewMainPanel": {
+							templateUrl: "partials/mygames.html",
+							controller: 'gameListController',
+							controllerAs: 'gameList'
+						}
+					}
 				});
 		}
 		
