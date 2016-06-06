@@ -5,7 +5,7 @@
     </head>
 
     <body ng-app="mahjongMadness">
-        <div class="container" ng-controller="gameListController as gameList">
+        <div class="container hidden" ng-controller="gameListController as gameList">
             <div class="row">
                 <div class="col-lg-6">
                     <h3>User info</h3>
@@ -72,9 +72,83 @@
                 {{ game.currentGame() }}
             </div>
         </div> <!-- /gameList -->
+        
+        <div class="container">
+            <nav class="navbar navbar-default" ng-controller="navigationController as navigation">
+                <div class="container-fluid">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">{{ navigation.title }}</a>
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li ng-repeat="item in navigation.menuitems"><a ui-sref="{{ item.state }}" class="{{ item.active }}">{{ item.label }}</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav">
+                            <!-- Active entry example -->                                
+                            <li class="active"><a ui-sref="index">Index<span class="sr-only">(current)</span></a></li>
+                            
+                            <!-- Normal entry example -->
+                            <li><a ui-sref="login">Login</a></li>
+                            <li><a ui-sref="gameList">Game List</a></li>
+                            <li><a ui-sref="myGames">My Games</a></li>
+                            
+                            <!-- Dropdown example -->
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Bopdown <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">Action</a></li>
+                                    <li><a href="#">Another action</a></li>
+                                    <li><a href="#">Something else here</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="#">Separated link</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="#">One more separated link</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        
+                        <!-- Search bar example -->
+                        <form class="navbar-form navbar-left" role="search">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search">
+                            </div>
+                            <button type="submit" class="btn btn-default">Submit</button>
+                        </form>
+                        
+                        <!-- right aligned navigation example -->
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="#">Link</a></li>
+                        </ul>
+                    </div><!-- /.navbar-collapse -->
+                </div><!-- /.container-fluid -->
+            </nav>
+        </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-3 col-lg-offset-1" ui-view="viewSidePanel"></div>
+                <div class="col-lg-7" ui-view="viewMainPanel"></div>
+            </div>
+            <div class="row">
+                <div class="col-lg-10 col-lg-offset-1" ui-view="viewBigPanel"></div>
+            </div>
+        </div>
+        
+        <!-- TODO: change to node_modules -->
         <script src="/lib/jquery-2.2.3.min.js"></script>
+        <script src="/lib/bootstrap-3.3.6.min.js"></script>
         <script src="/lib/underscore-1.8.3.min.js"></script>
         <script src="/lib/angular-1.5.5.min.js"></script>
+        <script src="/lib/angular-route-1.5.5.min.js"></script>
+        <script src="/lib/angular-ui-router-0.2.18.min.js"></script>
         <script src="/js/app.js"></script>
     </body>
 </html>

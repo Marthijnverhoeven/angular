@@ -4,17 +4,22 @@ namespace Application.Controllers
 {
 	export class GameListController
 	{
-		private games; // GameListService (GameFactory)
+		private games = [
+			{ game: "name" }
+		]; // GameListService (GameFactory)
 		private game; // GameService
 		private user;
+		public test = "test";
 		
-		constructor(private UserService, private GameFactory, private $scope)
-		{			
-			var self = this;
-			GameFactory.GET(function(games){
-				self.games = games;
-			});
-			this.user = this.UserService.user;
+		constructor(
+			private UserService,
+			private GameListService : Application.Services.GameListService,
+			private $scope)
+		{ }
+		
+		public myGames()
+		{
+			// return this.GameListService.readAll();
 		}
 		
 		public openGame(game: Application.Models.Game)
@@ -25,10 +30,10 @@ namespace Application.Controllers
 		
 		public newGame(_title) {
 			var self = this;
-			self.GameFactory.POST({ title: _title, players: [self.user] });
-			self.GameFactory.GET(function(games){
-				self.games = games;
-			});
+			// self.GameListService.POST({ title: _title, players: [self.user] });
+			// self.GameListService.GET(function(games){
+			// 	self.games = games;
+			// });
 		}
 		
 		public saveGame() {
