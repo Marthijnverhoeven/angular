@@ -13,7 +13,7 @@ namespace Application
 	mahjongMadness.directive('user', Application.Directive.UserDirective.Factory());
 	mahjongMadness.directive('gameitem', Application.Directive.GameItemDirective.Factory());
 	
-	mahjongMadness.filter('ownedGames', Application.Filter.OwnedGames);
+	mahjongMadness.filter('ownedGames', Application.Filter.OwnedGames.Factory());
 	
 	mahjongMadness.service('GameListService', Application.Services.GameListService);
 	mahjongMadness.service('UserService', Application.Services.UserService);
