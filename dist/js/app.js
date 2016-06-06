@@ -81,37 +81,6 @@ var Application;
                 ];
                 this.test = "test";
             }
-            GameListController.prototype.myGames = function () {
-            };
-            GameListController.prototype.openGame = function (game) {
-                this.$scope.selected = game;
-            };
-            GameListController.prototype.newGame = function (_title) {
-                var self = this;
-            };
-            GameListController.prototype.saveGame = function () {
-                var self = this;
-                self.games.push(self.game);
-                self.game = null;
-            };
-            GameListController.prototype.joinGame = function (game) {
-                var self = this;
-                if (game.players.length != 4) {
-                    game.players.push(self.user);
-                }
-            };
-            GameListController.prototype.canJoinGame = function (game) {
-                var self = this;
-                if (game.players.length == 4) {
-                    return false;
-                }
-                for (var i = 0; i < game.players.length; i++) {
-                    if (game.players[i] == self.user) {
-                        return false;
-                    }
-                }
-                return true;
-            };
             return GameListController;
         }());
         Controllers.GameListController = GameListController;
@@ -294,10 +263,10 @@ var Application;
         var UserService = (function () {
             function UserService(configuration) {
                 this.configuration = configuration;
-                this.user = { name: 'Marthijn' };
+                this.user = { name: 'Marthijn', token: 'tests' };
             }
             UserService.prototype.authenticationUrl = function () {
-                var callback = encodeURIComponent(this.configuration.authCallback);
+                var callback = encodeURIComponent(this.configuration.baseUrl + this.configuration.authCallback);
                 return 'http://mahjongmayhem.herokuapp.com/auth/avans?callbackUrl=' + callback;
             };
             return UserService;
@@ -424,7 +393,14 @@ var Application;
                     url: "/login",
                     views: {
                         "viewSidePanel": { templateUrl: "partials/empty.html" },
-                        "viewMainPanel": { templateUrl: "partials/login.html" }
+                        "viewMainPanel": {
+                            templateUrl: "partials/login.html",
+                            controller: function ($scope, UserService) {
+                                console.log($scope, UserService);
+                                this.url = UserService.authenticationUrl();
+                            },
+                            controllerAs: "loginCtrl"
+                        }
                     }
                 })
                     .state('authentication', {
@@ -486,6 +462,7 @@ var Application;
         var Configuration = (function () {
             function Configuration() {
                 this.authCallback = "/#/authCallback";
+                this.baseUrl = "http://localhost:3000";
             }
             Configuration.Factory = function () {
                 return new Configuration();

@@ -4,7 +4,7 @@ namespace Application.Services
 	
 	export class UserService
 	{
-		public user : Application.Models.User = { name: 'Marthijn' };
+		public user : Application.Models.User = { name: 'Marthijn', token: 'tests' };
 		
 		constructor(private configuration : any)
 		{ }
@@ -12,7 +12,7 @@ namespace Application.Services
 		public authenticationUrl() : string
 		{
 			// encodeURI || encodeURIComponent 
-			var callback = encodeURIComponent(this.configuration.authCallback);
+			var callback = encodeURIComponent(this.configuration.baseUrl + this.configuration.authCallback);
 			return 'http://mahjongmayhem.herokuapp.com/auth/avans?callbackUrl=' + callback;
 		}
 	}

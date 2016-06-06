@@ -41,7 +41,14 @@ namespace Application.Config
 					url: "/login",
 					views: {
 						"viewSidePanel": { templateUrl: "partials/empty.html" },
-						"viewMainPanel": { templateUrl: "partials/login.html" }
+						"viewMainPanel": {
+							templateUrl: "partials/login.html",
+							controller: function($scope, UserService) {
+								console.log($scope, UserService);
+								this.url = UserService.authenticationUrl();
+							},
+							controllerAs: "loginCtrl"
+						}
 					}
 				})
 				.state('authentication', {
@@ -51,6 +58,7 @@ namespace Application.Config
 						"viewMainPanel": { templateUrl: "partials/index.html" }
 					}
 				});
+		
 		}
 		
 		private appendGameStates() : void
