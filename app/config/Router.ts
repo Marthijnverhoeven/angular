@@ -52,11 +52,23 @@ namespace Application.Config
 					}
 				})
 				.state('authentication', {
-					url: this.configuration.authCallback,
+					url: "/authCallback", //this.configuration.authCallback,
 					views: {
 						"viewSidePanel": { templateUrl: "partials/empty.html" },
-						"viewMainPanel": { templateUrl: "partials/index.html" }
+						"viewMainPanel": { 	
+							templateUrl: "partials/empty.html", 
+							controller: function($scope, $stateParams, $state, UserService) {
+								console.log($stateParams, $state, UserService);
+								
+								$scope.currStateParams = $stateParams;
+								
+								$scope.$watch('currState', function() {
+									console.log($stateParams);
+								});
+							}
+						}
 					}
+					
 				});
 		
 		}

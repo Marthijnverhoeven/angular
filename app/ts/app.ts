@@ -3,7 +3,7 @@
 namespace Application
 {
 	'use strict';
-	let mahjongMadness = angular.module('mahjongMadness', ['ui.router']);
+	let mahjongMadness = angular.module('mahjongMadness', ['ui.router', 'ngRoute']);
 	
 	console.log('TEST');
 	
