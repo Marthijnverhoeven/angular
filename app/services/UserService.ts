@@ -10,6 +10,9 @@ namespace Application.Service
 	{
 		public user : User = { name: 'Marthijn', id: '1', token: 'tests' };
 		
+		public username: string = null;
+		public token: string = null;
+		
 		constructor(private configuration : any)
 		{ }
 		

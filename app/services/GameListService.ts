@@ -3,12 +3,15 @@
 namespace Application.Service
 {
 	'use strict';
-	declare var _ : any;
 	
-	// declare type SuccessCallback<T> = (data: T) => void;
-	// declare type ErrorCallback<T> = (error: Error, data: T) => void;
-	declare type onSuccess<T> = Application.Model.SuccessCallback<T>;
-	declare type onError<T> = Application.Model.ErrorCallback<T>;
+	// Libs
+	declare var _ : UnderscoreStatic;
+	declare type IHttpService = angular.IHttpService;
+	
+	// Temps
+	declare type callback<T> = (data: T) => void;
+	
+	// Models
 	declare type Game = Application.Model.Game;
 	
 	export class GameListService
@@ -68,31 +71,96 @@ namespace Application.Service
 			}
 		]
 		
-		constructor(private $http)
-		{ }
+		public availableGames: Game[];
+		public currentGame: Game;
+		public createdGame: Game;
 		
-		public create(template : string, minPlayers : number, maxPlayers : number) : Game
+		constructor(private $http: IHttpService)
 		{
-			// POST - /games
-			throw new Error('NotImplementedError');
+			this.availableGames = [];
 		}
 		
-		public readAll(onSuccess : onSuccess<Game[]>, onError : onError<Game[]>) : void
+		// POST - /games
+		public create(template : string, minPlayers : number, maxPlayers : number)
 		{
-			// GET - /games
-			throw new Error('NotImplementedError');
+			var self = this;
+			self.request<Game>(
+				'POST',
+				'/games',
+				(result: angular.IHttpPromiseCallbackArg<Game>) =>
+				{
+					self.createdGame = result.data;
+				},
+				(error: angular.IHttpPromiseCallbackArg<any>) =>
+				{
+					console.error(error);
+					alert("Error, templates could not be retrieved");
+				},
+				{
+					template: template,
+					minPlayers: minPlayers,
+					maxPlayers: maxPlayers
+				}
+			);
 		}
 		
-		public read(id : number) : Game
+		// GET - /games
+		public readAll(onSuccess: callback<Game[]>, onError: callback<any>) : void
 		{
-			// GET - /games/{id}
-			throw new Error('NotImplementedError');
+			console.log('reading all gaems');
+			var self = this;
+			self.request<Game[]>(
+				'GET',
+				'/games',
+				(result: angular.IHttpPromiseCallbackArg<Game[]>) =>
+				{
+					self.availableGames = result.data
+					onSuccess(result.data);
+				},
+				onError
+			);
 		}
 		
-		public delete(id : number) : void
+		// GET - /games/{id}
+		public read(id : number, onSuccess: callback<Game>, onError: callback<any>) : void
 		{
-			// DELETE - /games/{id}
-			throw new Error('NotImplementedError');	
+			var self = this;
+			self.request<Game>(
+				'GET',
+				'/games/' + id,
+				(result: angular.IHttpPromiseCallbackArg<Game>) =>
+				{
+					self.currentGame = result.data
+					onSuccess(result.data);
+				},
+				onError
+			);
+		}
+		
+		// DELETE - /games/{id}
+		public delete(id : number, onSuccess: callback<any>, onError: callback<any>) : void
+		{
+			var self = this;
+			self.request<any>(
+				'DELETE',
+				'/games/' + id,
+				(result: angular.IHttpPromiseCallbackArg<any>) =>
+				{
+					console.log(result);
+					onSuccess(result.data);
+				},
+				onError
+			);	
+		}
+		
+		private request<T>(method: string, url: string, onSuccess: (result: angular.IHttpPromiseCallbackArg<T>) => void, onError: (result: angular.IHttpPromiseCallbackArg<any>) => void, data?: any) : void
+		{
+			console.log(url);
+			var self = this;
+			this.$http<T>({
+				method: method,
+				url: 'http://mahjongmayhem.herokuapp.com' + url
+			}).then(onSuccess, onError);
 		}
 		
 		// public GET(id, callBack) {

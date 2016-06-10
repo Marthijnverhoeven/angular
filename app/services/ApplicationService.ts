@@ -2,7 +2,8 @@
 
 namespace Application.Service
 {	
-	declare type onSuccess<T> = Application.Model.SuccessCallback<T>;
+	declare type IHttpService = angular.IHttpService;
+	
 	declare type Template = {
 		_id: string;
 		__v: number;
@@ -19,7 +20,7 @@ namespace Application.Service
 		public currentTemplate: Template;
 		public availableGamestates: GameState[];
 		
-		constructor(private $http : angular.IHttpService)
+		constructor(private $http : IHttpService)
 		{
 			this.availableTemplates = [];
 			this.availableGamestates = [];
@@ -84,7 +85,11 @@ namespace Application.Service
 		
 		private request<T>(method: string, url: string, onSuccess: (result: angular.IHttpPromiseCallbackArg<T>) => void, onError: (result: angular.IHttpPromiseCallbackArg<any>) => void) : void
 		{
-			
+			var self = this;
+			this.$http<T>({
+				method: method,
+				url: url
+			}).then(onSuccess, onError);
 		}
 	}
 }

@@ -4,16 +4,12 @@ namespace Application.Config
 {
 	'use strict'
 	
-	export interface IConfiguration
-	{
-		authCallback : string;
-		baseUrl: string;
-	}
-	
-	export class Configuration implements IConfiguration
+	export class Configuration
 	{
 		public authCallback = "/#/authCallback";
 		public baseUrl = "http://localhost:3000";
+		
+		public apiUrl = "http://mahjongmayhem.herokuapp.com/";
 		
 		public static Factory()
 		{
