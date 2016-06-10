@@ -8,7 +8,7 @@ namespace Application.Service
 	
 	export class GameService
 	{
-		constructor(private HttpService)
+		constructor(private $http)
 		{ }
 		
 		public start(id : number) : void
