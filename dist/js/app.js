@@ -1,76 +1,63 @@
 var Application;
 (function (Application) {
-    var Models;
-    (function (Models) {
+    var Model;
+    (function (Model) {
         var Game = (function () {
             function Game() {
             }
             return Game;
         }());
-        Models.Game = Game;
-    })(Models = Application.Models || (Application.Models = {}));
+        Model.Game = Game;
+    })(Model = Application.Model || (Application.Model = {}));
 })(Application || (Application = {}));
 var Application;
 (function (Application) {
-    var Models;
-    (function (Models) {
+    var Model;
+    (function (Model) {
         var Tile = (function () {
-            function Tile(tileData) {
-                if (!tileData)
-                    throw new Error('no tileData');
-                this.id = tileData._id;
-                this.x = tileData.x;
-                this.y = tileData.y;
-                this.z = tileData.z;
-                this.name = tileData.tile.name;
-                this.suit = tileData.tile.suit;
-                this.matchesWholeSuit = tileData.tile.matchesWholeSuit;
+            function Tile() {
             }
             Tile.prototype.isOnTop = function (tile) {
                 var self = this;
-                if ((self.x - 1 === tile.x || self.x === tile.x || self.x + 1 === tile.x)
-                    && (self.y - 1 === tile.y || self.y === tile.y || self.y + 1 === tile.y)) {
-                    return true;
-                }
-                return false;
+                return ((self.xPos - 1 === tile.xPos || self.xPos === tile.xPos || self.xPos + 1 === tile.xPos)
+                    && (self.yPos - 1 === tile.yPos || self.yPos === tile.yPos || self.yPos + 1 === tile.yPos));
             };
             Tile.prototype.isLeftOrRight = function (tile) {
                 var self = this;
-                if ((self.x - 2 === tile.x || self.x + 2 === tile.x)
-                    && (self.y - 1 === tile.y || self.y === tile.y || self.y + 1 === tile.y)) {
-                    return true;
-                }
-                return false;
+                return ((self.xPos - 2 === tile.xPos || self.xPos + 2 === tile.xPos)
+                    && (self.yPos - 1 === tile.yPos || self.yPos === tile.yPos || self.yPos + 1 === tile.yPos));
             };
             Tile.prototype.canMatch = function (tiles) {
+                var self = this;
                 for (var _i = 0, tiles_1 = tiles; _i < tiles_1.length; _i++) {
                     var tile = tiles_1[_i];
-                    if (!this.isOnTop(tile) && this.isLeftOrRight(tile)) {
+                    if (!self.isOnTop(tile) && this.isLeftOrRight(tile)) {
                     }
                 }
                 return null;
             };
             return Tile;
         }());
-        Models.Tile = Tile;
-    })(Models = Application.Models || (Application.Models = {}));
+        Model.Tile = Tile;
+    })(Model = Application.Model || (Application.Model = {}));
 })(Application || (Application = {}));
 var Application;
 (function (Application) {
-    var Models;
-    (function (Models) {
+    var Model;
+    (function (Model) {
         var User = (function () {
             function User() {
             }
             return User;
         }());
-        Models.User = User;
-    })(Models = Application.Models || (Application.Models = {}));
+        Model.User = User;
+    })(Model = Application.Model || (Application.Model = {}));
 })(Application || (Application = {}));
 var Application;
 (function (Application) {
     var Controllers;
     (function (Controllers) {
+        'use strict';
         var GameListController = (function () {
             function GameListController(UserService, GameListService, $scope, $http) {
                 this.UserService = UserService;
@@ -179,15 +166,65 @@ var Application;
 })(Application || (Application = {}));
 var Application;
 (function (Application) {
-    var Services;
-    (function (Services) {
+    var Service;
+    (function (Service) {
         'use strict';
         var GameListService = (function () {
-            function GameListService($timeout) {
-                this.$timeout = $timeout;
+            function GameListService($http) {
+                this.$http = $http;
                 this.games = [
-                    { id: 2, title: "Mario", players: ["a", "b", "c", "d"] },
-                    { id: 3, title: "Rayman", players: ["henk", "heenk"] }
+                    {
+                        "_id": "5759d218e22c671100821f5a",
+                        "createdBy": {
+                            "_id": "rjl.ernens@student.avans.nl",
+                            "name": "Roel Ernens",
+                            "__v": 0
+                        },
+                        "createdOn": "2016-06-09T20:31:20.802Z",
+                        "gameTemplate": {
+                            "_id": "Ox",
+                            "__v": 0,
+                            "id": "Ox"
+                        },
+                        "__v": 0,
+                        "players": [
+                            {
+                                "_id": "rjl.ernens@student.avans.nl",
+                                "name": "Roel Ernens",
+                                "__v": 0
+                            }
+                        ],
+                        "maxPlayers": 32,
+                        "minPlayers": 2,
+                        "state": "open",
+                        "id": "5759d218e22c671100821f5a"
+                    },
+                    {
+                        "_id": "5759d106e22c671100821ec9",
+                        "createdBy": {
+                            "_id": "rjl.ernens@student.avans.nl",
+                            "name": "Roel Ernens",
+                            "__v": 0
+                        },
+                        "createdOn": "2016-06-09T20:26:46.524Z",
+                        "gameTemplate": {
+                            "_id": "Ox",
+                            "__v": 0,
+                            "id": "Ox"
+                        },
+                        "__v": 0,
+                        "players": [
+                            {
+                                "_id": "rjl.ernens@student.avans.nl",
+                                "name": "Roel Ernens",
+                                "__v": 0
+                            }
+                        ],
+                        "maxPlayers": 32,
+                        "minPlayers": 2,
+                        "state": "open",
+                        "id": "5759d106e22c671100821ec9"
+                    }
                 ];
             }
             GameListService.prototype.create = function (template, minPlayers, maxPlayers) {
@@ -202,47 +239,19 @@ var Application;
             GameListService.prototype.delete = function (id) {
                 throw new Error('NotImplementedError');
             };
-            GameListService.prototype.GET = function (id, callBack) {
-                var self = this;
-                self.$timeout(function () {
-                    if (_.isFunction(id)) {
-                        callBack = id;
-                        return callBack(self.games);
-                    }
-                    else {
-                        var result = _.findWhere(self.games, { id: id });
-                        return callBack(result);
-                    }
-                }, 1000);
-            };
-            GameListService.prototype.PUT = function (game) {
-                throw new Error('NotImplementedError');
-            };
-            GameListService.prototype.POST = function (game) {
-                var self = this;
-                var ids = [];
-                for (var i = 0; i < self.games.length; i++) {
-                    ids.push(self.games[i].id);
-                }
-                var largest = Math.max.apply(Math, ids);
-                var newID = largest + 1;
-                game.id = newID;
-                self.games.push(game);
-            };
-            GameListService.prototype.DELETE = function (game) {
-                throw new Error('NotImplementedError');
-            };
             return GameListService;
         }());
-        Services.GameListService = GameListService;
-    })(Services = Application.Services || (Application.Services = {}));
+        Service.GameListService = GameListService;
+    })(Service = Application.Service || (Application.Service = {}));
 })(Application || (Application = {}));
 var Application;
 (function (Application) {
-    var Services;
-    (function (Services) {
+    var Service;
+    (function (Service) {
+        'use strict';
         var GameService = (function () {
-            function GameService() {
+            function GameService(HttpService) {
+                this.HttpService = HttpService;
             }
             GameService.prototype.start = function (id) {
                 throw new Error('NotImplementedError');
@@ -258,13 +267,13 @@ var Application;
             };
             return GameService;
         }());
-        Services.GameService = GameService;
-    })(Services = Application.Services || (Application.Services = {}));
+        Service.GameService = GameService;
+    })(Service = Application.Service || (Application.Service = {}));
 })(Application || (Application = {}));
 var Application;
 (function (Application) {
-    var Services;
-    (function (Services) {
+    var Service;
+    (function (Service) {
         'use strict';
         var UserService = (function () {
             function UserService(configuration) {
@@ -277,8 +286,38 @@ var Application;
             };
             return UserService;
         }());
-        Services.UserService = UserService;
-    })(Services = Application.Services || (Application.Services = {}));
+        Service.UserService = UserService;
+    })(Service = Application.Service || (Application.Service = {}));
+})(Application || (Application = {}));
+var Application;
+(function (Application) {
+    var Service;
+    (function (Service) {
+        'use strict';
+        var HttpInterceptor = (function () {
+            function HttpInterceptor(UserService) {
+                this.UserService = UserService;
+            }
+            HttpInterceptor.prototype.request = function (config) {
+                if (this.UserService.username && this.UserService.token) {
+                    config.headers = { "x-username": this.UserService.username, "x-token": this.UserService.token };
+                }
+                return config;
+            };
+            HttpInterceptor.Factory = function () {
+                var interceptor = function (UserService) {
+                    var instance = new HttpInterceptor(UserService);
+                    return {
+                        'request': instance.request
+                    };
+                };
+                interceptor['$inject'] = ['UserService'];
+                return interceptor;
+            };
+            return HttpInterceptor;
+        }());
+        Service.HttpInterceptor = HttpInterceptor;
+    })(Service = Application.Service || (Application.Service = {}));
 })(Application || (Application = {}));
 var Application;
 (function (Application) {
@@ -508,9 +547,9 @@ var Application;
     mahjongMadness.directive('user', Application.Directive.UserDirective.Factory());
     mahjongMadness.directive('gameitem', Application.Directive.GameItemDirective.Factory());
     mahjongMadness.filter('ownedGames', Application.Filter.OwnedGames.Factory());
-    mahjongMadness.service('GameListService', Application.Services.GameListService);
-    mahjongMadness.service('UserService', Application.Services.UserService);
-    mahjongMadness.service('GameService', Application.Services.GameService);
+    mahjongMadness.service('GameListService', Application.Service.GameListService);
+    mahjongMadness.service('UserService', Application.Service.UserService);
+    mahjongMadness.service('GameService', Application.Service.GameService);
     mahjongMadness.controller('gameListController', Application.Controllers.GameListController);
     mahjongMadness.controller('gameController', Application.Controllers.GameController);
     mahjongMadness.controller('navigationController', Application.Controllers.NavigationController);

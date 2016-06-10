@@ -1,10 +1,14 @@
 /// <reference path="../ts/_all.ts" />
 
-namespace Application.Services
+namespace Application.Service
 {
+	'use strict'
+	
+	declare type Tile = Application.Model.Tile;
+	
 	export class GameService
 	{
-		constructor()
+		constructor(private HttpService)
 		{ }
 		
 		public start(id : number) : void
@@ -19,7 +23,7 @@ namespace Application.Services
 			throw new Error('NotImplementedError');
 		}
 		
-		public tiles(id : number) : Application.Models.Tile[]
+		public tiles(id : number) : Tile[]
 		{
 			// GET - /games/{id}/tiles
 			throw new Error('NotImplementedError');

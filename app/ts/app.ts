@@ -15,9 +15,9 @@ namespace Application
 	
 	mahjongMadness.filter('ownedGames', Application.Filter.OwnedGames.Factory());
 	
-	mahjongMadness.service('GameListService', Application.Services.GameListService);
-	mahjongMadness.service('UserService', Application.Services.UserService);
-	mahjongMadness.service('GameService', Application.Services.GameService);
+	mahjongMadness.service('GameListService', Application.Service.GameListService);
+	mahjongMadness.service('UserService', Application.Service.UserService);
+	mahjongMadness.service('GameService', Application.Service.GameService);
 	
 	mahjongMadness.controller('gameListController', Application.Controllers.GameListController);
 	mahjongMadness.controller('gameController', Application.Controllers.GameController);
