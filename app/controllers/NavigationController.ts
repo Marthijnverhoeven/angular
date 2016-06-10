@@ -5,6 +5,7 @@ namespace Application.Controllers
 	export class NavigationController
 	{
 		private title : string;
+		private user : any;
 		private menuitems : any[];
 		
 		private navigationDictionary = {
@@ -14,16 +15,20 @@ namespace Application.Controllers
 			'allGames.myGames' 	: { title: 'My games', 	items: this.getItemsWithActive("allGames.myGames") }
 		}
 		
-		constructor(private $state, private $scope)
+		constructor(private $state, private $scope, private UserService)
 		{
+			console.log('nav ctor');
 			var self = this;
 			
 			this.title = 'Error';
 			this.menuitems = [];
+			this.user = {};
 			
 			$scope.currState = $state;
 			$scope.$watch('currState.current.name', function(newValue, oldValue) {
 				console.log(newValue, oldValue);
+				console.log(self.UserService	);
+				self.user.name = self.UserService.username;
 				if(newValue !== undefined && !!newValue)
 				{
 					var nav = self.navigationDictionary[newValue];

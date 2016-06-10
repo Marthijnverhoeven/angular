@@ -22,5 +22,11 @@ namespace Application.Service
 			var callback = encodeURIComponent(this.configuration.baseUrl + this.configuration.authCallback);
 			return 'http://mahjongmayhem.herokuapp.com/auth/avans?callbackUrl=' + callback;
 		}
+		
+		public setUser(username: string, token: string) : void
+		{
+			this.username = username;
+			this.token = token;
+		}
 	}
 }

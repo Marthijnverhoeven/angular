@@ -9,7 +9,7 @@ namespace Application.Config
 		private $inject : string[] = ['configuration', '$stateProvider', '$urlRouterProvider'];
 		
 		constructor(
-			private configuration : Application.Config.IConfiguration,
+			private configuration,
 			private $stateProvider : angular.ui.IStateProvider,
 			private $urlRouterProvider: angular.ui.IUrlRouterProvider)
 		{
@@ -52,19 +52,14 @@ namespace Application.Config
 					}
 				})
 				.state('authentication', {
-					url: "/authCallback", //this.configuration.authCallback,
+					url: "/authCallback?username&token", //this.configuration.authCallback,
 					views: {
 						"viewSidePanel": { templateUrl: "partials/empty.html" },
 						"viewMainPanel": { 	
 							templateUrl: "partials/empty.html", 
-							controller: function($scope, $stateParams, $state, UserService) {
-								console.log($stateParams, $state, UserService);
-								
-								$scope.currStateParams = $stateParams;
-								
-								$scope.$watch('currState', function() {
-									console.log($stateParams);
-								});
+							controller: function($scope, $http, $state, $stateParams, UserService: Application.Service.UserService)
+							{
+								UserService.setUser($stateParams.username, $stateParams.token);
 							}
 						}
 					}
@@ -78,7 +73,7 @@ namespace Application.Config
 			this.$stateProvider
 				.state('game', {
 					url: "/game/{id}",
-					params: { },
+					// params: { },
 					views: {
 						"viewSidePanel": { templateUrl: "partials/empty.html" },
 						"viewBigPanel": { templateUrl: "partials/gameBoard.html" }

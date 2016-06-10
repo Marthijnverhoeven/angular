@@ -129,21 +129,26 @@ var Application;
     var Controllers;
     (function (Controllers) {
         var NavigationController = (function () {
-            function NavigationController($state, $scope) {
+            function NavigationController($state, $scope, UserService) {
                 this.$state = $state;
                 this.$scope = $scope;
+                this.UserService = UserService;
                 this.navigationDictionary = {
                     'index': { title: 'Index', items: this.getItemsWithActive("index") },
                     'login': { title: 'Login', items: this.getItemsWithActive("login") },
                     'allGames': { title: 'All games', items: this.getItemsWithActive("allGames") },
                     'allGames.myGames': { title: 'My games', items: this.getItemsWithActive("allGames.myGames") }
                 };
+                console.log('nav ctor');
                 var self = this;
                 this.title = 'Error';
                 this.menuitems = [];
+                this.user = {};
                 $scope.currState = $state;
                 $scope.$watch('currState.current.name', function (newValue, oldValue) {
                     console.log(newValue, oldValue);
+                    console.log(self.UserService);
+                    self.user.name = self.UserService.username;
                     if (newValue !== undefined && !!newValue) {
                         var nav = self.navigationDictionary[newValue];
                         if (!!nav) {
@@ -256,7 +261,6 @@ var Application;
                 });
             };
             GameListService.prototype.readAll = function (onSuccess, onError) {
-                console.log('reading all gaems');
                 var self = this;
                 self.request('GET', '/games', function (result) {
                     self.availableGames = result.data;
@@ -273,7 +277,6 @@ var Application;
             GameListService.prototype.delete = function (id, onSuccess, onError) {
                 var self = this;
                 self.request('DELETE', '/games/' + id, function (result) {
-                    console.log(result);
                     onSuccess(result.data);
                 }, onError);
             };
@@ -331,6 +334,10 @@ var Application;
             UserService.prototype.authenticationUrl = function () {
                 var callback = encodeURIComponent(this.configuration.baseUrl + this.configuration.authCallback);
                 return 'http://mahjongmayhem.herokuapp.com/auth/avans?callbackUrl=' + callback;
+            };
+            UserService.prototype.setUser = function (username, token) {
+                this.username = username;
+                this.token = token;
             };
             return UserService;
         }());
@@ -419,7 +426,6 @@ var Application;
             }
             OwnedGames.prototype.filter = function () {
                 return function (games, userId) {
-                    console.error(userId);
                     var filtered = [];
                     if (userId) {
                         for (var _i = 0, games_1 = games; _i < games_1.length; _i++) {
@@ -491,17 +497,13 @@ var Application;
                     }
                 })
                     .state('authentication', {
-                    url: "/authCallback",
+                    url: "/authCallback?username&token",
                     views: {
                         "viewSidePanel": { templateUrl: "partials/empty.html" },
                         "viewMainPanel": {
                             templateUrl: "partials/empty.html",
-                            controller: function ($scope, $stateParams, $state, UserService) {
-                                console.log($stateParams, $state, UserService);
-                                $scope.currStateParams = $stateParams;
-                                $scope.$watch('currState', function () {
-                                    console.log($stateParams);
-                                });
+                            controller: function ($scope, $http, $state, $stateParams, UserService) {
+                                UserService.setUser($stateParams.username, $stateParams.token);
                             }
                         }
                     }
@@ -511,7 +513,6 @@ var Application;
                 this.$stateProvider
                     .state('game', {
                     url: "/game/{id}",
-                    params: {},
                     views: {
                         "viewSidePanel": { templateUrl: "partials/empty.html" },
                         "viewBigPanel": { templateUrl: "partials/gameBoard.html" }
@@ -585,7 +586,6 @@ var Application;
     mahjongMadness.factory('httpRequestInterceptor', function (UserService, configuration) {
         return {
             request: function (config) {
-                console.log(config);
                 if (UserService.username && UserService.token) {
                     config.headers["x-username"] = UserService.username;
                     config.headers["x-token"] = UserService.token;

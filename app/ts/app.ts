@@ -11,8 +11,6 @@ namespace Application
 		function (UserService, configuration) { 
 			return { 
 				request: function (config) {
-					console.log(config);
-					 
 					if (UserService.username && UserService.token) {
 						config.headers["x-username"] = UserService.username
 						config.headers["x-token"] = UserService.token;

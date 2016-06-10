@@ -107,7 +107,6 @@ namespace Application.Service
 		// GET - /games
 		public readAll(onSuccess: callback<Game[]>, onError: callback<any>) : void
 		{
-			console.log('reading all gaems');
 			var self = this;
 			self.request<Game[]>(
 				'GET',
@@ -146,7 +145,6 @@ namespace Application.Service
 				'/games/' + id,
 				(result: angular.IHttpPromiseCallbackArg<any>) =>
 				{
-					console.log(result);
 					onSuccess(result.data);
 				},
 				onError
