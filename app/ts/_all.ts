@@ -1,4 +1,3 @@
-/// <reference path='../models/NamedTypings.ts' />
 /// <reference path='../models/Game.ts' />
 /// <reference path='../models/Tile.ts' />
 /// <reference path='../models/User.ts' />
