@@ -5,7 +5,7 @@ namespace Application.Services {
         constructor(private $http, private UserService)
         { }
 
-        public request(options, callback): void {
+        public request(options): void {
             if (this.UserService.username && this.UserService.token) {
                 return this.$http({
                     method: 'GET',

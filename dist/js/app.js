@@ -422,10 +422,19 @@ var Application;
                     }
                 })
                     .state('authentication', {
-                    url: this.configuration.authCallback,
+                    url: "/authCallback",
                     views: {
                         "viewSidePanel": { templateUrl: "partials/empty.html" },
-                        "viewMainPanel": { templateUrl: "partials/index.html" }
+                        "viewMainPanel": {
+                            templateUrl: "partials/empty.html",
+                            controller: function ($scope, $stateParams, $state, UserService) {
+                                console.log($stateParams, $state, UserService);
+                                $scope.currStateParams = $stateParams;
+                                $scope.$watch('currState', function () {
+                                    console.log($stateParams);
+                                });
+                            }
+                        }
                     }
                 });
             };
@@ -501,7 +510,7 @@ var Application;
 var Application;
 (function (Application) {
     'use strict';
-    var mahjongMadness = angular.module('mahjongMadness', ['ui.router']);
+    var mahjongMadness = angular.module('mahjongMadness', ['ui.router', 'ngRoute']);
     console.log('TEST');
     mahjongMadness.config(Application.Config.Router.Factory());
     mahjongMadness.constant('configuration', Application.Config.Configuration.Factory());
