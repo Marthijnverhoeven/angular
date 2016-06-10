@@ -52,9 +52,17 @@ describe("GameController", function() {
 	});
 
 	it('should check gameListController', function(){
-		// Given
-		var gameList = gameListController.allGames;
+		gameListController.getAllGames();
 
-		expect(gameList).to.not.be.undefined;
+		//expect(gameList).to.eventually.have.property("foo");
+		sleepFor(5000);
+		var gameList = gameListController.allGames;
+		console.log(gameList);
+		expect(gameList[0]).to.not.be.undefined;
+
+		function sleepFor(sleepDuration) {
+			var now = new Date().getTime();
+			while (new Date().getTime() < now + sleepDuration) { /* do nothing */ }
+		}
 	});
 });

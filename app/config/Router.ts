@@ -9,7 +9,7 @@ namespace Application.Config
 		private $inject : string[] = ['configuration', '$stateProvider', '$urlRouterProvider'];
 		
 		constructor(
-			private configuration : Application.Config.IConfiguration,
+			private configuration,
 			private $stateProvider : angular.ui.IStateProvider,
 			private $urlRouterProvider: angular.ui.IUrlRouterProvider)
 		{

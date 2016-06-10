@@ -67,11 +67,7 @@ var Application;
                 this.user = {
                     id: '1'
                 };
-                this.allGames =
-                    [
-                        { "_id": "5759d218e22c671100821f5a", "createdBy": { "_id": "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 }, "createdOn": "2016-06-09T20:31:20.802Z", "gameTemplate": { "_id": "Ox", "__v": 0, "id": "Ox" }, "__v": 0, "players": [{ "_id": "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 }], "maxPlayers": 32, "minPlayers": 2, "state": "open", "id": "5759d218e22c671100821f5a" },
-                        { "_id": "5759d106e22c671100821ec9", "createdBy": { "_id": "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 }, "createdOn": "2016-06-09T20:26:46.524Z", "gameTemplate": { "_id": "Ox", "__v": 0, "id": "Ox" }, "__v": 0, "players": [{ "_id": "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 }], "maxPlayers": 32, "minPlayers": 2, "state": "open", "id": "5759d106e22c671100821ec9" }
-                    ];
+                this.allGames = [];
                 console.log('ctor gamelistctrl');
                 this.getAllGames();
             }
@@ -296,8 +292,8 @@ var Application;
     (function (Service) {
         'use strict';
         var GameService = (function () {
-            function GameService(HttpService) {
-                this.HttpService = HttpService;
+            function GameService($http) {
+                this.$http = $http;
             }
             GameService.prototype.start = function (id) {
                 throw new Error('NotImplementedError');
