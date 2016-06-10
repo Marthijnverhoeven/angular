@@ -1,14 +1,10 @@
-/// <reference path="../ts/_all.ts" />
-
-namespace Application.Service
+namespace Application.Services
 {
 	'use strict'
 	
-	declare type User = Application.Model.User;
-	
 	export class UserService
 	{
-		public user : User = { name: 'Marthijn', id: '1', token: 'tests' };
+		public user : Application.Models.User = { name: 'Marthijn', id: '1', token: 'tests' };
 		
 		constructor(private configuration : any)
 		{ }

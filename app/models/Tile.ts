@@ -1,45 +1,64 @@
-namespace Application.Model
+namespace Application.Models
 {
 	export class Tile
 	{
-		xPos: number;
-		yPos: number;
-		zPos: number;
-		tile: {
-			_id: number,
-			suit: string,
-			name: string,
-			matchesWholeSuit: boolean,
-			__v: number
-		};
-		_id: string;
+		// "tile": {
+		// 	"_id": 48,
+		// 	"suit": "Bamboo",
+		// 	"name": "4",
+		// 	"matchesWholeSuit": false,
+		// 	"__v": 0,
+		// 	"id": "48"
+		// }
+		id: number;
+		x: number;
+		y: number;
+		z: number;
+		name: string;
+		suit: string;
+		matchesWholeSuit: boolean;
 		
-		/**
-		 * Checks if given tile is on blocking on top of current instance.
-		 */
+		constructor(tileData : any)
+		{
+			if(!tileData)
+				throw new Error('no tileData');
+				
+			this.id = tileData._id;
+			this.x = tileData.x;
+			this.y = tileData.y;
+			this.z = tileData.z;
+			this.name = tileData.tile.name;
+			this.suit = tileData.tile.suit;
+			this.matchesWholeSuit = tileData.tile.matchesWholeSuit;
+		}
+		
 		private isOnTop(tile : Tile) : boolean
 		{
 			var self = this;
-			return ((self.xPos -1 === tile.xPos || self.xPos === tile.xPos || self.xPos + 1 === tile.xPos)
-				&& (self.yPos -1 === tile.yPos || self.yPos === tile.yPos || self.yPos + 1 === tile.yPos));
+			if((self.x -1 === tile.x || self.x === tile.x || self.x + 1 === tile.x)
+				&& (self.y -1 === tile.y || self.y === tile.y || self.y + 1 === tile.y))
+			{
+				return true;
+			}
+			return false;
 		}
 		
-		/**
-		 * Checks if given tile is blocking to the left or the right of current instance.
-		 */
 		private isLeftOrRight(tile: Tile) : boolean
 		{
 			var self = this;
-			return ((self.xPos - 2 === tile.xPos || self.xPos + 2 === tile.xPos)
-				&& (self.yPos - 1 === tile.yPos || self.yPos === tile.yPos || self.yPos + 1 === tile.yPos))
+			if((self.x - 2 === tile.x || self.x + 2 === tile.x)
+				&& (self.y - 1 === tile.y || self.y === tile.y || self.y + 1 === tile.y))
+			{
+				return true;
+			}
+			return false;
 		}
 		
 		public canMatch(tiles : Tile[]) : boolean
 		{
-			var self = this;
 			for(var tile of tiles)
 			{
-				if(!self.isOnTop(tile) && this.isLeftOrRight(tile)) {
+				if(!this.isOnTop(tile) && this.isLeftOrRight(tile)) {
 					
 				}
 			}
