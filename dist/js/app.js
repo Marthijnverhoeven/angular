@@ -64,16 +64,30 @@ var Application;
                 this.GameListService = GameListService;
                 this.$scope = $scope;
                 this.$http = $http;
-                this.allGames = [
-                    { "asd": "1", createdBy: { id: '1' } },
-                    { "asd": "a1", createdBy: { id: '1' } },
-                    { "asd": "a123d", createdBy: { id: '1' } },
-                    { "asd": "as124214d", createdBy: { id: '2' } },
-                ];
                 this.user = {
                     id: '1'
                 };
+                this.allGames =
+                    [
+                        { "_id": "5759d218e22c671100821f5a", "createdBy": { "_id": "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 }, "createdOn": "2016-06-09T20:31:20.802Z", "gameTemplate": { "_id": "Ox", "__v": 0, "id": "Ox" }, "__v": 0, "players": [{ "_id": "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 }], "maxPlayers": 32, "minPlayers": 2, "state": "open", "id": "5759d218e22c671100821f5a" },
+                        { "_id": "5759d106e22c671100821ec9", "createdBy": { "_id": "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 }, "createdOn": "2016-06-09T20:26:46.524Z", "gameTemplate": { "_id": "Ox", "__v": 0, "id": "Ox" }, "__v": 0, "players": [{ "_id": "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 }], "maxPlayers": 32, "minPlayers": 2, "state": "open", "id": "5759d106e22c671100821ec9" }
+                    ];
+                console.log('ctor gamelistctrl');
+                this.getAllGames();
             }
+            GameListController.prototype.getAllGames = function () {
+                var self = this;
+                self.GameListService.readAll(function (games) {
+                    self.allGames = games;
+                }, function (error) {
+                    alert("omg no :C");
+                    throw error;
+                });
+            };
+            GameListController.prototype.getMyGames = function () {
+            };
+            GameListController.prototype.createGame = function (template, minPlayers, maxPlayers) {
+            };
             return GameListController;
         }());
         Controllers.GameListController = GameListController;
@@ -226,18 +240,50 @@ var Application;
                         "id": "5759d106e22c671100821ec9"
                     }
                 ];
+                this.availableGames = [];
             }
             GameListService.prototype.create = function (template, minPlayers, maxPlayers) {
-                throw new Error('NotImplementedError');
+                var self = this;
+                self.request('POST', '/games', function (result) {
+                    self.createdGame = result.data;
+                }, function (error) {
+                    console.error(error);
+                    alert("Error, templates could not be retrieved");
+                }, {
+                    template: template,
+                    minPlayers: minPlayers,
+                    maxPlayers: maxPlayers
+                });
             };
             GameListService.prototype.readAll = function (onSuccess, onError) {
-                throw new Error('NotImplementedError');
+                console.log('reading all gaems');
+                var self = this;
+                self.request('GET', '/games', function (result) {
+                    self.availableGames = result.data;
+                    onSuccess(result.data);
+                }, onError);
             };
-            GameListService.prototype.read = function (id) {
-                throw new Error('NotImplementedError');
+            GameListService.prototype.read = function (id, onSuccess, onError) {
+                var self = this;
+                self.request('GET', '/games/' + id, function (result) {
+                    self.currentGame = result.data;
+                    onSuccess(result.data);
+                }, onError);
             };
-            GameListService.prototype.delete = function (id) {
-                throw new Error('NotImplementedError');
+            GameListService.prototype.delete = function (id, onSuccess, onError) {
+                var self = this;
+                self.request('DELETE', '/games/' + id, function (result) {
+                    console.log(result);
+                    onSuccess(result.data);
+                }, onError);
+            };
+            GameListService.prototype.request = function (method, url, onSuccess, onError, data) {
+                console.log(url);
+                var self = this;
+                this.$http({
+                    method: method,
+                    url: 'http://mahjongmayhem.herokuapp.com' + url
+                }).then(onSuccess, onError);
             };
             return GameListService;
         }());
@@ -279,6 +325,8 @@ var Application;
             function UserService(configuration) {
                 this.configuration = configuration;
                 this.user = { name: 'Marthijn', id: '1', token: 'tests' };
+                this.username = null;
+                this.token = null;
             }
             UserService.prototype.authenticationUrl = function () {
                 var callback = encodeURIComponent(this.configuration.baseUrl + this.configuration.authCallback);
@@ -294,28 +342,10 @@ var Application;
     var Service;
     (function (Service) {
         'use strict';
-        var HttpInterceptor = (function () {
-            function HttpInterceptor(UserService) {
-                this.UserService = UserService;
-            }
-            HttpInterceptor.prototype.request = function (config) {
-                if (this.UserService.username && this.UserService.token) {
-                    config.headers = { "x-username": this.UserService.username, "x-token": this.UserService.token };
-                }
-                return config;
+        function HttpInterceptor() {
+            return function () {
             };
-            HttpInterceptor.Factory = function () {
-                var interceptor = function (UserService) {
-                    var instance = new HttpInterceptor(UserService);
-                    return {
-                        'request': instance.request
-                    };
-                };
-                interceptor['$inject'] = ['UserService'];
-                return interceptor;
-            };
-            return HttpInterceptor;
-        }());
+        }
         Service.HttpInterceptor = HttpInterceptor;
     })(Service = Application.Service || (Application.Service = {}));
 })(Application || (Application = {}));
@@ -461,10 +491,19 @@ var Application;
                     }
                 })
                     .state('authentication', {
-                    url: this.configuration.authCallback,
+                    url: "/authCallback",
                     views: {
                         "viewSidePanel": { templateUrl: "partials/empty.html" },
-                        "viewMainPanel": { templateUrl: "partials/index.html" }
+                        "viewMainPanel": {
+                            templateUrl: "partials/empty.html",
+                            controller: function ($scope, $stateParams, $state, UserService) {
+                                console.log($stateParams, $state, UserService);
+                                $scope.currStateParams = $stateParams;
+                                $scope.$watch('currState', function () {
+                                    console.log($stateParams);
+                                });
+                            }
+                        }
                     }
                 });
             };
@@ -528,6 +567,7 @@ var Application;
             function Configuration() {
                 this.authCallback = "/#/authCallback";
                 this.baseUrl = "http://localhost:3000";
+                this.apiUrl = "http://mahjongmayhem.herokuapp.com/";
             }
             Configuration.Factory = function () {
                 return new Configuration();
@@ -540,8 +580,21 @@ var Application;
 var Application;
 (function (Application) {
     'use strict';
-    var mahjongMadness = angular.module('mahjongMadness', ['ui.router']);
+    var mahjongMadness = angular.module('mahjongMadness', ['ui.router', 'ngRoute']);
     console.log('TEST');
+    mahjongMadness.factory('httpRequestInterceptor', function (UserService, configuration) {
+        return {
+            request: function (config) {
+                console.log(config);
+                if (UserService.username && UserService.token) {
+                    config.headers["x-username"] = UserService.username;
+                    config.headers["x-token"] = UserService.token;
+                }
+                return config;
+            }
+        };
+    });
+    mahjongMadness.config(function ($httpProvider) { $httpProvider.interceptors.push('httpRequestInterceptor'); });
     mahjongMadness.config(Application.Config.Router.Factory());
     mahjongMadness.constant('configuration', Application.Config.Configuration.Factory());
     mahjongMadness.directive('user', Application.Directive.UserDirective.Factory());

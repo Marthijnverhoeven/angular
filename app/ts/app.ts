@@ -7,7 +7,28 @@ namespace Application
 	
 	console.log('TEST');
 	
+	mahjongMadness.factory('httpRequestInterceptor', 
+		function (UserService, configuration) { 
+			return { 
+				request: function (config) {
+					console.log(config);
+					 
+					if (UserService.username && UserService.token) {
+						config.headers["x-username"] = UserService.username
+						config.headers["x-token"] = UserService.token;
+					}
+					// config.url = configuration.apiUrl + config.url;
+					return config;
+				}
+			}
+		}
+	);
+
+	mahjongMadness.config(function ($httpProvider) { $httpProvider.interceptors.push('httpRequestInterceptor'); });
+
+	
 	mahjongMadness.config(Application.Config.Router.Factory());
+	
 	mahjongMadness.constant('configuration', Application.Config.Configuration.Factory()); 
 	
 	mahjongMadness.directive('user', Application.Directive.UserDirective.Factory());
