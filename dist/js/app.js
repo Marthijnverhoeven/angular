@@ -5,6 +5,38 @@ var Application;
         var Game = (function () {
             function Game() {
             }
+            Game.prototype.getAvailableTiles = function () {
+                var available = [];
+                for (var _i = 0, _a = this.tiles; _i < _a.length; _i++) {
+                    var tile = _a[_i];
+                    if (!tile.isTileBlockedBy(this.tiles)) {
+                        available.push(tile);
+                    }
+                }
+                return available;
+            };
+            Game.prototype.getUnavailableAvailableTiles = function () {
+                var unAvailable = [];
+                for (var _i = 0, _a = this.tiles; _i < _a.length; _i++) {
+                    var tile = _a[_i];
+                    if (tile.isTileBlockedBy(this.tiles)) {
+                        unAvailable.push(tile);
+                    }
+                }
+                return unAvailable;
+            };
+            Game.prototype.getMatchedTiles = function () {
+                var matchedList = {};
+                for (var _i = 0, _a = this.players; _i < _a.length; _i++) {
+                    var player = _a[_i];
+                    matchedList[player.name] = [];
+                }
+                for (var _b = 0, _c = this.matched; _b < _c.length; _b++) {
+                    var tile = _c[_b];
+                    matchedList[tile.match.foundBy].push(tile);
+                }
+                return matchedList;
+            };
             return Game;
         }());
         Model.Game = Game;
@@ -17,24 +49,33 @@ var Application;
         var Tile = (function () {
             function Tile() {
             }
-            Tile.prototype.isOnTop = function (tile) {
+            Tile.prototype.isTileBlockedOnTopBy = function (tile) {
                 var self = this;
+                if (self.xPos === tile.xPos && self.yPos === tile.yPos && self.zPos === tile.zPos) {
+                    return false;
+                }
                 return ((self.xPos - 1 === tile.xPos || self.xPos === tile.xPos || self.xPos + 1 === tile.xPos)
-                    && (self.yPos - 1 === tile.yPos || self.yPos === tile.yPos || self.yPos + 1 === tile.yPos));
+                    && (self.yPos - 1 === tile.yPos || self.yPos === tile.yPos || self.yPos + 1 === tile.yPos)
+                    && (self.zPos + 1 === tile.zPos));
             };
-            Tile.prototype.isLeftOrRight = function (tile) {
+            Tile.prototype.isTileBlockedOnTheSideBy = function (tile) {
                 var self = this;
+                if (self.xPos === tile.xPos && self.yPos === tile.yPos && self.zPos === tile.zPos) {
+                    return false;
+                }
                 return ((self.xPos - 2 === tile.xPos || self.xPos + 2 === tile.xPos)
-                    && (self.yPos - 1 === tile.yPos || self.yPos === tile.yPos || self.yPos + 1 === tile.yPos));
+                    && (self.yPos - 1 === tile.yPos || self.yPos === tile.yPos || self.yPos + 1 === tile.yPos)
+                    && (self.zPos === tile.zPos));
             };
-            Tile.prototype.canMatch = function (tiles) {
+            Tile.prototype.isTileBlockedBy = function (tiles) {
                 var self = this;
                 for (var _i = 0, tiles_1 = tiles; _i < tiles_1.length; _i++) {
                     var tile = tiles_1[_i];
-                    if (!self.isOnTop(tile) && this.isLeftOrRight(tile)) {
+                    if (self.isTileBlockedOnTopBy(tile) || this.isTileBlockedOnTheSideBy(tile)) {
+                        return true;
                     }
                 }
-                return null;
+                return false;
             };
             return Tile;
         }());

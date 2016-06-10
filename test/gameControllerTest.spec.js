@@ -51,18 +51,19 @@ describe("GameController", function() {
 		expect(currentGame).to.be.undefined;
 	});
 
-	it('should check gameListController', function(){
-		gameListController.getAllGames();
+	// it('should check gameListController', function(){
+	// 	gameListController.getAllGames();
 
-		//expect(gameList).to.eventually.have.property("foo");
-		sleepFor(5000);
-		var gameList = gameListController.allGames;
-		console.log(gameList);
-		expect(gameList[0]).to.not.be.undefined;
+	// 	//expect(gameList).to.eventually.have.property("foo");
+	// 	sleepFor(5000);
+	// 	var gameList = gameListController.allGames;
+	// 	console.log(gameList);
+	// 	expect(gameList[0]).to.not.be.undefined;
 
-		function sleepFor(sleepDuration) {
-			var now = new Date().getTime();
-			while (new Date().getTime() < now + sleepDuration) { /* do nothing */ }
-		}
-	});
+	// 	function sleepFor(sleepDuration) {
+	// 		var now = new Date().getTime();
+	// 		while (new Date().getTime() < now + sleepDuration) { /* do nothing */ }
+	// 	}
+	// });
+	
 });
