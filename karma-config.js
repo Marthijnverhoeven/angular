@@ -8,8 +8,13 @@ module.exports = function (config) {
         frameworks: ['mocha', 'chai', 'sinon', 'browserify'],
         files: [
             // 'app/**/*.js',
-            'dist/lib/*.js',
-            'dist/js/*.js',
+            'dist/lib/jquery-2.2.3.min.js',
+            'dist/lib/bootstrap-3.3.6.min.js',
+            'dist/lib/underscore-1.8.3.min.js',
+            'dist/lib/angular-1.5.5.min.js',
+            'dist/lib/angular-route-1.5.5.min.js',
+            'dist/lib/angular-ui-router-0.2.18.min.js',
+            'dist/lib/angular-ui-router-0.2.18.min.js',
             'dist/**/app.js',
             // Angular-mocks moet na app.js geladen worden omdat daar angular in zit
             'node_modules/angular-mocks/angular-mocks.js',
