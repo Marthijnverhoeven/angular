@@ -1,7 +1,7 @@
 /// <reference path="../ts/_all.ts" />
 
 namespace Application.Directive
-{
+{	
 	export class UserDirective
 	{
 		public link : (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
@@ -33,4 +33,15 @@ namespace Application.Directive
 			return directive;
 		}
 	}
+	
+	// export function UserDirective()
+	// {
+	// 	return {
+	// 		template: '' +
+	// 		'<div class="col-lg-8 col-lg-offset-2">' +
+	// 			'{{ name }}' +
+	// 		'</div>',
+	// 		name: "Noot noot!"
+	// 	};
+	// }
 }

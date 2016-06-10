@@ -7,7 +7,10 @@ module.exports = function (config) {
         basePath: '',
         frameworks: ['mocha', 'chai', 'sinon', 'browserify'],
         files: [
-            'app/**/*.js',
+            // 'app/**/*.js',
+            'dist/lib/*.js',
+            'dist/js/*.js',
+            'dist/**/app.js',
             // Angular-mocks moet na app.js geladen worden omdat daar angular in zit
             'node_modules/angular-mocks/angular-mocks.js',
             'test/*.spec.js'

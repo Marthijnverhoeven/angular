@@ -2,6 +2,10 @@
 
 namespace Application.Controllers
 {
+	'use strict'
+	
+	declare type GameListService = Application.Service.GameListService;
+	
 	export class GameListController
 	{
 		public allGames = [
@@ -16,7 +20,7 @@ namespace Application.Controllers
 		
 		constructor(
 			private UserService,
-			private GameListService : Application.Services.GameListService,
+			private GameListService : GameListService,
 			private $scope,
 			private $http)
 		{ }

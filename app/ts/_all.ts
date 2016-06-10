@@ -1,3 +1,4 @@
+/// <reference path='../models/NamedTypings.ts' />
 /// <reference path='../models/Game.ts' />
 /// <reference path='../models/Tile.ts' />
 /// <reference path='../models/User.ts' />
@@ -9,6 +10,7 @@
 /// <reference path='../services/GameListService.ts' />
 /// <reference path='../services/GameService.ts' />
 /// <reference path='../services/UserService.ts' />
+/// <reference path='../services/HttpInterceptor.ts' />
 
 /// <reference path='../directives/GameItemDirective.ts' />
 /// <reference path='../directives/UserDirective.ts' />
