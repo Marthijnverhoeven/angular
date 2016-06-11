@@ -1,5 +1,5 @@
 namespace Application.Model
-{
+{	
 	export class Tile
 	{
 		xPos: number;

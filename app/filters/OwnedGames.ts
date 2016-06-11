@@ -4,17 +4,19 @@ namespace Application.Filter
 {
 	'use strict'
 	
+	// Models
+	declare type Game = Application.Model.Game;
+	
 	export class OwnedGames
 	{
 		private $inject : string[] = [];
 		
 		public filter()
 		{
-			return function(games, userId) {
-				console.error(userId);
+			return function(games: Game[], userId: string) {
 				
 				var filtered = [];
-				if(userId)
+				if(userId && games)
 				{
 					for(var game of games)
 					{

@@ -1,6 +1,6 @@
 <div>
 	<h3>All Games</h3>
 	<ul class="list-group">
-		<li class="list-group-item" ng-repeat="game in gameList.allGames">{{ game }}</li>
+		<a class="list-group-item" ng-repeat="game in gameList.GameListService.allGames" ui-sref="game({ id: game._id })">{{ game }}</a>
 	</ul>
 </div>

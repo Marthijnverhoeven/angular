@@ -31,6 +31,7 @@ namespace Application.Model
 		minPlayers: number;
 		state: string;
 		id: string;
+		
 		tiles: Tile[];
 		matched: Tile[];
 
