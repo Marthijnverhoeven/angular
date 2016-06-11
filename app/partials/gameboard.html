@@ -1,7 +1,10 @@
 <div class="col-lg-12" ng-controller="gameController as game">
-	<div id="board">
+	<h3>
 		<a ui-sref="game({ id: '574c1ee0124daf1100a71051' })">DOIT</a>
 		<strong>blub {{ Object.keys($scope) }}</strong>
-		<div ng-repeat="t in game.tiles" class="tile {{ t.tile.suit }}-{{ t.tile.name }}" style="left: {{ t.xPos * 25 + (t.zPos * 8) }}; top: {{ t.yPos * (349/480*50) - (t.zPos * 8) }}; z-index: {{ t.zPos }}"></div>
+	</h3>
+	<div id="board">
+		<tile ng-repeat="t in game.tiles" datasource="t"></tile>
 	</div>
+	<!--<div ng-repeat="t in game.tiles" class="tile {{ t.tile.suit }}-{{ t.tile.name }}" style="left: {{ t.xPos * 25 + (t.zPos * 8) }}; top: {{ t.yPos * (349/480*50) - (t.zPos * 8) }}; z-index: {{ t.zPos }}"></div>-->
 </div>

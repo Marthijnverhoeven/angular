@@ -5,6 +5,9 @@ var Application;
         var Game = (function () {
             function Game() {
             }
+            Game.prototype.canVisit = function () {
+                return this.state == 'open';
+            };
             return Game;
         }());
         Model.Game = Game;
@@ -67,25 +70,8 @@ var Application;
                 this.user = {
                     id: '1'
                 };
-                this.allGames =
-                    [
-                        { "_id": "5759d218e22c671100821f5a", "createdBy": { "_id": "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 }, "createdOn": "2016-06-09T20:31:20.802Z", "gameTemplate": { "_id": "Ox", "__v": 0, "id": "Ox" }, "__v": 0, "players": [{ "_id": "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 }], "maxPlayers": 32, "minPlayers": 2, "state": "open", "id": "5759d218e22c671100821f5a" },
-                        { "_id": "5759d106e22c671100821ec9", "createdBy": { "_id": "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 }, "createdOn": "2016-06-09T20:26:46.524Z", "gameTemplate": { "_id": "Ox", "__v": 0, "id": "Ox" }, "__v": 0, "players": [{ "_id": "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 }], "maxPlayers": 32, "minPlayers": 2, "state": "open", "id": "5759d106e22c671100821ec9" }
-                    ];
                 console.log('ctor gamelistctrl');
-                this.getAllGames();
             }
-            GameListController.prototype.getAllGames = function () {
-                var self = this;
-                self.GameListService.readAll(function (games) {
-                    self.allGames = games;
-                }, function (error) {
-                    alert("omg no :C");
-                    throw error;
-                });
-            };
-            GameListController.prototype.getMyGames = function () {
-            };
             GameListController.prototype.createGame = function (template, minPlayers, maxPlayers) {
             };
             return GameListController;
@@ -109,7 +95,6 @@ var Application;
                 var self = this;
                 var url = 'https://mahjongmayhem.herokuapp.com/games/' + $stateParams.id + '/tiles';
                 $http.get(url).success(function (data) {
-                    console.log('gamecontroller retrieve ' + $stateParams.id, data);
                     self.tiles = data;
                 });
             }
@@ -137,7 +122,7 @@ var Application;
                     'index': { title: 'Index', items: this.getItemsWithActive("index") },
                     'login': { title: 'Login', items: this.getItemsWithActive("login") },
                     'allGames': { title: 'All games', items: this.getItemsWithActive("allGames") },
-                    'allGames.myGames': { title: 'My games', items: this.getItemsWithActive("allGames.myGames") }
+                    'allGames.myGames': { title: 'My games', items: this.getItemsWithActive("myGames") }
                 };
                 console.log('nav ctor');
                 var self = this;
@@ -146,9 +131,6 @@ var Application;
                 this.user = {};
                 $scope.currState = $state;
                 $scope.$watch('currState.current.name', function (newValue, oldValue) {
-                    console.log(newValue, oldValue);
-                    console.log(self.UserService);
-                    self.user.name = self.UserService.username;
                     if (newValue !== undefined && !!newValue) {
                         var nav = self.navigationDictionary[newValue];
                         if (!!nav) {
@@ -163,7 +145,7 @@ var Application;
                     { label: 'Index', state: 'index' },
                     { label: 'Login', state: 'login' },
                     { label: 'All games', state: 'allGames' },
-                    { label: 'My games', state: 'allGames.myGames' }
+                    { label: 'My games', state: 'myGames' }
                 ];
                 var activeAdded = false;
                 for (var i = 0; i < items.length; i++) {
@@ -189,8 +171,9 @@ var Application;
     (function (Service) {
         'use strict';
         var GameListService = (function () {
-            function GameListService($http) {
+            function GameListService($http, configuration) {
                 this.$http = $http;
+                this.configuration = configuration;
                 this.games = [
                     {
                         "_id": "5759d218e22c671100821f5a",
@@ -245,11 +228,11 @@ var Application;
                         "id": "5759d106e22c671100821ec9"
                     }
                 ];
-                this.availableGames = [];
+                this.allGames = [];
             }
             GameListService.prototype.create = function (template, minPlayers, maxPlayers) {
                 var self = this;
-                self.request('POST', '/games', function (result) {
+                return self.request('POST', '/games', function (result) {
                     self.createdGame = result.data;
                 }, function (error) {
                     console.error(error);
@@ -260,33 +243,39 @@ var Application;
                     maxPlayers: maxPlayers
                 });
             };
-            GameListService.prototype.readAll = function (onSuccess, onError) {
+            GameListService.prototype.readAll = function () {
                 var self = this;
-                self.request('GET', '/games', function (result) {
-                    self.availableGames = result.data;
-                    onSuccess(result.data);
-                }, onError);
+                return self.request('GET', '/games', function (result) {
+                    self.allGames = result.data;
+                }, function (error) {
+                    console.error(error);
+                    alert("Error, templates could not be retrieved");
+                });
             };
-            GameListService.prototype.read = function (id, onSuccess, onError) {
+            GameListService.prototype.read = function (id) {
                 var self = this;
-                self.request('GET', '/games/' + id, function (result) {
+                return self.request('GET', '/games/' + id, function (result) {
                     self.currentGame = result.data;
-                    onSuccess(result.data);
-                }, onError);
+                }, function (error) {
+                    console.error(error);
+                    alert("Error, templates could not be retrieved");
+                });
             };
             GameListService.prototype.delete = function (id, onSuccess, onError) {
                 var self = this;
-                self.request('DELETE', '/games/' + id, function (result) {
+                return self.request('DELETE', '/games/' + id, function (result) {
                     onSuccess(result.data);
                 }, onError);
             };
             GameListService.prototype.request = function (method, url, onSuccess, onError, data) {
                 console.log(url);
                 var self = this;
-                this.$http({
+                var promise = this.$http({
                     method: method,
-                    url: 'http://mahjongmayhem.herokuapp.com' + url
-                }).then(onSuccess, onError);
+                    url: self.configuration.apiUrl + url
+                });
+                promise.then(onSuccess, onError);
+                return promise;
             };
             return GameListService;
         }());
@@ -299,20 +288,49 @@ var Application;
     (function (Service) {
         'use strict';
         var GameService = (function () {
-            function GameService(HttpService) {
-                this.HttpService = HttpService;
+            function GameService($http, configuration) {
+                this.$http = $http;
+                this.configuration = configuration;
             }
             GameService.prototype.start = function (id) {
-                throw new Error('NotImplementedError');
+                var self = this;
+                return self.request('POST', '/games/' + id + '/start', null, function (result) { }, function (error) {
+                    console.error(error);
+                    alert("Error, templates could not be retrieved");
+                });
             };
             GameService.prototype.join = function (id) {
-                throw new Error('NotImplementedError');
+                var self = this;
+                return self.request('POST', '/games/' + id + '/tiles/matches', null, function (result) { }, function (error) {
+                    console.error(error);
+                    alert("Error, templates could not be retrieved");
+                });
             };
             GameService.prototype.tiles = function (id) {
-                throw new Error('NotImplementedError');
+                var self = this;
+                return self.request('GET', '/games/' + id + '/tiles/matches', null, function (result) {
+                    self.currentTiles = result.data;
+                }, function (error) {
+                    console.error(error);
+                    alert("Error, templates could not be retrieved");
+                });
             };
-            GameService.prototype.match = function (id, body) {
-                throw new Error('NotImplementedError');
+            GameService.prototype.match = function (id, tile1Id, tile2Id) {
+                var self = this;
+                return self.request('POST', '/games/' + id + '/tiles/matches', { tile1Id: tile1Id, tile2Id: tile2Id }, function (result) { }, function (error) {
+                    console.error(error);
+                    alert("Error, templates could not be retrieved");
+                });
+            };
+            GameService.prototype.request = function (method, url, data, onSuccess, onError) {
+                console.log(url);
+                var self = this;
+                var promise = this.$http({
+                    method: method,
+                    url: self.configuration.apiUrl + url
+                });
+                promise.then(onSuccess, onError);
+                return promise;
             };
             return GameService;
         }());
@@ -327,17 +345,15 @@ var Application;
         var UserService = (function () {
             function UserService(configuration) {
                 this.configuration = configuration;
-                this.user = { name: 'Marthijn', id: '1', token: 'tests' };
-                this.username = null;
-                this.token = null;
+                this.user = {};
             }
             UserService.prototype.authenticationUrl = function () {
                 var callback = encodeURIComponent(this.configuration.baseUrl + this.configuration.authCallback);
-                return 'http://mahjongmayhem.herokuapp.com/auth/avans?callbackUrl=' + callback;
+                return this.configuration.apiUrl + '/auth/avans?callbackUrl=' + callback;
             };
             UserService.prototype.setUser = function (username, token) {
-                this.username = username;
-                this.token = token;
+                this.user.name = username;
+                this.user.token = token;
             };
             return UserService;
         }());
@@ -346,15 +362,65 @@ var Application;
 })(Application || (Application = {}));
 var Application;
 (function (Application) {
-    var Service;
-    (function (Service) {
+    var Factory;
+    (function (Factory) {
         'use strict';
-        function HttpInterceptor() {
-            return function () {
+        Factory.$inject = ['UserService'];
+        function HttpInterceptorFactory(UserService) {
+            return {
+                'request': function (config) {
+                    if (UserService.user && UserService.user.name && UserService.user.token) {
+                        config.headers = { "x-username": UserService.user.name, "x-token": UserService.user.token };
+                    }
+                    return config;
+                }
             };
         }
-        Service.HttpInterceptor = HttpInterceptor;
-    })(Service = Application.Service || (Application.Service = {}));
+        Factory.HttpInterceptorFactory = HttpInterceptorFactory;
+    })(Factory = Application.Factory || (Application.Factory = {}));
+})(Application || (Application = {}));
+var Application;
+(function (Application) {
+    var Directive;
+    (function (Directive) {
+        var TileDirective = (function () {
+            function TileDirective() {
+                this.template = '<div ng-click="click()" class="tile {{ datasource.tile.suit }}-{{ datasource.tile.name }} {{ getEffects(isBlocked, isSelected) }}" style="left: {{ datasource.xPos * 25 + (datasource.zPos * 8) }}; top: {{ datasource.yPos * (349/480*50) - (datasource.zPos * 8) }}; z-index: {{ datasource.zPos }}"></div>';
+                this.scope = {
+                    datasource: '='
+                };
+            }
+            TileDirective.prototype.controller = function ($scope) {
+                var switchMatchedTile = function () {
+                    if ($scope.isSelected) {
+                    }
+                    else {
+                    }
+                };
+                $scope.getEffects = function (isBlocked, isSelected) {
+                    return isBlocked
+                        ? 'blocked'
+                        : (isSelected
+                            ? 'selected'
+                            : '');
+                };
+                $scope.isSelected = false;
+                $scope.isBlocked = Math.random() > 0.5;
+                $scope.click = function () {
+                    if ($scope.isBlocked)
+                        return;
+                    $scope.isSelected = !$scope.isSelected;
+                    switchMatchedTile();
+                };
+            };
+            return TileDirective;
+        }());
+        Directive.TileDirective = TileDirective;
+        function TileDirectiveFactory() {
+            return new TileDirective();
+        }
+        Directive.TileDirectiveFactory = TileDirectiveFactory;
+    })(Directive = Application.Directive || (Application.Directive = {}));
 })(Application || (Application = {}));
 var Application;
 (function (Application) {
@@ -427,7 +493,7 @@ var Application;
             OwnedGames.prototype.filter = function () {
                 return function (games, userId) {
                     var filtered = [];
-                    if (userId) {
+                    if (userId && games) {
                         for (var _i = 0, games_1 = games; _i < games_1.length; _i++) {
                             var game = games_1[_i];
                             console.error(game);
@@ -462,7 +528,6 @@ var Application;
                 this.configuration = configuration;
                 this.$stateProvider = $stateProvider;
                 this.$urlRouterProvider = $urlRouterProvider;
-                this.$inject = ['configuration', '$stateProvider', '$urlRouterProvider'];
                 this.$urlRouterProvider
                     .otherwise("/index");
                 this.appendBaseStates();
@@ -489,8 +554,7 @@ var Application;
                         "viewMainPanel": {
                             templateUrl: "partials/login.html",
                             controller: function ($scope, UserService) {
-                                console.log($scope, UserService);
-                                this.url = UserService.authenticationUrl();
+                                this.UserService = UserService;
                             },
                             controllerAs: "loginCtrl"
                         }
@@ -517,7 +581,23 @@ var Application;
                         "viewSidePanel": { templateUrl: "partials/empty.html" },
                         "viewBigPanel": { templateUrl: "partials/gameBoard.html" }
                     },
-                    resolve: {}
+                    resolve: {
+                        game: function (GameListService, $stateParams) {
+                            return GameListService.read($stateParams.id);
+                        }
+                    }
+                })
+                    .state('matched', {
+                    url: "/matched",
+                    views: {
+                        "viewSidePanel": { templateUrl: "partials/empty.html" },
+                        "viewBigPanel": { templateUrl: "partials/matched.html" }
+                    },
+                    resolve: {
+                        tiles: function (GameService, $stateParams) {
+                            return GameService.tiles($stateParams.id);
+                        }
+                    }
                 });
             };
             Router.prototype.appendListStates = function () {
@@ -530,6 +610,11 @@ var Application;
                             templateUrl: "partials/gameList.html",
                             controller: 'gameListController',
                             controllerAs: 'gameList'
+                        }
+                    },
+                    resolve: {
+                        games: function (GameListService) {
+                            return GameListService.readAll();
                         }
                     }
                 })
@@ -544,19 +629,22 @@ var Application;
                             controller: 'gameListController',
                             controllerAs: 'gameList'
                         }
+                    },
+                    resolve: {
+                        games: function (GameListService) {
+                            return GameListService.readAll();
+                        }
                     }
                 });
-            };
-            Router.Factory = function () {
-                var configuration = function (configuration, $stateProvider, $urlRouterProvider) {
-                    return new Router(configuration, $stateProvider, $urlRouterProvider);
-                };
-                configuration['$inject'] = this.$inject;
-                return configuration;
             };
             return Router;
         }());
         Config.Router = Router;
+        Config.$inject = ['configuration', '$stateProvider', '$urlRouterProvider'];
+        function RouterFactory(configuration, $stateProvider, $urlRouterProvider) {
+            return new Router(configuration, $stateProvider, $urlRouterProvider);
+        }
+        Config.RouterFactory = RouterFactory;
     })(Config = Application.Config || (Application.Config = {}));
 })(Application || (Application = {}));
 var Application;
@@ -564,39 +652,50 @@ var Application;
     var Config;
     (function (Config) {
         'use strict';
+        var Initializer = (function () {
+            function Initializer($httpProvider) {
+                $httpProvider.interceptors.push('httpRequestInterceptor');
+            }
+            return Initializer;
+        }());
+        Config.Initializer = Initializer;
+        Config.$inject = ['$httpProvider'];
+        function InitializerFactory($httpProvider) {
+            return new Initializer($httpProvider);
+        }
+        Config.InitializerFactory = InitializerFactory;
+    })(Config = Application.Config || (Application.Config = {}));
+})(Application || (Application = {}));
+var Application;
+(function (Application) {
+    var Constant;
+    (function (Constant) {
+        'use strict';
         var Configuration = (function () {
             function Configuration() {
                 this.authCallback = "/#/authCallback";
                 this.baseUrl = "http://localhost:3000";
-                this.apiUrl = "http://mahjongmayhem.herokuapp.com/";
+                this.apiUrl = "http://mahjongmayhem.herokuapp.com";
             }
-            Configuration.Factory = function () {
-                return new Configuration();
-            };
             return Configuration;
         }());
-        Config.Configuration = Configuration;
-    })(Config = Application.Config || (Application.Config = {}));
+        Constant.Configuration = Configuration;
+        Constant.$inject = [];
+        Constant.ConfigurationFactory = (function () {
+            return new Configuration();
+        })();
+    })(Constant = Application.Constant || (Application.Constant = {}));
 })(Application || (Application = {}));
 var Application;
 (function (Application) {
     'use strict';
     var mahjongMadness = angular.module('mahjongMadness', ['ui.router', 'ngRoute']);
     console.log('TEST');
-    mahjongMadness.factory('httpRequestInterceptor', function (UserService, configuration) {
-        return {
-            request: function (config) {
-                if (UserService.username && UserService.token) {
-                    config.headers["x-username"] = UserService.username;
-                    config.headers["x-token"] = UserService.token;
-                }
-                return config;
-            }
-        };
-    });
-    mahjongMadness.config(function ($httpProvider) { $httpProvider.interceptors.push('httpRequestInterceptor'); });
-    mahjongMadness.config(Application.Config.Router.Factory());
-    mahjongMadness.constant('configuration', Application.Config.Configuration.Factory());
+    mahjongMadness.factory('httpRequestInterceptor', Application.Factory.HttpInterceptorFactory);
+    mahjongMadness.config(Application.Config.RouterFactory);
+    mahjongMadness.config(Application.Config.InitializerFactory);
+    mahjongMadness.constant('configuration', Application.Constant.ConfigurationFactory);
+    mahjongMadness.directive('tile', Application.Directive.TileDirectiveFactory);
     mahjongMadness.directive('user', Application.Directive.UserDirective.Factory());
     mahjongMadness.directive('gameitem', Application.Directive.GameItemDirective.Factory());
     mahjongMadness.filter('ownedGames', Application.Filter.OwnedGames.Factory());

@@ -17,7 +17,7 @@ namespace Application.Controllers
 			var self = this;
 			var url = 'https://mahjongmayhem.herokuapp.com/games/' + $stateParams.id + '/tiles';
 			$http.get(url).success(function(data) {
-				console.log('gamecontroller retrieve ' + $stateParams.id, data);
+				// console.log('gamecontroller retrieve ' + $stateParams.id, data);
 				self.tiles = data;
 			});
 		}

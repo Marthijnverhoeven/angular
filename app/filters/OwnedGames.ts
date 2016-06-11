@@ -16,7 +16,7 @@ namespace Application.Filter
 			return function(games: Game[], userId: string) {
 				
 				var filtered = [];
-				if(userId)
+				if(userId && games)
 				{
 					for(var game of games)
 					{

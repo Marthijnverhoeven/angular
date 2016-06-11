@@ -29,5 +29,11 @@ namespace Application.Model
 		minPlayers: number;
 		state: string;
 		id: string;
+		
+		
+		public canVisit() : boolean
+		{
+			return this.state == 'open';
+		}
 	}
 }

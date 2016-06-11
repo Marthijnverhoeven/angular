@@ -5,9 +5,7 @@ namespace Application.Config
 	'use strict'
 	
 	export class Router
-	{
-		private $inject : string[] = ['configuration', '$stateProvider', '$urlRouterProvider'];
-		
+	{		
 		constructor(
 			private configuration,
 			private $stateProvider : angular.ui.IStateProvider,
@@ -43,9 +41,8 @@ namespace Application.Config
 						"viewSidePanel": { templateUrl: "partials/empty.html" },
 						"viewMainPanel": {
 							templateUrl: "partials/login.html",
-							controller: function($scope, UserService) {
-								console.log($scope, UserService);
-								this.url = UserService.authenticationUrl();
+							controller: function($scope, UserService: Application.Service.UserService) {
+								this.UserService = UserService;
 							},
 							controllerAs: "loginCtrl"
 						}
@@ -78,7 +75,26 @@ namespace Application.Config
 						"viewSidePanel": { templateUrl: "partials/empty.html" },
 						"viewBigPanel": { templateUrl: "partials/gameBoard.html" }
 					},
-					resolve: { }
+					resolve: {
+						game: function(GameListService: Application.Service.GameListService, $stateParams)
+						{
+							return GameListService.read($stateParams.id);
+						}
+					}
+				})
+				.state('matched', {
+					url: "/matched",
+					// params: { },
+					views: {
+						"viewSidePanel": { templateUrl: "partials/empty.html" },
+						"viewBigPanel": { templateUrl: "partials/matched.html" }
+					},
+					resolve: {
+						tiles: function(GameService: Application.Service.GameService, $stateParams)
+						{
+							return GameService.tiles($stateParams.id);
+						}
+					}
 				});
 		}
 		
@@ -94,6 +110,12 @@ namespace Application.Config
 							controller: 'gameListController',
 							controllerAs: 'gameList'
 						}
+					},
+					resolve: {
+						games: function(GameListService: Application.Service.GameListService)
+						{
+							return GameListService.readAll();
+						}
 					}
 				})
 				.state('myGames', {
@@ -107,20 +129,21 @@ namespace Application.Config
 							controller: 'gameListController',
 							controllerAs: 'gameList'
 						}
+					},
+					resolve: {
+						games: function(GameListService: Application.Service.GameListService)
+						{
+							return GameListService.readAll();
+						}
 					}
 				});
 		}
-		
-		public static Factory()
-		{
-			var configuration = (configuration, $stateProvider, $urlRouterProvider) =>
-			{
-				return new Router(configuration, $stateProvider, $urlRouterProvider);
-			};
-
-			configuration['$inject'] = this.$inject;
-
-			return configuration;
-		}
+	}
+	
+	export var $inject = ['configuration', '$stateProvider', '$urlRouterProvider'];
+	
+	export function RouterFactory(configuration, $stateProvider, $urlRouterProvider)
+	{
+		return new Router(configuration, $stateProvider, $urlRouterProvider);
 	}
 }

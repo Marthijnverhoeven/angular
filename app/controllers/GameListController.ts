@@ -16,42 +16,13 @@ namespace Application.Controllers
 			id: '1'
 		}
 		
-		public allGames: Game[];
-		
 		constructor(
-			private UserService,
-			private GameListService : GameListService,
+			public UserService,
+			public GameListService : GameListService,
 			private $scope,
 			private $http)
 		{
-			this.allGames =
-			[
-				<Game>{ "_id": "5759d218e22c671100821f5a", "createdBy": { "_id": "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 }, "createdOn": "2016-06-09T20:31:20.802Z", "gameTemplate": { "_id": "Ox", "__v": 0, "id": "Ox" }, "__v": 0, "players": [ { "_id": "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 } ], "maxPlayers": 32, "minPlayers": 2, "state": "open", "id": "5759d218e22c671100821f5a" },
-				<Game>{ "_id": "5759d106e22c671100821ec9", "createdBy": { "_id": "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 }, "createdOn": "2016-06-09T20:26:46.524Z", "gameTemplate": { "_id": "Ox", "__v": 0, "id": "Ox" }, "__v": 0, "players": [ { "_id":  "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 } ], "maxPlayers": 32, "minPlayers": 2, "state": "open", "id": "5759d106e22c671100821ec9" }
-			];
-			
 			console.log('ctor gamelistctrl');
-			this.getAllGames();
-		}
-		
-		public getAllGames() : void
-		{
-			var self = this;
-			self.GameListService.readAll(
-				(games) => {
-					self.allGames = games;
-				},
-				(error) => {
-					alert("omg no :C");
-					// console.error(error);
-					throw error;
-				}
-			);
-		}
-		
-		public getMyGames() : void
-		{
-			
 		}
 		
 		public createGame(template : string, minPlayers : number, maxPlayers : number) : void

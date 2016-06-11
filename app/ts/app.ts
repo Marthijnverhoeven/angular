@@ -7,28 +7,33 @@ namespace Application
 	
 	console.log('TEST');
 	
-	mahjongMadness.factory('httpRequestInterceptor', 
-		function (UserService, configuration) { 
-			return { 
-				request: function (config) {
-					if (UserService.username && UserService.token) {
-						config.headers["x-username"] = UserService.username
-						config.headers["x-token"] = UserService.token;
-					}
-					// config.url = configuration.apiUrl + config.url;
-					return config;
-				}
-			}
-		}
-	);
+	
+	
+	// mahjongMadness.factory('httpRequestInterceptor', 
+	// 	function (UserService, configuration) { 
+	// 		return { 
+	// 			request: function (config) {
+	// 				if (UserService.username && UserService.token) {
+	// 					config.headers["x-username"] = UserService.username
+	// 					config.headers["x-token"] = UserService.token;
+	// 				}
+	// 				// config.url = configuration.apiUrl + config.url;
+	// 				return config;
+	// 			}
+	// 		}
+	// 	}
+	// );
 
-	mahjongMadness.config(function ($httpProvider) { $httpProvider.interceptors.push('httpRequestInterceptor'); });
-
+	// mahjongMadness.config(function ($httpProvider) { $httpProvider.interceptors.push('httpRequestInterceptor'); });
 	
-	mahjongMadness.config(Application.Config.Router.Factory());
+	mahjongMadness.factory('httpRequestInterceptor', Application.Factory.HttpInterceptorFactory);
 	
-	mahjongMadness.constant('configuration', Application.Config.Configuration.Factory()); 
+	mahjongMadness.config(Application.Config.RouterFactory);
+	mahjongMadness.config(Application.Config.InitializerFactory); 
 	
+	mahjongMadness.constant('configuration', Application.Constant.ConfigurationFactory); 
+	
+	mahjongMadness.directive('tile', Application.Directive.TileDirectiveFactory);
 	mahjongMadness.directive('user', Application.Directive.UserDirective.Factory());
 	mahjongMadness.directive('gameitem', Application.Directive.GameItemDirective.Factory());
 	

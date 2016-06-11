@@ -12,10 +12,10 @@ namespace Application.Controllers
 			'index' 			: { title: 'Index', 	items: this.getItemsWithActive("index") },
 			'login' 			: { title: 'Login', 	items: this.getItemsWithActive("login") },
 			'allGames' 			: { title: 'All games', items: this.getItemsWithActive("allGames") },
-			'allGames.myGames' 	: { title: 'My games', 	items: this.getItemsWithActive("allGames.myGames") }
+			'allGames.myGames' 	: { title: 'My games', 	items: this.getItemsWithActive("myGames") }
 		}
 		
-		constructor(private $state, private $scope, private UserService)
+		constructor(private $state, private $scope, public UserService)
 		{
 			console.log('nav ctor');
 			var self = this;
@@ -26,9 +26,6 @@ namespace Application.Controllers
 			
 			$scope.currState = $state;
 			$scope.$watch('currState.current.name', function(newValue, oldValue) {
-				console.log(newValue, oldValue);
-				console.log(self.UserService	);
-				self.user.name = self.UserService.username;
 				if(newValue !== undefined && !!newValue)
 				{
 					var nav = self.navigationDictionary[newValue];
@@ -47,7 +44,7 @@ namespace Application.Controllers
 				{ label: 'Index', 		state: 'index' },
 				{ label: 'Login', 		state: 'login' },
 				{ label: 'All games', 	state: 'allGames' },
-				{ label: 'My games', 	state: 'allGames.myGames' }
+				{ label: 'My games', 	state: 'myGames' }
 			];
 			
 			var activeAdded = false;
