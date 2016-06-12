@@ -14,13 +14,12 @@ namespace Application.Filter
 		public filter()
 		{
 			return function(games: Game[], userId: string) {
-				
+				console.log(games, userId);
 				var filtered = [];
 				if(userId && games)
 				{
 					for(var game of games)
 					{
-						console.error(game);
 						if(game.createdBy.id === userId) {
 							filtered.push(game);
 						}

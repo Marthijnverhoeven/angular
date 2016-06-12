@@ -74,10 +74,15 @@ namespace Application.Service
 		public allGames: Game[];
 		public currentGame: Game;
 		public createdGame: Game;
+		public createdGames: Game[];
 		
-		constructor(private $http: IHttpService, private configuration: Application.Constant.Configuration)
+		constructor(
+			private $http: IHttpService,
+			private configuration: Application.Constant.Configuration,
+			public UserService: Application.Service.UserService)
 		{
 			this.allGames = [];
+			this.createdGames = [];
 		}
 		
 		// POST - /games
@@ -89,7 +94,7 @@ namespace Application.Service
 				'/games',
 				(result: angular.IHttpPromiseCallbackArg<Game>) =>
 				{
-					self.createdGame = result.data;
+					self.createdGame = new Application.Model.Game(result.data);
 				},
 				(error: angular.IHttpPromiseCallbackArg<any>) =>
 				{
@@ -114,6 +119,26 @@ namespace Application.Service
 				(result: angular.IHttpPromiseCallbackArg<Game[]>) =>
 				{
 					self.allGames = result.data
+					// onSuccess(result.data);
+				},
+				(error: angular.IHttpPromiseCallbackArg<any>) =>
+				{
+					console.error(error);
+					alert("Error, templates could not be retrieved");
+				}
+			);
+		}
+		
+		// GET - /games
+		public readCreated() : angular.IPromise<Game[]>
+		{
+			var self = this;
+			return self.request<Game[]>(
+				'GET',
+				'/games?createdBy=' + self.UserService.user.name,
+				(result: angular.IHttpPromiseCallbackArg<Game[]>) =>
+				{
+					self.createdGames = result.data;
 					// onSuccess(result.data);
 				},
 				(error: angular.IHttpPromiseCallbackArg<any>) =>
@@ -161,7 +186,6 @@ namespace Application.Service
 		
 		private request<T>(method: string, url: string, onSuccess?: (result: angular.IHttpPromiseCallbackArg<T>) => void, onError?: (result: angular.IHttpPromiseCallbackArg<any>) => void, data?: any) : angular.IPromise<T>
 		{
-			console.log(url);
 			var self = this;
 			var promise = this.$http<T>({
 				method: method,

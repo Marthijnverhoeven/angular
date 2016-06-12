@@ -1,5 +1,15 @@
 namespace Application.Model
 {	
+	namespace Application.Model.Tile
+	{
+		export class MatchAttempt
+		{
+			isMatched: boolean;
+			isBlocked: boolean;
+			isSelected: boolean;
+		}
+	}
+	
 	export class Tile
 	{
 		xPos: number;
@@ -18,6 +28,18 @@ namespace Application.Model
       		foundOn: string
     	}
 		_id: string;
+		
+		matchAttempt: Application.Model.Tile.MatchAttempt;
+		
+		constructor(literal: any)
+		{
+			this.matchAttempt = <Application.Model.Tile.MatchAttempt>{};
+			
+			for(var key of Object.keys(literal))
+			{
+				this[key] = literal[key];
+			}
+		}
 		
 		/**
 		 * Returns true if the tile is being blocked on the top by the given tile.
@@ -72,6 +94,23 @@ namespace Application.Model
 				}
 			}
 			return false;
+		}
+		
+		public canMatch(tile: Tile) : boolean
+		{
+			// Elke tegel zit in een suit en heeft een naam,
+			// als matches whole suit op false staat moet de naam ook overeen komen bij het matchen,
+			// als dit op true staat hoeft de naam niet hetzelfde te zijn als de tegel waartegen je wilt matchen.
+			// De suit moet dan nog wel overeenkomen natuurlijk!
+			var self = this;
+			return (self.tile.matchesWholeSuit // matchesWholeSuit === true
+					&& self.tile.matchesWholeSuit === tile.tile.matchesWholeSuit // both tiles have same [matchesWholeSuit] 
+					&& self.tile.suit === tile.tile.suit) // same suit
+					||
+					(!self.tile.matchesWholeSuit // matchesWholeSuit === false 
+					&& self.tile.matchesWholeSuit === tile.tile.matchesWholeSuit // both tiles have same [matchesWholeSuit]
+					&& self.tile.suit === tile.tile.suit // same suit
+					&& self.tile.name === tile.tile.name); // same name
 		}
 	}
 }

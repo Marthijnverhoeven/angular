@@ -2,24 +2,22 @@ namespace Application.Controllers
 {
 	export class GameController
 	{
-		private game;
 		private test = "test";
-		private tiles;
 		
-		constructor(private UserService, $http : angular.IHttpService, $stateParams, private $scope)
-		{			
-			console.log($stateParams);
+		constructor(
+			public UserService,
+			public GameListService: Application.Service.GameListService,
+			public GameService: Application.Service.GameService,
+			private $stateParams,
+			private $scope)
+		{
 			
 			if($stateParams.id === 0) {
 				$stateParams.id = '5541fc5b1872631100678bb4';
 			}
 			
-			var self = this;
-			var url = 'https://mahjongmayhem.herokuapp.com/games/' + $stateParams.id + '/tiles';
-			$http.get(url).success(function(data) {
-				// console.log('gamecontroller retrieve ' + $stateParams.id, data);
-				self.tiles = data;
-			});
+			console.log(this.GameListService.currentGame);
+			this.GameService.tiles(this.GameListService.currentGame.id);
 		}
 		
 		public currentGame()
@@ -33,6 +31,17 @@ namespace Application.Controllers
 			// self.TileService.matchesExist(self.game, function(err, res) {
 				
 			// });
+		}
+		
+		public logSelectedTiles()
+		{
+			for(var tile of this.GameService.currentTiles)
+			{
+				if(tile.matchAttempt.isSelected)
+				{
+					console.log(tile);
+				}
+			}
 		}
 	}
 }

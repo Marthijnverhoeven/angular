@@ -7,6 +7,9 @@
 		$tileHeight: 480px;
 		$tileDivider: $tileWidth / $targetWidth;
 		
+		&:hover:not(.blocked) {
+			margin-top: 3px;
+		}
 		&.selected {
 			-webkit-filter: invert(100%);
 			filter: invert(100%);
@@ -15,8 +18,8 @@
 			-webkit-filter: invert(20%);
 			filter: invert(20%);
 		}
-		-webkit-transition: -webkit-filter 0.3s ease-in-out;
-		transition: filter 0.3s ease-in-out;
+		-webkit-transition: -webkit-filter 0.3s ease-in-out, margin 0.3s ease-in-out;
+		transition: filter 0.3s ease-in-out, margin 0.3s ease-in-out;
 		
 		position: absolute;
 		width: #{$tileWidth / $tileDivider};

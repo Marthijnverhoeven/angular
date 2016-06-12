@@ -31,6 +31,20 @@ namespace Application
 	mahjongMadness.config(Application.Config.RouterFactory);
 	mahjongMadness.config(Application.Config.InitializerFactory); 
 	
+	mahjongMadness.run(function($rootScope: ng.IRootScopeService, $state, UserService: Application.Service.UserService){
+		$rootScope.$on("$stateChangeStart",
+			function(event, toState, toParams, fromState, fromParams) 
+			{
+				if (toState.data && toState.data.authenticate && !UserService.isLoggedIn())
+				{
+					// User isn’t authenticated
+					$state.transitionTo("login");
+					event.preventDefault();
+				}
+			}
+		)
+	});
+	
 	mahjongMadness.constant('configuration', Application.Constant.ConfigurationFactory); 
 	
 	mahjongMadness.directive('tile', Application.Directive.TileDirectiveFactory);
@@ -39,6 +53,7 @@ namespace Application
 	
 	mahjongMadness.filter('ownedGames', Application.Filter.OwnedGames.Factory());
 	
+	mahjongMadness.service('ApplicationService', Application.Service.ApplicationService);
 	mahjongMadness.service('GameListService', Application.Service.GameListService);
 	mahjongMadness.service('UserService', Application.Service.UserService);
 	mahjongMadness.service('GameService', Application.Service.GameService);

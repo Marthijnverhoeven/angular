@@ -36,49 +36,43 @@ namespace Application.Directive
 	
 	export interface TileDirectiveScope extends ng.IScope
 	{
-		datasource: any,//Application.Model.Tile,
+		datasource: Application.Model.Tile,
+		
 		click: () => void,
-		isSelected: boolean,
-		isBlocked: boolean,
-		getEffects: any
+		getEffects: () => string; //(isMatched: boolean, isBlocked: boolean, isSelected: boolean) => string
 	}
 	
 	export class TileDirective
 	{
-		public template = '<div ng-click="click()" class="tile {{ datasource.tile.suit }}-{{ datasource.tile.name }} {{ getEffects(isBlocked, isSelected) }}" style="left: {{ datasource.xPos * 25 + (datasource.zPos * 8) }}; top: {{ datasource.yPos * (349/480*50) - (datasource.zPos * 8) }}; z-index: {{ datasource.zPos }}"></div>';
+		public template = '<div ng-click="click()" class="tile {{ datasource.tile.suit }}-{{ datasource.tile.name }} {{ getEffects() }}" style="left: {{ datasource.xPos * 25 + (datasource.zPos * 8) }}; top: {{ datasource.yPos * (349/480*50) - (datasource.zPos * 8) }}; z-index: {{ datasource.zPos }}"></div>';
 		public scope = {
 			datasource: '='
 		};
 		
-		public controller($scope: TileDirectiveScope)//, BoardController: any)
+		public controller($scope: TileDirectiveScope, GameService: Application.Service.GameService)//, BoardController: any)
 		{
-			var switchMatchedTile = () : void =>
+			var tile = GameService.getTile($scope.datasource._id);
+			tile.matchAttempt.isMatched = false;
+			tile.matchAttempt.isSelected = false;
+			tile.matchAttempt.isBlocked = GameService.isTileBlocked(tile);
+			
+			$scope.getEffects = () : string =>
 			{
-				if($scope.isSelected)
-				{
-					// BoardController.addMatchedTile($scope.t._id);
-				}
-				else
-				{
-					// BoardController.removeMatchedTile($scope.t._id);
-				}
-			}
-			$scope.getEffects = (isBlocked: boolean, isSelected: boolean) : string =>
-			{
-				return isBlocked
-					? 'blocked'
-					: (isSelected
-						? 'selected'
-						: '');
-			}
-			$scope.isSelected = false;
-			$scope.isBlocked = Math.random() > 0.5;			
+				return tile.matchAttempt.isMatched
+					? 'hidden' 
+					: (tile.matchAttempt.isBlocked
+						? 'blocked'
+						: (tile.matchAttempt.isSelected
+							? 'selected'
+							: ''));
+			}		
 			$scope.click = () : void =>
 			{
-				if($scope.isBlocked)
+				if(tile.matchAttempt.isBlocked)
 					return;
-				$scope.isSelected = !$scope.isSelected;
-				switchMatchedTile();
+				if(!tile.matchAttempt.isSelected && !GameService.canAddMatch(tile))
+					return;
+				GameService.matchTile(tile);
 			}
 		} 
 	}
@@ -86,42 +80,5 @@ namespace Application.Directive
 	export function TileDirectiveFactory()
 	{
 		return new TileDirective();
-		// return {
-		// 	template: '<div ng-click="click()" class="tile {{ t.tile.suit }}-{{ t.tile.name }}" style="{{ effect }}left: {{ t.xPos * 25 + (t.zPos * 8) }}; top: {{ t.yPos * (349/480*50) - (t.zPos * 8) }}; z-index: {{ t.zPos }}"></div>',
-		// 	controller: function($scope, BoardController: any)
-		// 	{
-		// 		var getEffect = function()
-		// 		{
-		// 			return $scope.isSelected
-		// 				? "-webkit-filter: invert(100%); filter: invert(100%);"
-		// 				: '';
-		// 		}
-		// 		var switchMatchedTile = function()
-		// 		{
-		// 			if($scope.isSelected)
-		// 			{
-		// 				BoardController.addMatchedTile($scope.t._id);
-		// 			}
-		// 			else
-		// 			{
-		// 				BoardController.removeMatchedTile($scope.t._id);
-		// 			}
-		// 		}
-		// 		$scope.isSelected = false;
-		// 		$scope.effect = getEffect();
-		// 		$scope.t = $scope.datasource;
-				
-		// 		console.log($scope.datasource);
-		// 		$scope.click = function()
-		// 		{
-		// 			$scope.isSelected = !$scope.isSelected;
-		// 			$scope.effect = getEffect();
-		// 			switchMatchedTile();
-		// 		}
-		// 	},
-		// 	scope: {
-		// 		datasource: '='
-		// 	}
-		// };
 	}
 }

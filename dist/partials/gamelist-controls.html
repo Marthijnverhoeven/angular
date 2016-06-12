@@ -1,0 +1,21 @@
+<div>
+	<h3>GameList Controls</h3>
+		
+	<div class="form-group">
+		<label for="template">Template</label>
+		<select name="template" class="form-control" ng-model="newGame.template">
+			<option ng-repeat="template in gameList.ApplicationService.availableTemplates">{{ template._id }}</option>
+		</select>
+	</div>
+	<div class="form-group">
+		<label for="minPlayers">Minimum player count</label>
+		<input class="form-control" type="number" min="2" max="32" name="minPlayers" value="2" ng-model="newGame.minPlayers" />
+	</div>
+	<div class="form-group">
+		<label for="maxPlayers">Maximum player count</label>
+		<input class="form-control" type="number" min="2" max="32" name="maxPlayers" value="4" ng-model="newGame.maxPlayers" />
+	</div>
+	<button class="btn btn-primary"
+		ng-disabled="!gameList.canCreateGame(newGame.template, newGame.minPlayers, newGame.maxPlayers)" 
+		ng-click="gameList.createGame(newGame.template, newGame.minPlayers, newGame.maxPlayers)">Nieuw game</button>
+</div>

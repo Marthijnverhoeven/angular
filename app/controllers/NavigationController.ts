@@ -5,14 +5,13 @@ namespace Application.Controllers
 	export class NavigationController
 	{
 		private title : string;
-		private user : any;
 		private menuitems : any[];
 		
 		private navigationDictionary = {
 			'index' 			: { title: 'Index', 	items: this.getItemsWithActive("index") },
 			'login' 			: { title: 'Login', 	items: this.getItemsWithActive("login") },
 			'allGames' 			: { title: 'All games', items: this.getItemsWithActive("allGames") },
-			'allGames.myGames' 	: { title: 'My games', 	items: this.getItemsWithActive("myGames") }
+			'myGames' 			: { title: 'My games', 	items: this.getItemsWithActive("myGames") }
 		}
 		
 		constructor(private $state, private $scope, public UserService)
@@ -22,7 +21,6 @@ namespace Application.Controllers
 			
 			this.title = 'Error';
 			this.menuitems = [];
-			this.user = {};
 			
 			$scope.currState = $state;
 			$scope.$watch('currState.current.name', function(newValue, oldValue) {

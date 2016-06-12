@@ -54,9 +54,10 @@ namespace Application.Config
 						"viewSidePanel": { templateUrl: "partials/empty.html" },
 						"viewMainPanel": { 	
 							templateUrl: "partials/empty.html", 
-							controller: function($scope, $http, $state, $stateParams, UserService: Application.Service.UserService)
+							controller: function($scope, $state: angular.ui.IStateService, UserService: Application.Service.UserService)
 							{
-								UserService.setUser($stateParams.username, $stateParams.token);
+								UserService.setUser($state.params['username'], $state.params['token']);
+								$state.go('allGames');
 							}
 						}
 					}
@@ -80,6 +81,9 @@ namespace Application.Config
 						{
 							return GameListService.read($stateParams.id);
 						}
+					},
+					data: {
+						// authenticate: true
 					}
 				})
 				.state('matched', {
@@ -104,14 +108,22 @@ namespace Application.Config
 				.state('allGames', {
 					url: "/games",
 					views: {
-						"viewSidePanel": { templateUrl: "partials/user.html" },
+						"viewSidePanel": {
+							templateUrl: "partials/gamelist-controls.html",
+							controller: 'gameListController',
+							controllerAs: 'gameList'
+						},
 						"viewMainPanel": {
-							templateUrl: "partials/gameList.html",
+							templateUrl: "partials/gamelist.html",
 							controller: 'gameListController',
 							controllerAs: 'gameList'
 						}
 					},
 					resolve: {
+						templates: function(ApplicationService: Application.Service.ApplicationService)
+						{
+							return ApplicationService.templates();
+						},
 						games: function(GameListService: Application.Service.GameListService)
 						{
 							return GameListService.readAll();
@@ -125,15 +137,19 @@ namespace Application.Config
 							templateUrl: "partials/user.html" 
 						},
 						"viewMainPanel": {
-							templateUrl: "partials/mygames.html",
+							templateUrl: "partials/gamelist-created.html",
 							controller: 'gameListController',
 							controllerAs: 'gameList'
 						}
 					},
 					resolve: {
-						games: function(GameListService: Application.Service.GameListService)
+						templates: function(ApplicationService: Application.Service.ApplicationService)
 						{
-							return GameListService.readAll();
+							return ApplicationService.templates();
+						},
+						createdGames: function(GameListService: Application.Service.GameListService)
+						{
+							return GameListService.readCreated();
 						}
 					}
 				});

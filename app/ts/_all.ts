@@ -6,6 +6,7 @@
 /// <reference path='../controllers/GameController.ts' />
 /// <reference path='../controllers/NavigationController.ts' />
 
+/// <reference path='../services/ApplicationService.ts' />
 /// <reference path='../services/GameListService.ts' />
 /// <reference path='../services/GameService.ts' />
 /// <reference path='../services/UserService.ts' />
