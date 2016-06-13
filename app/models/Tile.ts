@@ -47,7 +47,7 @@ namespace Application.Model
 		public isTileBlockedOnTopBy(tile : Tile) : boolean
 		{
 			var self = this;
-
+			
 			//The given tile is in the same spot as this tile, therefore it is not being blocked
 			if(self.xPos === tile.xPos && self.yPos === tile.yPos && self.zPos === tile.zPos) {
 				return false;
@@ -61,10 +61,11 @@ namespace Application.Model
 			console.log("Selected tile conflicting ypos: " + (self.yPos -1 == tile.yPos || self.yPos == tile.yPos || self.yPos + 1 == tile.yPos));
 			console.log("Selected tile conflicting zpos: " + (self.zPos +1 == tile.zPos));
 			*/
-
+			
 			return ((self.xPos -1 === tile.xPos || self.xPos === tile.xPos || self.xPos + 1 === tile.xPos)
 				&& (self.yPos -1 === tile.yPos || self.yPos === tile.yPos || self.yPos + 1 === tile.yPos)
-				&& (self.zPos +1 === tile.zPos));
+				&& (self.zPos +1 === tile.zPos)
+				&& !tile.matchAttempt.isMatched);
 		}
 		
 		/**
@@ -81,7 +82,8 @@ namespace Application.Model
 
 			return ((self.xPos - 2 === tile.xPos || self.xPos + 2 === tile.xPos)
 				&& (self.yPos - 1 === tile.yPos || self.yPos === tile.yPos || self.yPos + 1 === tile.yPos)
-				&& (self.zPos === tile.zPos));
+				&& (self.zPos === tile.zPos
+				&& !tile.matchAttempt.isMatched));
 		}
 		
 		public isTileBlockedBy(tiles : Tile[]) : boolean
@@ -89,7 +91,7 @@ namespace Application.Model
 			var self = this;
 			for(var tile of tiles)
 			{
-				if(self.isTileBlockedOnTopBy(tile) || this.isTileBlockedOnTheSideBy(tile)) {
+				if(self.isTileBlockedOnTopBy(tile) || self.isTileBlockedOnTheSideBy(tile)) {
 					return true;
 				}
 			}

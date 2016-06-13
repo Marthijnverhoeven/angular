@@ -11,7 +11,6 @@ namespace Application.Controllers
 			private $stateParams,
 			private $scope)
 		{
-			
 			if($stateParams.id === 0) {
 				$stateParams.id = '5541fc5b1872631100678bb4';
 			}
@@ -22,7 +21,7 @@ namespace Application.Controllers
 		
 		public currentGame()
 		{
-			return this.$scope.selected;
+			return this.GameListService.currentGame;
 		}
 		
 		public matchesExist()

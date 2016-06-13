@@ -1,33 +1,33 @@
 describe("TileModel", function() {
 	it('should check an array of tiles', function(){
-		var game1 = new Application.Model.Game();
+		var game1 = new Application.Model.Game({});
 
-		var tile1 = new Application.Model.Tile();
+		var tile1 = new Application.Model.Tile({});
 		tile1.xPos = 10;
 		tile1.yPos = 10;
 		tile1.zPos = 1;
 
-		var tile2 = new Application.Model.Tile();
+		var tile2 = new Application.Model.Tile({});
 		tile2.xPos = 8;
 		tile2.yPos = 11;
 		tile2.zPos = 1;
 
-		var tile3 = new Application.Model.Tile();
+		var tile3 = new Application.Model.Tile({});
 		tile3.xPos = 12;
 		tile3.yPos = 9;
 		tile3.zPos = 1;
 
-		var tile4 = new Application.Model.Tile();
+		var tile4 = new Application.Model.Tile({});
 		tile4.xPos = 8;
 		tile4.yPos = 10;
 		tile4.zPos = 2;
 
-		var tile5 = new Application.Model.Tile();
+		var tile5 = new Application.Model.Tile({});
 		tile5.xPos = 15;
 		tile5.yPos = 15;
 		tile5.zPos = 2;
 
-		var tile6 = new Application.Model.Tile();
+		var tile6 = new Application.Model.Tile({});
 		tile6.xPos = 18;
 		tile6.yPos = 18;
 		tile6.zPos = 2;
@@ -43,7 +43,7 @@ describe("TileModel", function() {
 	});
 
 	it('should check an array of matched tiles', function(){
-		var game1 = new Application.Model.Game();
+		var game1 = new Application.Model.Game({});
 		
 		var player1 = { 	"_id": "idTest1",
 							"name": "player1",
@@ -65,7 +65,7 @@ describe("TileModel", function() {
 				"foundOn": "" 
 			};
 
-		var tile1 = new Application.Model.Tile();
+		var tile1 = new Application.Model.Tile({});
 		tile1.xPos = 10;
 		tile1.yPos = 10;
 		tile1.zPos = 1;
@@ -77,7 +77,7 @@ describe("TileModel", function() {
 				"foundOn": "" 
 			};
 
-		var tile2 = new Application.Model.Tile();
+		var tile2 = new Application.Model.Tile({});
 		tile2.xPos = 8;
 		tile2.yPos = 11;
 		tile2.zPos = 1;
@@ -89,7 +89,7 @@ describe("TileModel", function() {
 				"foundOn": "" 
 			};
 
-		var tile3 = new Application.Model.Tile();
+		var tile3 = new Application.Model.Tile({});
 		tile3.xPos = 12;
 		tile3.yPos = 9;
 		tile3.zPos = 1;
@@ -101,7 +101,7 @@ describe("TileModel", function() {
 				"foundOn": "" 
 			};
 
-		var tile4 = new Application.Model.Tile();
+		var tile4 = new Application.Model.Tile({});
 		tile4.xPos = 8;
 		tile4.yPos = 10;
 		tile4.zPos = 2;
@@ -113,7 +113,7 @@ describe("TileModel", function() {
 				"foundOn": "" 
 			};
 
-		var tile5 = new Application.Model.Tile();
+		var tile5 = new Application.Model.Tile({});
 		tile5.xPos = 15;
 		tile5.yPos = 15;
 		tile5.zPos = 2;
@@ -125,7 +125,7 @@ describe("TileModel", function() {
 				"foundOn": "" 
 			};
 
-		var tile6 = new Application.Model.Tile();
+		var tile6 = new Application.Model.Tile({});
 		tile6.xPos = 18;
 		tile6.yPos = 18;
 		tile6.zPos = 2;
@@ -136,6 +136,6 @@ describe("TileModel", function() {
 		game1.matched = list1;
 
 		//Verbeter dit nog.
-		expect(game1.getMatchedTiles).to.not.be.empty;
+		expect(game1.getMatchedTilesByPlayer).to.not.be.empty;
 	});
 });
