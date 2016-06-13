@@ -71,7 +71,28 @@ namespace Application.Model
 		/**
 		 * Returns true if the tile is being blocked on the side by the given tile.
 		 */
-		public isTileBlockedOnTheSideBy(tile: Tile) : boolean
+		public isTileBlockedOnTheSideBy(tiles: Tile[]) : boolean
+		{
+			var self = this;
+			var leftFound = false;
+			var rightFound = false;
+
+			for(var tile of tiles)
+			{
+				if(self.isTileBlockedOnTheLeftBy(tile)) {
+					leftFound = true;
+				}
+
+				if(self.isTileBlockedOnTheRightBy(tile)) {
+					rightFound = true;
+				}
+			}
+
+			return (rightFound && leftFound);
+		}
+
+
+		public isTileBlockedOnTheLeftBy(tile: Tile) : boolean
 		{
 			var self = this;
 
@@ -80,10 +101,25 @@ namespace Application.Model
 				return false;
 			}
 
-			return ((self.xPos - 2 === tile.xPos || self.xPos + 2 === tile.xPos)
+			return ((self.xPos + 2 === tile.xPos)
 				&& (self.yPos - 1 === tile.yPos || self.yPos === tile.yPos || self.yPos + 1 === tile.yPos)
-				&& (self.zPos === tile.zPos
-				&& !tile.matchAttempt.isMatched));
+				&& (self.zPos === tile.zPos)
+				&& !tile.matchAttempt.isMatched);
+		}
+
+		public isTileBlockedOnTheRightBy(tile: Tile) : boolean
+		{
+			var self = this;
+
+			//The given tile is in the same spot as this tile, therefore it is not being blocked
+			if(self.xPos === tile.xPos && self.yPos === tile.yPos && self.zPos === tile.zPos) {
+				return false;
+			}
+
+			return ((self.xPos - 2 === tile.xPos)
+				&& (self.yPos - 1 === tile.yPos || self.yPos === tile.yPos || self.yPos + 1 === tile.yPos)
+				&& (self.zPos === tile.zPos)
+				&& !tile.matchAttempt.isMatched);
 		}
 		
 		public isTileBlockedBy(tiles : Tile[]) : boolean
@@ -91,7 +127,7 @@ namespace Application.Model
 			var self = this;
 			for(var tile of tiles)
 			{
-				if(self.isTileBlockedOnTopBy(tile) || self.isTileBlockedOnTheSideBy(tile)) {
+				if(self.isTileBlockedOnTopBy(tile) || self.isTileBlockedOnTheSideBy(tiles)) {
 					return true;
 				}
 			}
