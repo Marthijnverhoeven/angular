@@ -104,21 +104,46 @@ var Application;
                     && (self.zPos + 1 === tile.zPos)
                     && !tile.matchAttempt.isMatched);
             };
-            Tile.prototype.isTileBlockedOnTheSideBy = function (tile) {
+            Tile.prototype.isTileBlockedOnTheSideBy = function (tiles) {
+                var self = this;
+                var leftFound = false;
+                var rightFound = false;
+                for (var _i = 0, tiles_1 = tiles; _i < tiles_1.length; _i++) {
+                    var tile = tiles_1[_i];
+                    if (self.isTileBlockedOnTheLeftBy(tile)) {
+                        leftFound = true;
+                    }
+                    if (self.isTileBlockedOnTheRightBy(tile)) {
+                        rightFound = true;
+                    }
+                }
+                return (rightFound && leftFound);
+            };
+            Tile.prototype.isTileBlockedOnTheLeftBy = function (tile) {
                 var self = this;
                 if (self.xPos === tile.xPos && self.yPos === tile.yPos && self.zPos === tile.zPos) {
                     return false;
                 }
-                return ((self.xPos - 2 === tile.xPos || self.xPos + 2 === tile.xPos)
+                return ((self.xPos + 2 === tile.xPos)
                     && (self.yPos - 1 === tile.yPos || self.yPos === tile.yPos || self.yPos + 1 === tile.yPos)
-                    && (self.zPos === tile.zPos
-                        && !tile.matchAttempt.isMatched));
+                    && (self.zPos === tile.zPos)
+                    && !tile.matchAttempt.isMatched);
+            };
+            Tile.prototype.isTileBlockedOnTheRightBy = function (tile) {
+                var self = this;
+                if (self.xPos === tile.xPos && self.yPos === tile.yPos && self.zPos === tile.zPos) {
+                    return false;
+                }
+                return ((self.xPos - 2 === tile.xPos)
+                    && (self.yPos - 1 === tile.yPos || self.yPos === tile.yPos || self.yPos + 1 === tile.yPos)
+                    && (self.zPos === tile.zPos)
+                    && !tile.matchAttempt.isMatched);
             };
             Tile.prototype.isTileBlockedBy = function (tiles) {
                 var self = this;
-                for (var _i = 0, tiles_1 = tiles; _i < tiles_1.length; _i++) {
-                    var tile = tiles_1[_i];
-                    if (self.isTileBlockedOnTopBy(tile) || self.isTileBlockedOnTheSideBy(tile)) {
+                for (var _i = 0, tiles_2 = tiles; _i < tiles_2.length; _i++) {
+                    var tile = tiles_2[_i];
+                    if (self.isTileBlockedOnTopBy(tile) || self.isTileBlockedOnTheSideBy(tiles)) {
                         return true;
                     }
                 }
