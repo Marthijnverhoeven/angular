@@ -262,8 +262,12 @@ var Application;
                 this.navigationDictionary = {
                     'index': { title: 'Index', items: this.getItemsWithActive("index") },
                     'login': { title: 'Login', items: this.getItemsWithActive("login") },
+                    'game': { title: 'Game X', items: this.getItemsWithActive("game") },
                     'allGames': { title: 'All games', items: this.getItemsWithActive("allGames") },
                     'myGames': { title: 'My games', items: this.getItemsWithActive("myGames") }
+                };
+                this.subDictionary = {
+                    'game': { title: 'Game X', items: this.getItemsWithActive(null) }
                 };
                 console.log('nav ctor');
                 var self = this;
@@ -287,6 +291,8 @@ var Application;
                     { label: 'All games', state: 'allGames' },
                     { label: 'My games', state: 'myGames' }
                 ];
+                if (!active)
+                    return items;
                 var activeAdded = false;
                 for (var i = 0; i < items.length; i++) {
                     if (items[i].state === active) {
@@ -560,6 +566,7 @@ var Application;
                             tile2.matchAttempt.isMatched = true;
                             tile1.matchAttempt.isSelected = false;
                             tile2.matchAttempt.isSelected = false;
+                            this.recheckBlockedTiles();
                             return;
                         }
                         console.log('no match');
@@ -571,6 +578,16 @@ var Application;
                     console.log('misc');
                     tile.matchAttempt.isSelected = true;
                     return;
+                }
+            };
+            GameService.prototype.recheckBlockedTiles = function () {
+                for (var _i = 0, _a = this.currentTiles; _i < _a.length; _i++) {
+                    var tile = _a[_i];
+                    var blocked = tile.matchAttempt.isBlocked;
+                    tile.matchAttempt.isBlocked = tile.isTileBlockedBy(this.currentTiles);
+                    if (blocked !== tile.matchAttempt.isBlocked) {
+                        console.log('chagned');
+                    }
                 }
             };
             GameService.prototype.canAddMatch = function (tile) {

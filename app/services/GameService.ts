@@ -156,6 +156,7 @@ namespace Application.Service
 						tile2.matchAttempt.isMatched = true;
 						tile1.matchAttempt.isSelected = false;
 						tile2.matchAttempt.isSelected = false;
+						this.recheckBlockedTiles();
 						return;
 					}
 					console.log('no match');
@@ -167,6 +168,19 @@ namespace Application.Service
 				console.log('misc');
 				tile.matchAttempt.isSelected = true;
 				return;
+			}
+		}
+		
+		private recheckBlockedTiles()
+		{
+			for(var tile of this.currentTiles)
+			{				
+				var blocked = tile.matchAttempt.isBlocked;
+				tile.matchAttempt.isBlocked = tile.isTileBlockedBy(this.currentTiles);
+				if(blocked !== tile.matchAttempt.isBlocked)
+				{
+					console.log('chagned'); 
+				} 
 			}
 		}
 		
