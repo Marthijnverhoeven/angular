@@ -71,25 +71,30 @@ namespace Application.Service
 			}
 		]
 		
-		public availableGames: Game[];
+		public allGames: Game[];
 		public currentGame: Game;
 		public createdGame: Game;
+		public createdGames: Game[];
 		
-		constructor(private $http: IHttpService)
+		constructor(
+			private $http: IHttpService,
+			private configuration: Application.Constant.Configuration,
+			public UserService: Application.Service.UserService)
 		{
-			this.availableGames = [];
+			this.allGames = [];
+			this.createdGames = [];
 		}
 		
 		// POST - /games
-		public create(template : string, minPlayers : number, maxPlayers : number)
+		public create(template : string, minPlayers : number, maxPlayers : number) : angular.IPromise<Game>
 		{
 			var self = this;
-			self.request<Game>(
+			return self.request<Game>(
 				'POST',
 				'/games',
 				(result: angular.IHttpPromiseCallbackArg<Game>) =>
 				{
-					self.createdGame = result.data;
+					self.createdGame = new Application.Model.Game(result.data);
 				},
 				(error: angular.IHttpPromiseCallbackArg<any>) =>
 				{
@@ -105,62 +110,89 @@ namespace Application.Service
 		}
 		
 		// GET - /games
-		public readAll(onSuccess: callback<Game[]>, onError: callback<any>) : void
+		public readAll() : angular.IPromise<Game[]>
 		{
-			console.log('reading all gaems');
 			var self = this;
-			self.request<Game[]>(
+			return self.request<Game[]>(
 				'GET',
 				'/games',
 				(result: angular.IHttpPromiseCallbackArg<Game[]>) =>
 				{
-					self.availableGames = result.data
-					onSuccess(result.data);
+					self.allGames = result.data
+					// onSuccess(result.data);
 				},
-				onError
+				(error: angular.IHttpPromiseCallbackArg<any>) =>
+				{
+					console.error(error);
+					alert("Error, templates could not be retrieved");
+				}
+			);
+		}
+		
+		// GET - /games
+		public readCreated() : angular.IPromise<Game[]>
+		{
+			var self = this;
+			return self.request<Game[]>(
+				'GET',
+				'/games?createdBy=' + self.UserService.user.name,
+				(result: angular.IHttpPromiseCallbackArg<Game[]>) =>
+				{
+					self.createdGames = result.data;
+					// onSuccess(result.data);
+				},
+				(error: angular.IHttpPromiseCallbackArg<any>) =>
+				{
+					console.error(error);
+					alert("Error, templates could not be retrieved");
+				}
 			);
 		}
 		
 		// GET - /games/{id}
-		public read(id : number, onSuccess: callback<Game>, onError: callback<any>) : void
+		public read(id : number) : angular.IPromise<Game>
 		{
 			var self = this;
-			self.request<Game>(
+			return self.request<Game>(
 				'GET',
 				'/games/' + id,
 				(result: angular.IHttpPromiseCallbackArg<Game>) =>
 				{
 					self.currentGame = result.data
-					onSuccess(result.data);
+					// onSuccess(result.data);
 				},
-				onError
+				(error: angular.IHttpPromiseCallbackArg<any>) =>
+				{
+					console.error(error);
+					alert("Error, templates could not be retrieved");
+				}
 			);
 		}
 		
 		// DELETE - /games/{id}
-		public delete(id : number, onSuccess: callback<any>, onError: callback<any>) : void
+		public delete(id : number, onSuccess?: callback<any>, onError?: callback<any>) : angular.IPromise<any>
 		{
 			var self = this;
-			self.request<any>(
+		 	return self.request<any>(
 				'DELETE',
 				'/games/' + id,
 				(result: angular.IHttpPromiseCallbackArg<any>) =>
 				{
-					console.log(result);
 					onSuccess(result.data);
 				},
 				onError
 			);	
 		}
 		
-		private request<T>(method: string, url: string, onSuccess: (result: angular.IHttpPromiseCallbackArg<T>) => void, onError: (result: angular.IHttpPromiseCallbackArg<any>) => void, data?: any) : void
+		private request<T>(method: string, url: string, onSuccess?: (result: angular.IHttpPromiseCallbackArg<T>) => void, onError?: (result: angular.IHttpPromiseCallbackArg<any>) => void, data?: any) : angular.IPromise<T>
 		{
-			console.log(url);
 			var self = this;
-			this.$http<T>({
+			var promise = this.$http<T>({
 				method: method,
-				url: 'http://mahjongmayhem.herokuapp.com' + url
-			}).then(onSuccess, onError);
+				url: self.configuration.apiUrl + url
+			});
+			promise.then(onSuccess, onError);
+			return promise;
 		}
 		
 		// public GET(id, callBack) {

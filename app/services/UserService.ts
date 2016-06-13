@@ -8,19 +8,31 @@ namespace Application.Service
 	
 	export class UserService
 	{
-		public user : User = { name: 'Marthijn', id: '1', token: 'tests' };
+		public user : User = 
+		<User>{
+			name: 'fs.karsodimedjo@student.avans.nl',
+			token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.ImZzLmthcnNvZGltZWRqb0BzdHVkZW50LmF2YW5zLm5sIg.htVG8dEuA4EM89b_HwwLUWh9qv_vPzO_fHRDEFna8qI'
+		};
 		
-		public username: string = null;
-		public token: string = null;
-		
-		constructor(private configuration : any)
+		constructor(private configuration : Application.Constant.Configuration)
 		{ }
 		
 		public authenticationUrl() : string
 		{
 			// encodeURI || encodeURIComponent 
 			var callback = encodeURIComponent(this.configuration.baseUrl + this.configuration.authCallback);
-			return 'http://mahjongmayhem.herokuapp.com/auth/avans?callbackUrl=' + callback;
+			return this.configuration.apiUrl + '/auth/avans?callbackUrl=' + callback;
+		}
+		
+		public setUser(username: string, token: string) : void
+		{
+			this.user.name = username;
+			this.user.token = token;
+		}
+		
+		public isLoggedIn()
+		{
+			return this.user.name && this.user.token;
 		}
 	}
 }

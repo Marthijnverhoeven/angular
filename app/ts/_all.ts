@@ -6,18 +6,23 @@
 /// <reference path='../controllers/GameController.ts' />
 /// <reference path='../controllers/NavigationController.ts' />
 
+/// <reference path='../services/ApplicationService.ts' />
 /// <reference path='../services/GameListService.ts' />
 /// <reference path='../services/GameService.ts' />
 /// <reference path='../services/UserService.ts' />
-/// <reference path='../services/HttpInterceptor.ts' />
 
+/// <reference path='../factories/HttpInterceptorFactory.ts' />
+
+/// <reference path='../directives/TileDirective.ts' />
 /// <reference path='../directives/GameItemDirective.ts' />
 /// <reference path='../directives/UserDirective.ts' />
 
 /// <reference path='../filters/OwnedGames.ts' />
 
 /// <reference path='../config/Router.ts' />
-/// <reference path='../config/Configuration.ts' />
+/// <reference path='../config/Initializer.ts' />
+
+/// <reference path='../constants/Configuration.ts' />
 
 /// <reference path='app.ts' />
 

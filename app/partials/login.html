@@ -1,5 +1,5 @@
 <script type="text/javascript">
     // window.location.href = "{{ loginCtrl.url }}"
 </script>
-<a href="{{ loginCtrl.url }}">LOGIN</a>
-{{ loginCtrl.url }}
+<a href="{{ loginCtrl.UserService.authenticationUrl() }}">LOGIN</a>
+{{ loginCtrl.UserService.authenticationUrl() }}

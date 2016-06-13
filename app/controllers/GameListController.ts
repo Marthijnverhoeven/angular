@@ -6,6 +6,8 @@ namespace Application.Controllers
 	
 	// Services
 	declare type GameListService = Application.Service.GameListService;
+	declare type UserService = Application.Service.UserService;
+	declare type ApplicationService = Application.Service.ApplicationService;
 	
 	// Models
 	declare type Game = Application.Model.Game;
@@ -16,47 +18,38 @@ namespace Application.Controllers
 			id: '1'
 		}
 		
-		public allGames: Game[];
-		
 		constructor(
-			private UserService,
-			private GameListService : GameListService,
 			private $scope,
-			private $http)
+			private $state: angular.ui.IStateService,
+			public UserService: UserService,
+			public GameListService: GameListService,
+			public ApplicationService: ApplicationService)
 		{
-			this.allGames =[];
-				/*<Game>{ "_id": "5759d218e22c671100821f5a", "createdBy": { "_id": "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 }, "createdOn": "2016-06-09T20:31:20.802Z", "gameTemplate": { "_id": "Ox", "__v": 0, "id": "Ox" }, "__v": 0, "players": [ { "_id": "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 } ], "maxPlayers": 32, "minPlayers": 2, "state": "open", "id": "5759d218e22c671100821f5a" },
-				<Game>{ "_id": "5759d106e22c671100821ec9", "createdBy": { "_id": "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 }, "createdOn": "2016-06-09T20:26:46.524Z", "gameTemplate": { "_id": "Ox", "__v": 0, "id": "Ox" }, "__v": 0, "players": [ { "_id":  "rjl.ernens@student.avans.nl", "name": "Roel Ernens", "__v": 0 } ], "maxPlayers": 32, "minPlayers": 2, "state": "open", "id": "5759d106e22c671100821ec9" }*/
-			
-			
 			console.log('ctor gamelistctrl');
-			this.getAllGames();
-		}
-		
-		public getAllGames() : void
-		{
-			var self = this;
-			self.GameListService.readAll(
-				(games) => {
-					self.allGames = games;
-				},
-				(error) => {
-					alert("omg no :C");
-					// console.error(error);
-					throw error;
-				}
-			);
-		}
-		
-		public getMyGames() : void
-		{
 			
+			this.$scope.newGame = {
+				template: ApplicationService.availableTemplates[0]._id,
+				minPlayers: 2,
+				maxPlayers: 4
+			};
+		}
+		
+		public canCreateGame(template : string, minPlayers : number, maxPlayers : number)
+		{
+			return (template != null || template != undefined)
+				&& minPlayers <= maxPlayers;
 		}
 		
 		public createGame(template : string, minPlayers : number, maxPlayers : number) : void
 		{
-			// todo: validate min < max;
-			// todo: choose from list of templates
+			console.log(
+				template,
+				minPlayers,
+				maxPlayers
+			);
+			
+			this.GameListService.create(template, minPlayers, maxPlayers);
+			this.$state.go('state', { id: 'somehting' });
 			// todo: make request
 		}
 		

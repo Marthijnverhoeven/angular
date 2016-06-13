@@ -3,6 +3,7 @@
 namespace Application.Service
 {	
 	declare type IHttpService = angular.IHttpService;
+	declare type IPromise<T> = angular.IPromise<T>;
 	
 	declare type Template = {
 		_id: string;
@@ -20,17 +21,17 @@ namespace Application.Service
 		public currentTemplate: Template;
 		public availableGamestates: GameState[];
 		
-		constructor(private $http : IHttpService)
+		constructor(private $http : IHttpService, private configuration: Application.Constant.Configuration)
 		{
 			this.availableTemplates = [];
 			this.availableGamestates = [];
 		}
 		
 		// GET - /gametemplates
-		public templates() : any
+		public templates() : IPromise<Template[]>
 		{
 			var self = this;
-			self.request<Template[]>(
+			return self.request<Template[]>(
 				'GET',
 				'/gametemplates/',
 				(result: angular.IHttpPromiseCallbackArg<Template[]>) =>
@@ -46,10 +47,10 @@ namespace Application.Service
 		}
 		
 		// GET - /gametemplates/{id}
-		public template(id : number) : any
+		public template(id : string) : IPromise<Template>
 		{
 			var self = this;
-			self.request<Template>(
+			return self.request<Template>(
 				'GET',
 				'/gametemplates/' + id,
 				(result: angular.IHttpPromiseCallbackArg<Template>) =>
@@ -65,10 +66,10 @@ namespace Application.Service
 		}
 		
 		// GET - /gamestates
-		public states() : any
+		public states() : IPromise<GameState[]>
 		{
 			var self = this;
-			self.request<GameState[]>(
+			return self.request<GameState[]>(
 				'GET',
 				'/gamestates',
 				(result: angular.IHttpPromiseCallbackArg<GameState[]>) =>
@@ -83,13 +84,15 @@ namespace Application.Service
 			);
 		}
 		
-		private request<T>(method: string, url: string, onSuccess: (result: angular.IHttpPromiseCallbackArg<T>) => void, onError: (result: angular.IHttpPromiseCallbackArg<any>) => void) : void
+		private request<T>(method: string, url: string, onSuccess: (result: angular.IHttpPromiseCallbackArg<T>) => void, onError: (result: angular.IHttpPromiseCallbackArg<any>) => void) : IPromise<T>
 		{
 			var self = this;
-			this.$http<T>({
+			var promise = this.$http<T>({
 				method: method,
-				url: url
-			}).then(onSuccess, onError);
+				url: self.configuration.apiUrl + url
+			})
+			promise.then(onSuccess, onError);
+			return promise;
 		}
 	}
 }

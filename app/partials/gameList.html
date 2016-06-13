@@ -1,6 +1,9 @@
 <div>
 	<h3>All Games</h3>
-	<ul class="list-group">
-		<li class="list-group-item" ng-repeat="game in gameList.allGames">{{ game }}</li>
+	<ul class="list-group">		
+		<ng-include
+			src="'partials/gamelist-item.html'"
+			ng-repeat="game in gameList.GameListService.allGames">
+		</ng-include>
 	</ul>
 </div>

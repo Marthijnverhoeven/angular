@@ -7,35 +7,53 @@ namespace Application
 	
 	console.log('TEST');
 	
-	mahjongMadness.factory('httpRequestInterceptor', 
-		function (UserService, configuration) { 
-			return { 
-				request: function (config) {
-					console.log(config);
-					 
-					if (UserService.username && UserService.token) {
-						config.headers["x-username"] = UserService.username
-						config.headers["x-token"] = UserService.token;
-					}
-					// config.url = configuration.apiUrl + config.url;
-					return config;
+	
+	
+	// mahjongMadness.factory('httpRequestInterceptor', 
+	// 	function (UserService, configuration) { 
+	// 		return { 
+	// 			request: function (config) {
+	// 				if (UserService.username && UserService.token) {
+	// 					config.headers["x-username"] = UserService.username
+	// 					config.headers["x-token"] = UserService.token;
+	// 				}
+	// 				// config.url = configuration.apiUrl + config.url;
+	// 				return config;
+	// 			}
+	// 		}
+	// 	}
+	// );
+
+	// mahjongMadness.config(function ($httpProvider) { $httpProvider.interceptors.push('httpRequestInterceptor'); });
+	
+	mahjongMadness.factory('httpRequestInterceptor', Application.Factory.HttpInterceptorFactory);
+	
+	mahjongMadness.config(Application.Config.RouterFactory);
+	mahjongMadness.config(Application.Config.InitializerFactory); 
+	
+	mahjongMadness.run(function($rootScope: ng.IRootScopeService, $state, UserService: Application.Service.UserService){
+		$rootScope.$on("$stateChangeStart",
+			function(event, toState, toParams, fromState, fromParams) 
+			{
+				if (toState.data && toState.data.authenticate && !UserService.isLoggedIn())
+				{
+					// User isn’t authenticated
+					$state.transitionTo("login");
+					event.preventDefault();
 				}
 			}
-		}
-	);
-
-	mahjongMadness.config(function ($httpProvider) { $httpProvider.interceptors.push('httpRequestInterceptor'); });
-
+		)
+	});
 	
-	mahjongMadness.config(Application.Config.Router.Factory());
+	mahjongMadness.constant('configuration', Application.Constant.ConfigurationFactory); 
 	
-	mahjongMadness.constant('configuration', Application.Config.Configuration.Factory()); 
-	
+	mahjongMadness.directive('tile', Application.Directive.TileDirectiveFactory);
 	mahjongMadness.directive('user', Application.Directive.UserDirective.Factory());
 	mahjongMadness.directive('gameitem', Application.Directive.GameItemDirective.Factory());
 	
 	mahjongMadness.filter('ownedGames', Application.Filter.OwnedGames.Factory());
 	
+	mahjongMadness.service('ApplicationService', Application.Service.ApplicationService);
 	mahjongMadness.service('GameListService', Application.Service.GameListService);
 	mahjongMadness.service('UserService', Application.Service.UserService);
 	mahjongMadness.service('GameService', Application.Service.GameService);

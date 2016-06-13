@@ -1,38 +1,50 @@
 /// <reference path="../ts/_all.ts" />
 
 namespace Application.Model
-{
+{	
+	namespace Application.Model.Game
+	{
+		export class Player
+		{
+			_id: string;
+			name: string;
+			__v: number;
+			id: string;
+		}
+		
+		export class Template
+		{
+			_id: string;
+			__v: number;
+			id: string;
+		}
+	}
+	
 	export class Game
 	{
 		_id: string;
-		createdBy: 
-		{
-			_id: string,
-			name: string,
-			__v: number,
-			id: string
-		};
+		createdBy: Application.Model.Game.Player;
 		createdOn: string;
 		startedOn: string;
 		endedOn: string;
-		gameTemplate: {
-			_id: string,
-			__v: number,
-			id: string
-		};
+		gameTemplate: Application.Model.Game.Player;
 		__v: number;
-		players: {
-			_id: string,
-			name: string,
-			__v: number,
-			id: string
-		}[];
+		players: Application.Model.Game.Player[];
 		maxPlayers: number;
 		minPlayers: number;
 		state: string;
 		id: string;
+		
 		tiles: Tile[];
 		matched: Tile[];
+		
+		constructor(literal: any)
+		{
+			for(var key of Object.keys(literal))
+			{
+				this[key] = literal[key];
+			}
+		}
 
 		public getAvailableTiles() : Tile[] {
 			var available = [];
@@ -58,7 +70,7 @@ namespace Application.Model
 			return unAvailable;
 		}
 
-		public getMatchedTiles() : any {
+		public getMatchedTilesByPlayer() : any {
 			var matchedList = {};
 
 			for(var player of this.players) {
