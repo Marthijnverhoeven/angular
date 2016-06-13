@@ -62,6 +62,73 @@ var Application;
                 }
                 return matchedList;
             };
+            Game.prototype.matchTile = function (tile, tiles, onMatch) {
+                var self = this;
+                if (tile.matchAttempt.isSelected) {
+                    console.log('unselecting');
+                    tile.matchAttempt.isSelected = false;
+                    return;
+                }
+                else {
+                    tile.matchAttempt.isSelected = true;
+                    var selected = this.getSelectedIndice(tiles);
+                    if (selected.length == 2) {
+                        var tile1 = tiles[selected[0]];
+                        var tile2 = tiles[selected[1]];
+                        if (tile1.canMatch(tile2)) {
+                            console.log('match');
+                            tile1.matchAttempt.isMatched = true;
+                            tile2.matchAttempt.isMatched = true;
+                            tile1.matchAttempt.isSelected = false;
+                            tile2.matchAttempt.isSelected = false;
+                            onMatch(tile1, tile2);
+                            this.recheckBlockedTiles(tiles);
+                            return;
+                        }
+                        console.log('no match');
+                        console.log(tile1, tile2);
+                        tile1.matchAttempt.isSelected = false;
+                        tile2.matchAttempt.isSelected = false;
+                        return;
+                    }
+                    console.log('misc');
+                    tile.matchAttempt.isSelected = true;
+                    return;
+                }
+            };
+            Game.prototype.recheckBlockedTiles = function (tiles) {
+                for (var _i = 0, tiles_1 = tiles; _i < tiles_1.length; _i++) {
+                    var tile = tiles_1[_i];
+                    var blocked = tile.matchAttempt.isBlocked;
+                    tile.matchAttempt.isBlocked = tile.isTileBlockedBy(tiles);
+                    if (blocked !== tile.matchAttempt.isBlocked) {
+                        console.log('chagned');
+                    }
+                }
+            };
+            Game.prototype.canAddMatch = function (tiles) {
+                return this.getSelectedIndice(tiles).length < 2;
+            };
+            Game.prototype.getTile = function (id, tiles) {
+                for (var _i = 0, tiles_2 = tiles; _i < tiles_2.length; _i++) {
+                    var tile = tiles_2[_i];
+                    if (tile._id === id) {
+                        return tile;
+                    }
+                }
+            };
+            Game.prototype.getSelectedIndice = function (tiles) {
+                var self = this, selected = [];
+                for (var i = 0; i < tiles.length; i++) {
+                    if (tiles[i].matchAttempt.isSelected) {
+                        selected.push(i);
+                    }
+                }
+                return selected;
+            };
+            Game.prototype.isTileBlocked = function (tile, tiles) {
+                return tile.isTileBlockedBy(tiles);
+            };
             return Game;
         }());
         Model_1.Game = Game;
@@ -108,8 +175,8 @@ var Application;
                 var self = this;
                 var leftFound = false;
                 var rightFound = false;
-                for (var _i = 0, tiles_1 = tiles; _i < tiles_1.length; _i++) {
-                    var tile = tiles_1[_i];
+                for (var _i = 0, tiles_3 = tiles; _i < tiles_3.length; _i++) {
+                    var tile = tiles_3[_i];
                     if (self.isTileBlockedOnTheLeftBy(tile)) {
                         leftFound = true;
                     }
@@ -141,8 +208,8 @@ var Application;
             };
             Tile.prototype.isTileBlockedBy = function (tiles) {
                 var self = this;
-                for (var _i = 0, tiles_2 = tiles; _i < tiles_2.length; _i++) {
-                    var tile = tiles_2[_i];
+                for (var _i = 0, tiles_4 = tiles; _i < tiles_4.length; _i++) {
+                    var tile = tiles_4[_i];
                     if (self.isTileBlockedOnTopBy(tile) || self.isTileBlockedOnTheSideBy(tiles)) {
                         return true;
                     }
@@ -181,32 +248,64 @@ var Application;
 (function (Application) {
     var Controllers;
     (function (Controllers) {
+        var AppController = (function () {
+            function AppController(configuration) {
+                this.configuration = configuration;
+            }
+            AppController.prototype.getMinPlayers = function () {
+                return this.configuration.minPlayers;
+            };
+            AppController.prototype.getMaxPlayers = function () {
+                return this.configuration.maxPlayers;
+            };
+            return AppController;
+        }());
+        Controllers.AppController = AppController;
+    })(Controllers = Application.Controllers || (Application.Controllers = {}));
+})(Application || (Application = {}));
+var Application;
+(function (Application) {
+    var Controllers;
+    (function (Controllers) {
         'use strict';
         var GameListController = (function () {
-            function GameListController($scope, $state, UserService, GameListService, ApplicationService) {
+            function GameListController($scope, $state, UserService, GameListService, GameService, ApplicationService) {
                 this.$scope = $scope;
                 this.$state = $state;
                 this.UserService = UserService;
                 this.GameListService = GameListService;
+                this.GameService = GameService;
                 this.ApplicationService = ApplicationService;
                 this.user = {
                     id: '1'
                 };
-                console.log('ctor gamelistctrl');
                 this.$scope.newGame = {
                     template: ApplicationService.availableTemplates[0]._id,
                     minPlayers: 2,
                     maxPlayers: 4
                 };
             }
+            GameListController.prototype.canJoinGame = function (game) {
+                return true;
+            };
+            GameListController.prototype.joinGame = function (game) {
+                this.GameService.join(game._id, function () {
+                    alert('Joined');
+                }, function (error) {
+                    alert('error');
+                });
+            };
             GameListController.prototype.canCreateGame = function (template, minPlayers, maxPlayers) {
                 return (template != null || template != undefined)
                     && minPlayers <= maxPlayers;
             };
             GameListController.prototype.createGame = function (template, minPlayers, maxPlayers) {
-                console.log(template, minPlayers, maxPlayers);
-                this.GameListService.create(template, minPlayers, maxPlayers);
-                this.$state.go('state', { id: 'somehting' });
+                var _this = this;
+                this.GameListService.create(template, minPlayers, maxPlayers, function (data) {
+                    _this.$state.go('view', { id: data._id });
+                }, function (error) {
+                    alert(error);
+                });
             };
             return GameListController;
         }());
@@ -218,32 +317,30 @@ var Application;
     var Controllers;
     (function (Controllers) {
         var GameController = (function () {
-            function GameController(UserService, GameListService, GameService, $stateParams, $scope) {
+            function GameController(UserService, GameListService, GameService, $state, $stateParams, $scope) {
                 this.UserService = UserService;
                 this.GameListService = GameListService;
                 this.GameService = GameService;
+                this.$state = $state;
                 this.$stateParams = $stateParams;
                 this.$scope = $scope;
                 this.test = "test";
-                if ($stateParams.id === 0) {
-                    $stateParams.id = '5541fc5b1872631100678bb4';
-                }
-                console.log(this.GameListService.currentGame);
                 this.GameService.tiles(this.GameListService.currentGame.id);
             }
             GameController.prototype.currentGame = function () {
                 return this.GameListService.currentGame;
             };
-            GameController.prototype.matchesExist = function () {
-                var self = this;
+            GameController.prototype.canStartGame = function () {
+                return true;
             };
-            GameController.prototype.logSelectedTiles = function () {
-                for (var _i = 0, _a = this.GameService.currentTiles; _i < _a.length; _i++) {
-                    var tile = _a[_i];
-                    if (tile.matchAttempt.isSelected) {
-                        console.log(tile);
-                    }
-                }
+            GameController.prototype.startGame = function (game) {
+                var _this = this;
+                this.GameService.start(game._id, function (id) {
+                    _this.$state.go('game', { id: id });
+                }, function (error) {
+                    alert('error @GameController.startGame');
+                    console.error(error);
+                });
             };
             return GameController;
         }());
@@ -322,28 +419,22 @@ var Application;
                 this.availableTemplates = [];
                 this.availableGamestates = [];
             }
-            ApplicationService.prototype.templates = function () {
+            ApplicationService.prototype.templates = function (onSuccess, onError) {
                 var self = this;
                 return self.request('GET', '/gametemplates/', function (result) {
-                    self.availableTemplates = result.data;
-                }, function (error) {
-                    console.error(error);
-                    alert("Error, templates could not be retrieved");
-                });
+                    onSuccess(result.data);
+                }, onError);
             };
-            ApplicationService.prototype.template = function (id) {
+            ApplicationService.prototype.template = function (id, onSuccess, onError) {
                 var self = this;
                 return self.request('GET', '/gametemplates/' + id, function (result) {
-                    self.currentTemplate = result.data;
-                }, function (error) {
-                    console.error(error);
-                    alert("Error, templates could not be retrieved");
-                });
+                    onSuccess(result.data);
+                }, onError);
             };
-            ApplicationService.prototype.states = function () {
+            ApplicationService.prototype.states = function (onSuccess, onError) {
                 var self = this;
                 return self.request('GET', '/gamestates', function (result) {
-                    self.availableGamestates = result.data;
+                    onSuccess(result.data);
                 }, function (error) {
                     console.error(error);
                     alert("Error, templates could not be retrieved");
@@ -368,119 +459,83 @@ var Application;
     var Service;
     (function (Service) {
         'use strict';
+        var StorageService = (function () {
+            function StorageService() {
+                this.storage = localStorage;
+            }
+            StorageService.prototype.store = function (key, value) {
+                return this.storage.setItem(key, JSON.stringify(value));
+            };
+            StorageService.prototype.retrieve = function (key) {
+                var item = this.storage.getItem(key);
+                if (!!item) {
+                    return JSON.parse(item);
+                }
+                throw new Error('item does not exist');
+            };
+            StorageService.prototype.remove = function (key) {
+                return this.storage.removeItem(key);
+            };
+            return StorageService;
+        }());
+        Service.StorageService = StorageService;
+    })(Service = Application.Service || (Application.Service = {}));
+})(Application || (Application = {}));
+var Application;
+(function (Application) {
+    var Service;
+    (function (Service) {
+        'use strict';
         var GameListService = (function () {
             function GameListService($http, configuration, UserService) {
                 this.$http = $http;
                 this.configuration = configuration;
                 this.UserService = UserService;
-                this.games = [
-                    {
-                        "_id": "5759d218e22c671100821f5a",
-                        "createdBy": {
-                            "_id": "rjl.ernens@student.avans.nl",
-                            "name": "Roel Ernens",
-                            "__v": 0
-                        },
-                        "createdOn": "2016-06-09T20:31:20.802Z",
-                        "gameTemplate": {
-                            "_id": "Ox",
-                            "__v": 0,
-                            "id": "Ox"
-                        },
-                        "__v": 0,
-                        "players": [
-                            {
-                                "_id": "rjl.ernens@student.avans.nl",
-                                "name": "Roel Ernens",
-                                "__v": 0
-                            }
-                        ],
-                        "maxPlayers": 32,
-                        "minPlayers": 2,
-                        "state": "open",
-                        "id": "5759d218e22c671100821f5a"
-                    },
-                    {
-                        "_id": "5759d106e22c671100821ec9",
-                        "createdBy": {
-                            "_id": "rjl.ernens@student.avans.nl",
-                            "name": "Roel Ernens",
-                            "__v": 0
-                        },
-                        "createdOn": "2016-06-09T20:26:46.524Z",
-                        "gameTemplate": {
-                            "_id": "Ox",
-                            "__v": 0,
-                            "id": "Ox"
-                        },
-                        "__v": 0,
-                        "players": [
-                            {
-                                "_id": "rjl.ernens@student.avans.nl",
-                                "name": "Roel Ernens",
-                                "__v": 0
-                            }
-                        ],
-                        "maxPlayers": 32,
-                        "minPlayers": 2,
-                        "state": "open",
-                        "id": "5759d106e22c671100821ec9"
-                    }
-                ];
-                this.allGames = [];
-                this.createdGames = [];
             }
-            GameListService.prototype.create = function (template, minPlayers, maxPlayers) {
+            GameListService.prototype.create = function (template, minPlayers, maxPlayers, onSuccess, onError) {
                 var self = this;
-                return self.request('POST', '/games', function (result) {
-                    self.createdGame = new Application.Model.Game(result.data);
-                }, function (error) {
-                    console.error(error);
-                    alert("Error, templates could not be retrieved");
-                }, {
-                    template: template,
+                return self.request('POST', '/games', {
+                    templateName: template,
                     minPlayers: minPlayers,
                     maxPlayers: maxPlayers
-                });
+                }, function (result) {
+                    onSuccess(new Application.Model.Game(result.data));
+                }, onError);
             };
-            GameListService.prototype.readAll = function () {
+            GameListService.prototype.readAll = function (onSuccess, onError) {
                 var self = this;
-                return self.request('GET', '/games', function (result) {
-                    self.allGames = result.data;
-                }, function (error) {
-                    console.error(error);
-                    alert("Error, templates could not be retrieved");
-                });
+                return self.request('GET', '/games', null, function (result) {
+                    var games = [];
+                    for (var _i = 0, _a = result.data; _i < _a.length; _i++) {
+                        var game = _a[_i];
+                        games.push(new Application.Model.Game(game));
+                    }
+                    onSuccess(games);
+                }, onError);
             };
-            GameListService.prototype.readCreated = function () {
+            GameListService.prototype.readCreated = function (onSuccess, onError) {
                 var self = this;
-                return self.request('GET', '/games?createdBy=' + self.UserService.user.name, function (result) {
-                    self.createdGames = result.data;
-                }, function (error) {
-                    console.error(error);
-                    alert("Error, templates could not be retrieved");
-                });
-            };
-            GameListService.prototype.read = function (id) {
-                var self = this;
-                return self.request('GET', '/games/' + id, function (result) {
-                    self.currentGame = result.data;
-                }, function (error) {
-                    console.error(error);
-                    alert("Error, templates could not be retrieved");
-                });
+                return self.request('GET', '/games?createdBy=' + self.UserService.user.name, null, function (result) {
+                    var games = [];
+                    for (var _i = 0, _a = result.data; _i < _a.length; _i++) {
+                        var game = _a[_i];
+                        games.push(new Application.Model.Game(game));
+                    }
+                    onSuccess(games);
+                }, onError);
             };
             GameListService.prototype.delete = function (id, onSuccess, onError) {
                 var self = this;
-                return self.request('DELETE', '/games/' + id, function (result) {
-                    onSuccess(result.data);
+                return self.request('DELETE', '/games/' + id, null, function (result) {
+                    onSuccess(id);
                 }, onError);
             };
-            GameListService.prototype.request = function (method, url, onSuccess, onError, data) {
+            GameListService.prototype.request = function (method, url, data, onSuccess, onError) {
                 var self = this;
                 var promise = this.$http({
                     method: method,
-                    url: self.configuration.apiUrl + url
+                    url: self.configuration.apiUrl + url,
+                    data: data || {}
                 });
                 promise.then(onSuccess, onError);
                 return promise;
@@ -500,39 +555,38 @@ var Application;
                 this.$http = $http;
                 this.configuration = configuration;
             }
-            GameService.prototype.start = function (id) {
+            GameService.prototype.read = function (id, onSuccess, onError) {
                 var self = this;
-                return self.request('POST', '/games/' + id + '/start', null, function (result) { }, function (error) {
-                    console.error(error);
-                    alert("Error, templates could not be retrieved");
-                });
+                return self.request('GET', '/games/' + id, null, function (result) {
+                    onSuccess(new Application.Model.Game(result.data));
+                }, onError);
             };
-            GameService.prototype.join = function (id) {
+            GameService.prototype.start = function (id, onSuccess, onError) {
                 var self = this;
-                return self.request('POST', '/games/' + id + '/tiles/matches', null, function (result) { }, function (error) {
-                    console.error(error);
-                    alert("Error, templates could not be retrieved");
-                });
+                return self.request('POST', '/games/' + id + '/start', null, function (result) {
+                    onSuccess(id);
+                }, onError);
             };
-            GameService.prototype.tiles = function (id) {
+            GameService.prototype.join = function (id, onSuccess, onError) {
+                var self = this;
+                return self.request('POST', '/games/' + id + '/players', null, onSuccess, onError);
+            };
+            GameService.prototype.tiles = function (id, onSuccess, onError) {
                 var self = this;
                 return self.request('GET', '/games/' + id + '/tiles', null, function (result) {
-                    self.currentTiles = [];
+                    var tiles = [];
                     for (var _i = 0, _a = result.data; _i < _a.length; _i++) {
                         var tileLiteral = _a[_i];
-                        self.currentTiles.push(new Application.Model.Tile(tileLiteral));
+                        tiles.push(new Application.Model.Tile(tileLiteral));
                     }
-                }, function (error) {
-                    console.error(error);
-                    alert("Error, templates could not be retrieved");
-                });
+                    onSuccess(tiles);
+                }, onError);
             };
-            GameService.prototype.match = function (id, tile1Id, tile2Id) {
+            GameService.prototype.match = function (id, tile1Id, tile2Id, onSuccess, onError) {
                 var self = this;
-                return self.request('POST', '/games/' + id + '/tiles/matches', { tile1Id: tile1Id, tile2Id: tile2Id }, function (result) { }, function (error) {
-                    console.error(error);
-                    alert("Error, templates could not be retrieved");
-                });
+                return self.request('POST', '/games/' + id + '/tiles/matches', { tile1Id: tile1Id, tile2Id: tile2Id }, function (result) {
+                    onSuccess();
+                }, onError);
             };
             GameService.prototype.request = function (method, url, data, onSuccess, onError) {
                 var self = this;
@@ -547,74 +601,6 @@ var Application;
                 promise.then(onSuccess, onError);
                 return promise;
             };
-            GameService.prototype.matchTile = function (tile) {
-                var self = this;
-                if (tile.matchAttempt.isSelected) {
-                    console.log('unselecting');
-                    tile.matchAttempt.isSelected = false;
-                    return;
-                }
-                else {
-                    tile.matchAttempt.isSelected = true;
-                    var selected = this.getSelectedIndice();
-                    if (selected.length == 2) {
-                        var tile1 = self.currentTiles[selected[0]];
-                        var tile2 = self.currentTiles[selected[1]];
-                        if (tile1.canMatch(tile2)) {
-                            console.log('match');
-                            tile1.matchAttempt.isMatched = true;
-                            tile2.matchAttempt.isMatched = true;
-                            tile1.matchAttempt.isSelected = false;
-                            tile2.matchAttempt.isSelected = false;
-                            this.recheckBlockedTiles();
-                            return;
-                        }
-                        console.log('no match');
-                        console.log(tile1, tile2);
-                        tile1.matchAttempt.isSelected = false;
-                        tile2.matchAttempt.isSelected = false;
-                        return;
-                    }
-                    console.log('misc');
-                    tile.matchAttempt.isSelected = true;
-                    return;
-                }
-            };
-            GameService.prototype.recheckBlockedTiles = function () {
-                for (var _i = 0, _a = this.currentTiles; _i < _a.length; _i++) {
-                    var tile = _a[_i];
-                    var blocked = tile.matchAttempt.isBlocked;
-                    tile.matchAttempt.isBlocked = tile.isTileBlockedBy(this.currentTiles);
-                    if (blocked !== tile.matchAttempt.isBlocked) {
-                        console.log('chagned');
-                    }
-                }
-            };
-            GameService.prototype.canAddMatch = function (tile) {
-                return this.getSelectedIndice().length < 2;
-            };
-            GameService.prototype.getTile = function (id) {
-                if (!this.currentTiles)
-                    throw new Error('Game not initialized.');
-                for (var _i = 0, _a = this.currentTiles; _i < _a.length; _i++) {
-                    var tile = _a[_i];
-                    if (tile._id === id) {
-                        return tile;
-                    }
-                }
-            };
-            GameService.prototype.getSelectedIndice = function () {
-                var self = this, selected = [];
-                for (var i = 0; i < self.currentTiles.length; i++) {
-                    if (self.currentTiles[i].matchAttempt.isSelected) {
-                        selected.push(i);
-                    }
-                }
-                return selected;
-            };
-            GameService.prototype.isTileBlocked = function (tile) {
-                return tile.isTileBlockedBy(this.currentTiles);
-            };
             return GameService;
         }());
         Service.GameService = GameService;
@@ -625,28 +611,28 @@ var Application;
     var Service;
     (function (Service) {
         'use strict';
-        var UserService = (function () {
-            function UserService(configuration) {
+        var AuthService = (function () {
+            function AuthService(configuration) {
                 this.configuration = configuration;
                 this.user = {
                     name: 'fs.karsodimedjo@student.avans.nl',
                     token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.ImZzLmthcnNvZGltZWRqb0BzdHVkZW50LmF2YW5zLm5sIg.htVG8dEuA4EM89b_HwwLUWh9qv_vPzO_fHRDEFna8qI'
                 };
             }
-            UserService.prototype.authenticationUrl = function () {
+            AuthService.prototype.authenticationUrl = function () {
                 var callback = encodeURIComponent(this.configuration.baseUrl + this.configuration.authCallback);
                 return this.configuration.apiUrl + '/auth/avans?callbackUrl=' + callback;
             };
-            UserService.prototype.setUser = function (username, token) {
+            AuthService.prototype.setUser = function (username, token) {
                 this.user.name = username;
                 this.user.token = token;
             };
-            UserService.prototype.isLoggedIn = function () {
+            AuthService.prototype.isLoggedIn = function () {
                 return this.user.name && this.user.token;
             };
-            return UserService;
+            return AuthService;
         }());
-        Service.UserService = UserService;
+        Service.AuthService = AuthService;
     })(Service = Application.Service || (Application.Service = {}));
 })(Application || (Application = {}));
 var Application;
@@ -664,7 +650,6 @@ var Application;
                     if (UserService.user && UserService.user.name && UserService.user.token) {
                         config.headers["x-username"] = UserService.user.name;
                         config.headers["x-token"] = UserService.user.token;
-                        config.headers["content-type"] = "application/json;charset=UTF-8";
                     }
                     return config;
                 }
@@ -834,7 +819,23 @@ var Application;
                     url: "/index",
                     views: {
                         "viewSidePanel": { templateUrl: "partials/empty.html" },
-                        "viewMainPanel": { templateUrl: "partials/index.html" }
+                        "viewMainPanel": {
+                            templateUrl: "partials/index.html",
+                            controller: function () {
+                                var socket = io('http://mahjongmayhem.herokuapp.com?gameId=575e8feab62cb21100dc6275');
+                                socket.on('start', function () {
+                                    console.log('game started');
+                                }).on('end', function () {
+                                    console.log('game ended');
+                                }).on('playerJoined', function (player) {
+                                    console.log('player joined');
+                                    console.log(player);
+                                }).on('match', function (matchedTiles) {
+                                    console.log('match made');
+                                    console.log(matchedTiles);
+                                });
+                            }
+                        }
                     }
                 });
             };
@@ -872,8 +873,19 @@ var Application;
                     .state('game', {
                     url: "/game/{id}",
                     views: {
-                        "viewSidePanel": { templateUrl: "partials/empty.html" },
-                        "viewBigPanel": { templateUrl: "partials/gameBoard.html" }
+                        "viewSidePanel": {
+                            templateUrl: "partials/game.html",
+                            controller: function (GameService, GameListService) {
+                                GameService.currentGame = GameListService.currentGame;
+                                this.GameService = GameService;
+                            },
+                            controllerAs: 'gameCtrl'
+                        },
+                        "viewMainPanel": {
+                            templateUrl: 'partials/game-board.html',
+                            controller: 'gameController',
+                            controllerAs: 'gameCtrl'
+                        }
                     },
                     resolve: {
                         game: function (GameListService, $stateParams) {
@@ -882,15 +894,39 @@ var Application;
                     },
                     data: {}
                 })
+                    .state('board', {
+                    url: "/game/{id}/board",
+                    views: {
+                        "viewSidePanel": { templateUrl: "partials/game.html" },
+                        "viewMainPanel": { templateUrl: "partials/game-board.html" }
+                    },
+                    resolve: {
+                        game: function (GameListService, $stateParams) {
+                            return GameListService.read($stateParams.id);
+                        }
+                    },
+                })
                     .state('matched', {
-                    url: "/matched",
+                    url: "/game/{id}/matched",
                     views: {
                         "viewSidePanel": { templateUrl: "partials/empty.html" },
                         "viewBigPanel": { templateUrl: "partials/matched.html" }
                     },
                     resolve: {
-                        tiles: function (GameService, $stateParams) {
-                            return GameService.tiles($stateParams.id);
+                        game: function (GameListService, $stateParams) {
+                            return GameListService.read($stateParams.id);
+                        }
+                    }
+                })
+                    .state('view', {
+                    url: "/game/{id}/view",
+                    views: {
+                        "viewSidePanel": { templateUrl: "partials/empty.html" },
+                        "viewBigPanel": { templateUrl: "partials/empty.html" }
+                    },
+                    resolve: {
+                        game: function (GameListService, $stateParams) {
+                            return GameListService.read($stateParams.id);
                         }
                     }
                 });
@@ -981,6 +1017,8 @@ var Application;
                 this.authCallback = "/#/authCallback";
                 this.baseUrl = "http://localhost:3000";
                 this.apiUrl = "http://mahjongmayhem.herokuapp.com";
+                this.minPlayers = 1;
+                this.maxPlayers = 32;
             }
             return Configuration;
         }());
@@ -999,9 +1037,10 @@ var Application;
     mahjongMadness.factory('httpRequestInterceptor', Application.Factory.HttpInterceptorFactory);
     mahjongMadness.config(Application.Config.RouterFactory);
     mahjongMadness.config(Application.Config.InitializerFactory);
-    mahjongMadness.run(function ($rootScope, $state, UserService) {
+    mahjongMadness.run(function ($rootScope, $state, AuthService) {
         $rootScope.$on("$stateChangeStart", function (event, toState, toParams, fromState, fromParams) {
-            if (toState.data && toState.data.authenticate && !UserService.isLoggedIn()) {
+            if (toState.data && toState.data.reqAuth && !AuthService.isLoggedIn()) {
+                alert('u\'r nut uthuntucutud, u\'ll bu ruduructud tu lugun.');
                 $state.transitionTo("login");
                 event.preventDefault();
             }
@@ -1013,9 +1052,11 @@ var Application;
     mahjongMadness.directive('gameitem', Application.Directive.GameItemDirective.Factory());
     mahjongMadness.filter('ownedGames', Application.Filter.OwnedGames.Factory());
     mahjongMadness.service('ApplicationService', Application.Service.ApplicationService);
+    mahjongMadness.service('StorageService', Application.Service.StorageService);
     mahjongMadness.service('GameListService', Application.Service.GameListService);
-    mahjongMadness.service('UserService', Application.Service.UserService);
+    mahjongMadness.service('AuthService', Application.Service.AuthService);
     mahjongMadness.service('GameService', Application.Service.GameService);
+    mahjongMadness.controller('appController', Application.Controllers.AppController);
     mahjongMadness.controller('gameListController', Application.Controllers.GameListController);
     mahjongMadness.controller('gameController', Application.Controllers.GameController);
     mahjongMadness.controller('navigationController', Application.Controllers.NavigationController);

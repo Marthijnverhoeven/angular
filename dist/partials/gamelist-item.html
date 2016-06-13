@@ -1,6 +1,9 @@
-<a class="list-group-item" ui-sref="game({ id: game._id })">
-	<h4></h4>
-	<strong>Created By: {{ game.createdBy.name }} </strong><br/>
+<li class="list-group-item">
+	<div>
+		<a ui-sref="game({ id: game._id })" class="btn btn-primary">Open</a>
+		<button type="button" ng-click="gameList.joinGame(game)" ng-disabled="!gameList.canJoinGame(game)" class="btn btn-primary">Join</button>
+	</div>
+	<h5>Created By: {{ game.createdBy.name }} </h5><br/>
 	<p>
 		Template: {{ game.gameTemplate._id }}<br />
 		State: {{ game.state }}<br />
@@ -11,4 +14,4 @@
 		<li class="list-group-item active"><h4>Current players ({{ game.players.length }})</h4></li>
 		<li class="list-group-item" ng-repeat="player in game.players">{{ player.name }}</li>
 	</ul>
-</div>
+</li>

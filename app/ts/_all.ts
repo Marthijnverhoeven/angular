@@ -2,14 +2,16 @@
 /// <reference path='../models/Tile.ts' />
 /// <reference path='../models/User.ts' />
 
+/// <reference path='../controllers/AppController.ts' />
 /// <reference path='../controllers/GameListController.ts' />
 /// <reference path='../controllers/GameController.ts' />
 /// <reference path='../controllers/NavigationController.ts' />
 
 /// <reference path='../services/ApplicationService.ts' />
+/// <reference path='../services/StorageService.ts' />
 /// <reference path='../services/GameListService.ts' />
 /// <reference path='../services/GameService.ts' />
-/// <reference path='../services/UserService.ts' />
+/// <reference path='../services/AuthService.ts' />
 
 /// <reference path='../factories/HttpInterceptorFactory.ts' />
 
@@ -31,3 +33,4 @@
 /// <reference path='../../external/angularjs/angular-route.d.ts' />
 /// <reference path='../../external/angular-ui-router/angular-ui-router.d.ts' />
 /// <reference path='../../external/underscore/underscore.d.ts' />
+/// <reference path='../../external/socket.io/socket.io.d.ts' />

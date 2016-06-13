@@ -4,6 +4,9 @@ namespace Application.Config
 {
 	'use strict'
 	
+	// Globals
+	declare var io: SocketIOStatic;
+	
 	export class Router
 	{		
 		constructor(
@@ -27,7 +30,36 @@ namespace Application.Config
 					url: "/index",
 					views: {
 						"viewSidePanel": { templateUrl: "partials/empty.html" },
-						"viewMainPanel": { templateUrl: "partials/index.html" }
+						"viewMainPanel":
+						{
+							templateUrl: "partials/index.html",
+							controller: function()
+							{
+								var socket = io('http://mahjongmayhem.herokuapp.com?gameId=575e8feab62cb21100dc6275');
+								// start, end, playerJoined, match
+								socket.on('start', () =>
+								{
+									console.log('game started');
+								}).on('end', () =>
+								{
+									console.log('game ended');
+								}).on('playerJoined', (player) =>
+								{
+									console.log('player joined');
+									console.log(player);	
+								}).on('match', (matchedTiles) =>
+								{
+									console.log('match made');
+									console.log(matchedTiles);
+								});
+								
+								// 
+								// $scope.$on('$destroy', () =>
+								// {
+								// 	socket.close();
+								// });
+							} 
+						}
 					}
 				});
 		}
@@ -71,10 +103,21 @@ namespace Application.Config
 			this.$stateProvider
 				.state('game', {
 					url: "/game/{id}",
-					// params: { },
 					views: {
-						"viewSidePanel": { templateUrl: "partials/empty.html" },
-						"viewBigPanel": { templateUrl: "partials/gameBoard.html" }
+						"viewSidePanel": {
+							templateUrl: "partials/game.html",
+							controller: function(GameService: Application.Service.GameService, GameListService: Application.Service.GameListService)
+							{
+								GameService.currentGame = GameListService.currentGame;
+								this.GameService = GameService;
+							},
+							controllerAs: 'gameCtrl'
+						},
+						"viewMainPanel": {
+							templateUrl: 'partials/game-board.html',
+							controller: 'gameController',
+							controllerAs: 'gameCtrl'
+						}
 					},
 					resolve: {
 						game: function(GameListService: Application.Service.GameListService, $stateParams)
@@ -86,17 +129,43 @@ namespace Application.Config
 						// authenticate: true
 					}
 				})
+				.state('board', {
+					url: "/game/{id}/board",
+					views: {
+						"viewSidePanel": { templateUrl: "partials/game.html" },
+						"viewMainPanel": { templateUrl: "partials/game-board.html" }
+					},
+					resolve: {
+						game: function(GameListService: Application.Service.GameListService, $stateParams)
+						{
+							return GameListService.read($stateParams.id);
+						}
+					},
+				})
 				.state('matched', {
-					url: "/matched",
+					url: "/game/{id}/matched",
 					// params: { },
 					views: {
 						"viewSidePanel": { templateUrl: "partials/empty.html" },
 						"viewBigPanel": { templateUrl: "partials/matched.html" }
 					},
 					resolve: {
-						tiles: function(GameService: Application.Service.GameService, $stateParams)
+						game: function(GameListService: Application.Service.GameListService, $stateParams)
 						{
-							return GameService.tiles($stateParams.id);
+							return GameListService.read($stateParams.id);
+						}
+					}
+				})
+				.state('view', {
+					url: "/game/{id}/view",
+					views: {
+						"viewSidePanel": { templateUrl: "partials/empty.html" },
+						"viewBigPanel": { templateUrl: "partials/empty.html" }
+					},
+					resolve: {
+						game: function(GameListService: Application.Service.GameListService, $stateParams)
+						{
+							return GameListService.read($stateParams.id);
 						}
 					}
 				});

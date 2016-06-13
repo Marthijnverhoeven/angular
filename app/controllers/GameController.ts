@@ -8,14 +8,10 @@ namespace Application.Controllers
 			public UserService,
 			public GameListService: Application.Service.GameListService,
 			public GameService: Application.Service.GameService,
+			private $state: angular.ui.IStateService,
 			private $stateParams,
 			private $scope)
 		{
-			if($stateParams.id === 0) {
-				$stateParams.id = '5541fc5b1872631100678bb4';
-			}
-			
-			console.log(this.GameListService.currentGame);
 			this.GameService.tiles(this.GameListService.currentGame.id);
 		}
 		
@@ -24,23 +20,22 @@ namespace Application.Controllers
 			return this.GameListService.currentGame;
 		}
 		
-		public matchesExist()
+		public canStartGame() : boolean
 		{
-			var self = this;
-			// self.TileService.matchesExist(self.game, function(err, res) {
-				
-			// });
+			return true;
 		}
 		
-		public logSelectedTiles()
+		public startGame(game: Application.Model.Game) : void
 		{
-			for(var tile of this.GameService.currentTiles)
-			{
-				if(tile.matchAttempt.isSelected)
-				{
-					console.log(tile);
+			this.GameService.start(game._id,
+				(id) => {
+					this.$state.go('game', { id: id });
+				},
+				(error) => {
+					alert('error @GameController.startGame');
+					console.error(error);
 				}
-			}
+			);
 		}
 	}
 }

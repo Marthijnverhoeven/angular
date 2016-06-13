@@ -9,11 +9,11 @@
 	</div>
 	<div class="form-group">
 		<label for="minPlayers">Minimum player count</label>
-		<input class="form-control" type="number" min="2" max="32" name="minPlayers" value="2" ng-model="newGame.minPlayers" />
+		<input class="form-control" type="number" min="{{ app.getMinPlayers() }}" max="{{ app.getMaxPlayers() }}" name="minPlayers" ng-model="newGame.minPlayers" />
 	</div>
 	<div class="form-group">
 		<label for="maxPlayers">Maximum player count</label>
-		<input class="form-control" type="number" min="2" max="32" name="maxPlayers" value="4" ng-model="newGame.maxPlayers" />
+		<input class="form-control" type="number" min="{{ app.getMinPlayers() }}" max="{{ app.getMaxPlayers() }}" name="maxPlayers" ng-model="newGame.maxPlayers" />
 	</div>
 	<button class="btn btn-primary"
 		ng-disabled="!gameList.canCreateGame(newGame.template, newGame.minPlayers, newGame.maxPlayers)" 
