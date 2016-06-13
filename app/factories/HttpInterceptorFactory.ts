@@ -34,7 +34,9 @@ namespace Application.Factory
 					console.log('request made: ' + config.url);
 				}
 				if (UserService.user && UserService.user.name && UserService.user.token) {
-					config.headers = { "x-username": UserService.user.name, "x-token": UserService.user.token };
+					config.headers["x-username"] = UserService.user.name;
+					 config.headers["x-token"] = UserService.user.token;
+					 config.headers["content-type"] = "application/json;charset=UTF-8";
 				}
 				return config;
 			}

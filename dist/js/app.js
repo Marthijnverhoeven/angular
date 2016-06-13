@@ -101,7 +101,8 @@ var Application;
                 }
                 return ((self.xPos - 1 === tile.xPos || self.xPos === tile.xPos || self.xPos + 1 === tile.xPos)
                     && (self.yPos - 1 === tile.yPos || self.yPos === tile.yPos || self.yPos + 1 === tile.yPos)
-                    && (self.zPos + 1 === tile.zPos));
+                    && (self.zPos + 1 === tile.zPos)
+                    && !tile.matchAttempt.isMatched);
             };
             Tile.prototype.isTileBlockedOnTheSideBy = function (tile) {
                 var self = this;
@@ -110,13 +111,14 @@ var Application;
                 }
                 return ((self.xPos - 2 === tile.xPos || self.xPos + 2 === tile.xPos)
                     && (self.yPos - 1 === tile.yPos || self.yPos === tile.yPos || self.yPos + 1 === tile.yPos)
-                    && (self.zPos === tile.zPos));
+                    && (self.zPos === tile.zPos
+                        && !tile.matchAttempt.isMatched));
             };
             Tile.prototype.isTileBlockedBy = function (tiles) {
                 var self = this;
                 for (var _i = 0, tiles_1 = tiles; _i < tiles_1.length; _i++) {
                     var tile = tiles_1[_i];
-                    if (self.isTileBlockedOnTopBy(tile) || this.isTileBlockedOnTheSideBy(tile)) {
+                    if (self.isTileBlockedOnTopBy(tile) || self.isTileBlockedOnTheSideBy(tile)) {
                         return true;
                     }
                 }
@@ -205,7 +207,7 @@ var Application;
                 this.GameService.tiles(this.GameListService.currentGame.id);
             }
             GameController.prototype.currentGame = function () {
-                return this.$scope.selected;
+                return this.GameListService.currentGame;
             };
             GameController.prototype.matchesExist = function () {
                 var self = this;
@@ -618,7 +620,9 @@ var Application;
                         console.log('request made: ' + config.url);
                     }
                     if (UserService.user && UserService.user.name && UserService.user.token) {
-                        config.headers = { "x-username": UserService.user.name, "x-token": UserService.user.token };
+                        config.headers["x-username"] = UserService.user.name;
+                        config.headers["x-token"] = UserService.user.token;
+                        config.headers["content-type"] = "application/json;charset=UTF-8";
                     }
                     return config;
                 }
