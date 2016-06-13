@@ -10,8 +10,13 @@ namespace Application.Controllers
 		private navigationDictionary = {
 			'index' 			: { title: 'Index', 	items: this.getItemsWithActive("index") },
 			'login' 			: { title: 'Login', 	items: this.getItemsWithActive("login") },
+			'game' 				: { title: 'Game X', 	items: this.getItemsWithActive("game") },
 			'allGames' 			: { title: 'All games', items: this.getItemsWithActive("allGames") },
 			'myGames' 			: { title: 'My games', 	items: this.getItemsWithActive("myGames") }
+		}
+		
+		private subDictionary = {
+			'game' 				: { title: 'Game X', 	items: this.getItemsWithActive(null) }
 		}
 		
 		constructor(private $state, private $scope, public UserService)
@@ -44,6 +49,9 @@ namespace Application.Controllers
 				{ label: 'All games', 	state: 'allGames' },
 				{ label: 'My games', 	state: 'myGames' }
 			];
+			
+			if(!active)
+				return items;
 			
 			var activeAdded = false;
 			for(var i = 0; i < items.length; i++)

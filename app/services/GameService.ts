@@ -179,7 +179,7 @@ namespace Application.Service
 				tile.matchAttempt.isBlocked = tile.isTileBlockedBy(this.currentTiles);
 				if(blocked !== tile.matchAttempt.isBlocked)
 				{
-					console.log('chagned');
+					console.log('chagned'); 
 				} 
 			}
 		}

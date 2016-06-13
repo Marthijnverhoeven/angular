@@ -31,3 +31,4 @@
 /// <reference path='../../external/angularjs/angular-route.d.ts' />
 /// <reference path='../../external/angular-ui-router/angular-ui-router.d.ts' />
 /// <reference path='../../external/underscore/underscore.d.ts' />
+/// <reference path='../../external/socket.io/socket.io.d.ts' />
