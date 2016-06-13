@@ -533,6 +533,7 @@ var Application;
                             tile2.matchAttempt.isMatched = true;
                             tile1.matchAttempt.isSelected = false;
                             tile2.matchAttempt.isSelected = false;
+                            this.recheckBlockedTiles();
                             return;
                         }
                         console.log('no match');
@@ -544,6 +545,16 @@ var Application;
                     console.log('misc');
                     tile.matchAttempt.isSelected = true;
                     return;
+                }
+            };
+            GameService.prototype.recheckBlockedTiles = function () {
+                for (var _i = 0, _a = this.currentTiles; _i < _a.length; _i++) {
+                    var tile = _a[_i];
+                    var blocked = tile.matchAttempt.isBlocked;
+                    tile.matchAttempt.isBlocked = tile.isTileBlockedBy(this.currentTiles);
+                    if (blocked !== tile.matchAttempt.isBlocked) {
+                        console.log('chagned');
+                    }
                 }
             };
             GameService.prototype.canAddMatch = function (tile) {
