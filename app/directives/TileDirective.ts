@@ -73,6 +73,7 @@ namespace Application.Directive
 				if(!tile.matchAttempt.isSelected && !GameService.canAddMatch(tile))
 					return;
 				GameService.matchTile(tile);
+				// tile.matchAttempt.isBlocked = GameService.isTileBlocked(tile);
 			}
 		} 
 	}
