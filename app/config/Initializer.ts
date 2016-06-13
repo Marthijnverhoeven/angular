@@ -4,7 +4,7 @@ namespace Application.Config
 {
 	'use strict'
 	
-	declare var io: SocketIO.Client;
+	// declare var io: SocketIO.Client;
 	
 	export class Initializer
 	{
