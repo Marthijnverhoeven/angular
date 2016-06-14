@@ -228,8 +228,6 @@ var Application;
                 if ($stateParams.id === 0) {
                     $stateParams.id = '5541fc5b1872631100678bb4';
                 }
-                console.log("beepboop: " + this.GameListService);
-                console.log("beepboop: " + this.GameListService.currentGame);
                 this.GameService.tiles(this.GameListService.currentGame.id);
             }
             GameController.prototype.currentGame = function () {
