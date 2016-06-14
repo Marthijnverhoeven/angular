@@ -263,7 +263,8 @@ var Application;
                     'login': { title: 'Login', items: this.getItemsWithActive("login") },
                     'game': { title: 'Game X', items: this.getItemsWithActive("game") },
                     'allGames': { title: 'All games', items: this.getItemsWithActive("allGames") },
-                    'myGames': { title: 'My games', items: this.getItemsWithActive("myGames") }
+                    'myGames': { title: 'My games', items: this.getItemsWithActive("myGames") },
+                    'settings': { title: 'Settings', items: this.getItemsWithActive("settings") }
                 };
                 this.subDictionary = {
                     'game': { title: 'Game X', items: this.getItemsWithActive(null) }
@@ -288,7 +289,8 @@ var Application;
                     { label: 'Index', state: 'index' },
                     { label: 'Login', state: 'login' },
                     { label: 'All games', state: 'allGames' },
-                    { label: 'My games', state: 'myGames' }
+                    { label: 'My games', state: 'myGames' },
+                    { label: 'Settings', state: 'settings' }
                 ];
                 if (!active)
                     return items;
@@ -308,6 +310,47 @@ var Application;
             return NavigationController;
         }());
         Controllers.NavigationController = NavigationController;
+    })(Controllers = Application.Controllers || (Application.Controllers = {}));
+})(Application || (Application = {}));
+var Application;
+(function (Application) {
+    var Controllers;
+    (function (Controllers) {
+        var StyleController = (function () {
+            function StyleController($state, $scope, StorageService) {
+                this.$state = $state;
+                this.$scope = $scope;
+                this.StorageService = StorageService;
+                this.availableStyles = [
+                    { key: "app.css", name: "App", url: "css/app.css" },
+                    { key: "alt.css", name: "Alt", url: "css/alt.css" }
+                ];
+                this.currentStyle = {};
+                this.getCurrentStyle();
+            }
+            StyleController.prototype.getCurrentStyle = function () {
+                var style;
+                if (style = this.StorageService.retrieve("style")) {
+                    this.currentStyle = style;
+                }
+                else {
+                    this.StorageService.store("style", this.availableStyles[0]);
+                }
+            };
+            StyleController.prototype.getAvailableStyles = function () {
+                return this.availableStyles;
+            };
+            StyleController.prototype.setCurrentStyle = function () {
+                for (var i = 0; i < this.availableStyles.length; i++) {
+                    if (this.availableStyles[i].key == this.selectedStyle) {
+                        this.StorageService.store("style", this.availableStyles[i]);
+                        this.currentStyle = this.availableStyles[i];
+                    }
+                }
+            };
+            return StyleController;
+        }());
+        Controllers.StyleController = StyleController;
     })(Controllers = Application.Controllers || (Application.Controllers = {}));
 })(Application || (Application = {}));
 var Application;
@@ -650,6 +693,37 @@ var Application;
 })(Application || (Application = {}));
 var Application;
 (function (Application) {
+    var Service;
+    (function (Service) {
+        'use strict';
+        var StorageService = (function () {
+            function StorageService() {
+                this.storage = localStorage;
+            }
+            StorageService.prototype.store = function (key, value) {
+                var item = this.storage.getItem(key);
+                if (!!item) {
+                    this.storage.removeItem(key);
+                }
+                return this.storage.setItem(key, JSON.stringify(value));
+            };
+            StorageService.prototype.retrieve = function (key) {
+                var item = this.storage.getItem(key);
+                if (!!item) {
+                    return JSON.parse(item);
+                }
+                return null;
+            };
+            StorageService.prototype.remove = function (key) {
+                return this.storage.removeItem(key);
+            };
+            return StorageService;
+        }());
+        Service.StorageService = StorageService;
+    })(Service = Application.Service || (Application.Service = {}));
+})(Application || (Application = {}));
+var Application;
+(function (Application) {
     var Factory;
     (function (Factory) {
         'use strict';
@@ -833,7 +907,22 @@ var Application;
                     url: "/index",
                     views: {
                         "viewSidePanel": { templateUrl: "partials/empty.html" },
-                        "viewMainPanel": { templateUrl: "partials/index.html" }
+                        "viewMainPanel": { templateUrl: "partials/index.html", controller: function ($http) {
+                                $http({
+                                    url: 'partials/',
+                                    method: 'GET'
+                                }).then(function (data) {
+                                    console.log(data);
+                                }, function (err) {
+                                    console.log(err);
+                                });
+                            } },
+                    }
+                }).state('settings', {
+                    url: "/settings",
+                    views: {
+                        "viewSidePanel": { templateUrl: "partials/empty.html" },
+                        "viewMainPanel": { templateUrl: "partials/style.html" }
                     }
                 });
             };
@@ -1015,8 +1104,10 @@ var Application;
     mahjongMadness.service('GameListService', Application.Service.GameListService);
     mahjongMadness.service('UserService', Application.Service.UserService);
     mahjongMadness.service('GameService', Application.Service.GameService);
+    mahjongMadness.service('StorageService', Application.Service.StorageService);
     mahjongMadness.controller('gameListController', Application.Controllers.GameListController);
     mahjongMadness.controller('gameController', Application.Controllers.GameController);
     mahjongMadness.controller('navigationController', Application.Controllers.NavigationController);
+    mahjongMadness.controller('styleController', Application.Controllers.StyleController);
 })(Application || (Application = {}));
 //# sourceMappingURL=app.js.map
