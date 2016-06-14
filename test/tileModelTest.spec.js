@@ -56,6 +56,12 @@ describe("Tile Model Test", function() {
 
 		var tiles = [tile1, tile2, tile3, tile4];
 
+		//Expecting tile1 to be blocked on the left by tile2
+		expect(tile1.isTileBlockedOnTheLeftBy(tile2)).to.be.true;
+
+		//Expecting tile1 to not be blocked on the right by tile2
+		expect(tile1.isTileBlockedOnTheRightBy(tile2)).to.be.false;
+
 		//Expecting tile1 being blocked on the side by the tiles in the list
 		expect(tile1.isTileBlockedOnTheSideBy(tiles)).to.be.true;
 

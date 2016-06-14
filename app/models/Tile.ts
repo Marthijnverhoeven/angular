@@ -92,7 +92,7 @@ namespace Application.Model
 		}
 
 
-		public isTileBlockedOnTheLeftBy(tile: Tile) : boolean
+		public isTileBlockedOnTheRightBy(tile: Tile) : boolean
 		{
 			var self = this;
 
@@ -100,14 +100,13 @@ namespace Application.Model
 			if(self.xPos === tile.xPos && self.yPos === tile.yPos && self.zPos === tile.zPos) {
 				return false;
 			}
-
 			return ((self.xPos + 2 === tile.xPos)
 				&& (self.yPos - 1 === tile.yPos || self.yPos === tile.yPos || self.yPos + 1 === tile.yPos)
 				&& (self.zPos === tile.zPos)
 				&& !tile.matchAttempt.isMatched);
 		}
 
-		public isTileBlockedOnTheRightBy(tile: Tile) : boolean
+		public isTileBlockedOnTheLeftBy(tile: Tile) : boolean
 		{
 			var self = this;
 
