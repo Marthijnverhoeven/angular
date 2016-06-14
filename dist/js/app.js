@@ -119,7 +119,7 @@ var Application;
                 }
                 return (rightFound && leftFound);
             };
-            Tile.prototype.isTileBlockedOnTheLeftBy = function (tile) {
+            Tile.prototype.isTileBlockedOnTheRightBy = function (tile) {
                 var self = this;
                 if (self.xPos === tile.xPos && self.yPos === tile.yPos && self.zPos === tile.zPos) {
                     return false;
@@ -129,7 +129,7 @@ var Application;
                     && (self.zPos === tile.zPos)
                     && !tile.matchAttempt.isMatched);
             };
-            Tile.prototype.isTileBlockedOnTheRightBy = function (tile) {
+            Tile.prototype.isTileBlockedOnTheLeftBy = function (tile) {
                 var self = this;
                 if (self.xPos === tile.xPos && self.yPos === tile.yPos && self.zPos === tile.zPos) {
                     return false;
