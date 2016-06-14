@@ -1,3 +1,8 @@
+.view-game {
+  color: red;
+  font-size: 1em;
+  font-weight: strong; }
+
 #board {
   position: relative; }
   #board .tile {

@@ -1,13 +1,13 @@
-<div id="view-game">
-	<h4>Created by: {{ gameCtrl.GameService.currentGame.createdBy.name }}</h4>
+<div class="view-game">
+	<h4>Created by: {{ gameCtrl.currentGame.createdBy.name }}</h4>
 	<p>
-		Template: {{ game.gameTemplate._id }}<br />
-		State: {{ game.state }}<br />
-		Min players: {{ game.minPlayers }}<br />
-		Max players: {{ game.maxPlayers }}<br />
+		Template: {{ gameCtrl.currentGame.gameTemplate._id }}<br />
+		State: {{ gameCtrl.currentGame.state }}<br />
+		Min players: {{ gameCtrl.currentGame.minPlayers }}<br />
+		Max players: {{ gameCtrl.currentGame.maxPlayers }}<br />
 	</p>
 	<ul class="list-group">
-		<li class="list-group-item active"><h4>Current players ({{ game.players.length }})</h4></li>
-		<li class="list-group-item" ng-repeat="player in game.players">{{ player.name }}</li>
+		<li class="list-group-item active"><h4>Current players ({{ gameCtrl.currentGame.players.length }})</h4></li>
+		<li class="list-group-item" ng-repeat="player in gameCtrl.currentGame.players">{{ player.name }}</li>
 	</ul>
 </div>

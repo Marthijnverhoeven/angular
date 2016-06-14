@@ -19,7 +19,7 @@ namespace Application.Controllers
 			'game' 				: { title: 'Game X', 	items: this.getItemsWithActive(null) }
 		}
 		
-		constructor(private $state, private $scope, public UserService)
+		constructor(private $state, private $scope, public AuthService: Application.Service.AuthService)
 		{
 			console.log('nav ctor');
 			var self = this;

@@ -36,7 +36,6 @@ namespace Application.Model
 		id: string;
 		
 		tiles: Tile[];
-		matched: Tile[];
 		
 		constructor(literal: any)
 		{
@@ -77,8 +76,12 @@ namespace Application.Model
 				matchedList[player.name] = [];
 			}
 
-			for(var tile of this.matched) {
-				matchedList[tile.match.foundBy].push(tile);
+			for(var tile of this.tiles) {
+				if(!!tile.match && !!tile.match.foundBy)
+				{
+					matchedList[tile.match.foundBy].push(tile);
+				}
+				
 			}
 
 			return matchedList;
@@ -86,7 +89,7 @@ namespace Application.Model
 		
 		// FSK
 		
-		public matchTile(tile: Tile, tiles: Tile[], onMatch: (tile1: Tile, tile2: Tile) => void) : void
+		public matchTile(tile: Tile, onMatch: (tile1: Tile, tile2: Tile) => void) : void
 		{
 			var self = this;
 			
@@ -99,25 +102,24 @@ namespace Application.Model
 			else // tile.matchAttempt.isSelected === false 
 			{
 				tile.matchAttempt.isSelected = true;
-				var selected = this.getSelectedIndice(tiles);
+				
+				var selected = self.getSelectedIndice();
 				if(selected.length == 2)
 				{
-					var tile1 = tiles[selected[0]];
-					var tile2 = tiles[selected[1]];
+					var tile1 = self.tiles[selected[0]];
+					var tile2 = self.tiles[selected[1]];
 					if(tile1.canMatch(tile2))
 					{
-						// todo: match tiles
 						console.log('match');
 						tile1.matchAttempt.isMatched = true;
 						tile2.matchAttempt.isMatched = true;
 						tile1.matchAttempt.isSelected = false;
 						tile2.matchAttempt.isSelected = false;
 						onMatch(tile1, tile2);
-						this.recheckBlockedTiles(tiles);
+						self.resetBlockedTiles();
 						return;
 					}
 					console.log('no match');
-					console.log(tile1, tile2);
 					tile1.matchAttempt.isSelected = false;
 					tile2.matchAttempt.isSelected = false;
 					return;
@@ -128,27 +130,23 @@ namespace Application.Model
 			}
 		}
 		
-		private recheckBlockedTiles(tiles: Tile[])
+		private resetBlockedTiles()
 		{
-			for(var tile of tiles)
+			var self = this;
+			for(var tile of self.tiles)
 			{				
-				var blocked = tile.matchAttempt.isBlocked;
-				tile.matchAttempt.isBlocked = tile.isTileBlockedBy(tiles);
-				if(blocked !== tile.matchAttempt.isBlocked)
-				{
-					console.log('chagned'); 
-				} 
+				tile.isTileBlockedBy(self.tiles);
 			}
 		}
 		
-		public canAddMatch(tiles: Tile[]) : boolean
+		public canAddMatch() : boolean
 		{
-			return this.getSelectedIndice(tiles).length < 2;
+			return this.getSelectedIndice().length < 2;
 		}
 		
-		public getTile(id: string, tiles: Tile[]) : Tile
+		public getTile(id: string) : Tile
 		{
-			for(var tile of tiles)
+			for(var tile of this.tiles)
 			{
 				if(tile._id === id)
 				{
@@ -157,13 +155,13 @@ namespace Application.Model
 			}
 		}
 		
-		private getSelectedIndice(tiles: Tile[]) : string[]
+		private getSelectedIndice() : string[]
 		{
 			var self = this,
 				selected = [];
-			for(var i = 0; i < tiles.length; i++)
+			for(var i = 0; i < self.tiles.length; i++)
 			{
-				if(tiles[i].matchAttempt.isSelected)
+				if(self.tiles[i].matchAttempt.isSelected)
 				{
 					selected.push(i);
 				}
@@ -171,9 +169,9 @@ namespace Application.Model
 			return selected;
 		}
 		
-		public isTileBlocked(tile: Tile, tiles: Tile[]) : boolean
+		public isTileBlocked(tile: Tile) : boolean
 		{
-			return tile.isTileBlockedBy(tiles);
+			return tile.isTileBlockedBy(this.tiles);
 		}
 	}
 }

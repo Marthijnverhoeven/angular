@@ -7,7 +7,7 @@ namespace Application.Controllers
 	// Services
 	declare type GameListService = Application.Service.GameListService;
 	declare type GameService = Application.Service.GameService;
-	declare type UserService = Application.Service.UserService;
+	declare type AuthService = Application.Service.AuthService;
 	declare type ApplicationService = Application.Service.ApplicationService;
 	
 	// Models
@@ -22,7 +22,7 @@ namespace Application.Controllers
 		constructor(
 			private $scope,
 			private $state: angular.ui.IStateService,
-			public UserService: UserService,
+			public AuthService: AuthService,
 			public GameListService: GameListService,
 			public GameService: GameService,
 			public ApplicationService: ApplicationService)

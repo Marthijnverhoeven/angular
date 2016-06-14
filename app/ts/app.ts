@@ -48,8 +48,8 @@ namespace Application
 	mahjongMadness.constant('configuration', Application.Constant.ConfigurationFactory); 
 	
 	mahjongMadness.directive('tile', Application.Directive.TileDirectiveFactory);
-	mahjongMadness.directive('user', Application.Directive.UserDirective.Factory());
-	mahjongMadness.directive('gameitem', Application.Directive.GameItemDirective.Factory());
+	// mahjongMadness.directive('user', Application.Directive.UserDirective.Factory());
+	// mahjongMadness.directive('gameitem', Application.Directive.GameItemDirective.Factory());
 	
 	mahjongMadness.filter('ownedGames', Application.Filter.OwnedGames.Factory());
 	

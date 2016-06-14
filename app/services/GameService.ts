@@ -18,8 +18,13 @@ namespace Application.Service
 		{ }
 		
 		// GET - /games/{id}
-		public read(id : string, onSuccess: (game: Game) => void, onError: (error) => void) : angular.IPromise<Game>
+		public read(id : string, onSuccess?: (game: Game) => void, onError?: (error) => void) : angular.IPromise<Game>
 		{
+			var fallback = () => {};
+			
+			onError = onError || fallback;
+			onSuccess = onSuccess || fallback;
+			
 			var self = this;
 			return self.request<Game>(
 				'GET',
@@ -50,21 +55,29 @@ namespace Application.Service
 		}
 		
 		// POST - /games/{id}/players
-		public join(id : string, onSuccess: () => void, onError: (error) => void) : IPromise<any>
+		public join(id : string, onSuccess: (gameId: string) => void, onError: (error) => void) : IPromise<any>
 		{
 			var self = this;
 			return self.request(
 				'POST',
 				'/games/' + id + '/players',
 				null,
-				onSuccess,
+				(result: angular.IHttpPromiseCallbackArg<any>) =>
+				{
+					onSuccess(id);
+				},
 				onError			
 			);
 		}
 		
 		// GET - /games/{id}/tiles
-		public tiles(id : string, onSuccess: (tiles: Tile[]) => void, onError: (error) => void) : IPromise<Tile[]>
+		public tiles(id : string, onSuccess?: (tiles: Tile[]) => void, onError?: (error) => void) : IPromise<Tile[]>
 		{
+			var fallback = () => {};
+			
+			onSuccess = onSuccess || fallback;
+			onError = onError || fallback;
+			
 			var self = this;
 			return self.request(
 				'GET',
@@ -86,12 +99,13 @@ namespace Application.Service
 		// POST - /games/{id}/tiles/matches
 		public match(id : string, tile1Id: string, tile2Id: string, onSuccess: () => void, onError: (error) => void) : IPromise<any> 
 		{
+			console.log('match', tile1Id, tile2Id);
 			var self = this;
 			return self.request(
 				'POST',
 				'/games/' + id + '/tiles/matches',
 				{ tile1Id: tile1Id, tile2Id: tile2Id },
-				(result: angular.IHttpPromiseCallbackArg<any>) =>
+				(result: angular.IHttpPromiseCallbackArg<any>) => 
 				{
 					onSuccess();
 				},

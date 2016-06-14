@@ -12,12 +12,12 @@ namespace Application.Controllers
 			private $stateParams,
 			private $scope)
 		{
-			this.GameService.tiles(this.GameListService.currentGame.id);
+			// this.GameService.tiles(this.GameListService.currentGame.id);
 		}
 		
 		public currentGame()
 		{
-			return this.GameListService.currentGame;
+			// return this.GameListService.currentGame;
 		}
 		
 		public canStartGame() : boolean

@@ -15,7 +15,7 @@ namespace Application.Service
 		constructor(
 			private $http: IHttpService,
 			private configuration: Application.Constant.Configuration,
-			private UserService: Application.Service.UserService)
+			private AuthService: Application.Service.AuthService)
 		{ }
 		
 		// POST - /games
@@ -39,8 +39,13 @@ namespace Application.Service
 		}
 		
 		// GET - /games
-		public readAll(onSuccess: (games: Game[]) => void, onError: (error) => void) : angular.IPromise<Game[]>
+		public readAll(onSuccess?: (games: Game[]) => void, onError?: (error) => void) : angular.IPromise<Game[]>
 		{
+			var fallback = () => {};
+			
+			onSuccess = onSuccess || fallback;
+			onError = onError || fallback;
+			
 			var self = this;
 			return self.request<Game[]>(
 				'GET',
@@ -60,12 +65,17 @@ namespace Application.Service
 		}
 		
 		// GET - /games
-		public readCreated(onSuccess: (games: Game[]) => void, onError: (error) => void) : angular.IPromise<Game[]>
+		public readCreated(onSuccess?: (games: Game[]) => void, onError?: (error) => void) : angular.IPromise<Game[]>
 		{
+			var fallback = () => {};
+			
+			onSuccess = onSuccess || fallback;
+			onError = onError || fallback;
+			
 			var self = this;
 			return self.request<Game[]>(
 				'GET',
-				'/games?createdBy=' + self.UserService.user.name,
+				'/games?createdBy=' + self.AuthService.user.name,
 				null,
 				(result: angular.IHttpPromiseCallbackArg<Game[]>) =>
 				{

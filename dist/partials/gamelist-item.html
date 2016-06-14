@@ -1,7 +1,8 @@
 <li class="list-group-item">
 	<div>
 		<a ui-sref="game({ id: game._id })" class="btn btn-primary">Open</a>
-		<button type="button" ng-click="gameList.joinGame(game)" ng-disabled="!gameList.canJoinGame(game)" class="btn btn-primary">Join</button>
+		<button type="button" ng-disabled="!gamesCtrl.canJoinGame(game)" ng-click="gamesCtrl.joinGame(game)" class="btn btn-primary">Join</button>
+		<button type="button" ng-disabled="!gamesCtrl.canStartGame(game)" ng-click="gamesCtrl.startGame(game)" class="btn btn-primary">Start</button>
 	</div>
 	<h5>Created By: {{ game.createdBy.name }} </h5><br/>
 	<p>

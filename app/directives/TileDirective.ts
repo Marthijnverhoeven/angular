@@ -36,7 +36,8 @@ namespace Application.Directive
 	
 	export interface TileDirectiveScope extends ng.IScope
 	{
-		datasource: Application.Model.Tile,
+		t: Application.Model.Tile,
+		g: Application.Model.Game,
 		
 		click: () => void,
 		getEffects: () => string; //(isMatched: boolean, isBlocked: boolean, isSelected: boolean) => string
@@ -44,35 +45,59 @@ namespace Application.Directive
 	
 	export class TileDirective
 	{
-		public template = '<div ng-click="click()" class="tile {{ datasource.tile.suit }}-{{ datasource.tile.name }} {{ getEffects() }}" style="left: {{ datasource.xPos * 25 + (datasource.zPos * 8) }}; top: {{ datasource.yPos * (349/480*50) - (datasource.zPos * 8) }}; z-index: {{ datasource.zPos }}"></div>';
+		public template = '<div ng-click="click()" class="tile {{ t.tile.suit }}-{{ t.tile.name }} {{ getEffects() }}" style="left: {{ t.xPos * 25 + (t.zPos * 8) }}; top: {{ t.yPos * (349/480*50) - (t.zPos * 8) }}; z-index: {{ t.zPos }}"></div>';
 		public scope = {
-			datasource: '='
+			t: '=',
+			g: '='
 		};
 		
 		public controller($scope: TileDirectiveScope, GameService: Application.Service.GameService)//, BoardController: any)
 		{
-			var tile = GameService.getTile($scope.datasource._id);
-			tile.matchAttempt.isMatched = false;
-			tile.matchAttempt.isSelected = false;
-			tile.matchAttempt.isBlocked = GameService.isTileBlocked(tile);
+			// move to tile
+			// after tiles set, recheck on Block and Match
+			if($scope.t.match && $scope.t.match.foundBy)
+			{
+				$scope.t.matchAttempt.isMatched = true;
+			}
+			else 
+			{
+				$scope.t.matchAttempt.isMatched = false;
+			}
+			$scope.t.matchAttempt.isSelected = false;
+			$scope.t.matchAttempt.isBlocked = $scope.g.isTileBlocked($scope.t);
 			
 			$scope.getEffects = () : string =>
 			{
-				return tile.matchAttempt.isMatched
+				return $scope.t.matchAttempt.isMatched
 					? 'hidden' 
-					: (tile.matchAttempt.isBlocked
+					: ($scope.t.matchAttempt.isBlocked
 						? 'blocked'
-						: (tile.matchAttempt.isSelected
+						: ($scope.t.matchAttempt.isSelected
 							? 'selected'
 							: ''));
 			}		
 			$scope.click = () : void =>
 			{
-				if(tile.matchAttempt.isBlocked)
+				console.log($scope.t);
+				
+				if($scope.t.matchAttempt.isBlocked)
 					return;
-				if(!tile.matchAttempt.isSelected && !GameService.canAddMatch(tile))
+				if(!$scope.t.matchAttempt.isSelected && !$scope.g.canAddMatch())
 					return;
-				GameService.matchTile(tile);
+				$scope.g.matchTile($scope.t, (tile1: Application.Model.Tile, tile2: Application.Model.Tile) =>
+				{
+					GameService.match($scope.g._id, tile1._id, tile2._id,
+						() =>
+						{
+							console.log('match made');
+						},
+						(error) =>
+						{
+							alert('error');
+							console.error(error);
+						}
+					);
+				});
 				// tile.matchAttempt.isBlocked = GameService.isTileBlocked(tile);
 			}
 		} 

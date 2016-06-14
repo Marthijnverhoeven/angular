@@ -20,11 +20,11 @@ namespace Application.Factory
 {
 	'use strict'
 	
-	declare type UserService = Application.Service.UserService;
+	declare type AuthService = Application.Service.AuthService;
 	
 	export var $inject = ['UserService'];
 	
-	export function HttpInterceptorFactory(UserService: UserService)
+	export function HttpInterceptorFactory(AuthService: AuthService)
 	{
 		return {
 			'request': (config: angular.IRequestConfig) =>
@@ -33,10 +33,13 @@ namespace Application.Factory
 				{
 					console.log('request made: ' + config.url);
 				}
-				if (UserService.user && UserService.user.name && UserService.user.token) {
-					 config.headers["x-username"] = UserService.user.name;
-					 config.headers["x-token"] = UserService.user.token;
-					 // config.headers["content-type"] = "application/json;charset=UTF-8";
+				if (AuthService.user && AuthService.user.name && AuthService.user.token) {
+					if(!config.headers)
+					{
+						config.headers = {};
+					}
+					config.headers["x-username"] = AuthService.user.name;
+					config.headers["x-token"] = AuthService.user.token;
 				}
 				return config;
 			}

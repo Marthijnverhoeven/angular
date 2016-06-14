@@ -28,8 +28,13 @@ namespace Application.Service
 		}
 		
 		// GET - /gametemplates
-		public templates(onSuccess: (templates: Template[]) => void, onError: (error) => void) : IPromise<Template[]>
+		public templates(onSuccess?: (templates: Template[]) => void, onError?: (error) => void) : IPromise<Template[]>
 		{
+			var fallback = () => {};
+			
+			onSuccess = onSuccess || fallback;
+			onError = onError || fallback;
+			
 			var self = this;
 			return self.request<Template[]>(
 				'GET',

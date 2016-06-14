@@ -56,13 +56,15 @@ var Application;
                     var player = _a[_i];
                     matchedList[player.name] = [];
                 }
-                for (var _b = 0, _c = this.matched; _b < _c.length; _b++) {
+                for (var _b = 0, _c = this.tiles; _b < _c.length; _b++) {
                     var tile = _c[_b];
-                    matchedList[tile.match.foundBy].push(tile);
+                    if (!!tile.match && !!tile.match.foundBy) {
+                        matchedList[tile.match.foundBy].push(tile);
+                    }
                 }
                 return matchedList;
             };
-            Game.prototype.matchTile = function (tile, tiles, onMatch) {
+            Game.prototype.matchTile = function (tile, onMatch) {
                 var self = this;
                 if (tile.matchAttempt.isSelected) {
                     console.log('unselecting');
@@ -71,10 +73,10 @@ var Application;
                 }
                 else {
                     tile.matchAttempt.isSelected = true;
-                    var selected = this.getSelectedIndice(tiles);
+                    var selected = self.getSelectedIndice();
                     if (selected.length == 2) {
-                        var tile1 = tiles[selected[0]];
-                        var tile2 = tiles[selected[1]];
+                        var tile1 = self.tiles[selected[0]];
+                        var tile2 = self.tiles[selected[1]];
                         if (tile1.canMatch(tile2)) {
                             console.log('match');
                             tile1.matchAttempt.isMatched = true;
@@ -82,11 +84,10 @@ var Application;
                             tile1.matchAttempt.isSelected = false;
                             tile2.matchAttempt.isSelected = false;
                             onMatch(tile1, tile2);
-                            this.recheckBlockedTiles(tiles);
+                            self.resetBlockedTiles();
                             return;
                         }
                         console.log('no match');
-                        console.log(tile1, tile2);
                         tile1.matchAttempt.isSelected = false;
                         tile2.matchAttempt.isSelected = false;
                         return;
@@ -96,38 +97,35 @@ var Application;
                     return;
                 }
             };
-            Game.prototype.recheckBlockedTiles = function (tiles) {
-                for (var _i = 0, tiles_1 = tiles; _i < tiles_1.length; _i++) {
-                    var tile = tiles_1[_i];
-                    var blocked = tile.matchAttempt.isBlocked;
-                    tile.matchAttempt.isBlocked = tile.isTileBlockedBy(tiles);
-                    if (blocked !== tile.matchAttempt.isBlocked) {
-                        console.log('chagned');
-                    }
+            Game.prototype.resetBlockedTiles = function () {
+                var self = this;
+                for (var _i = 0, _a = self.tiles; _i < _a.length; _i++) {
+                    var tile = _a[_i];
+                    tile.isTileBlockedBy(self.tiles);
                 }
             };
-            Game.prototype.canAddMatch = function (tiles) {
-                return this.getSelectedIndice(tiles).length < 2;
+            Game.prototype.canAddMatch = function () {
+                return this.getSelectedIndice().length < 2;
             };
-            Game.prototype.getTile = function (id, tiles) {
-                for (var _i = 0, tiles_2 = tiles; _i < tiles_2.length; _i++) {
-                    var tile = tiles_2[_i];
+            Game.prototype.getTile = function (id) {
+                for (var _i = 0, _a = this.tiles; _i < _a.length; _i++) {
+                    var tile = _a[_i];
                     if (tile._id === id) {
                         return tile;
                     }
                 }
             };
-            Game.prototype.getSelectedIndice = function (tiles) {
+            Game.prototype.getSelectedIndice = function () {
                 var self = this, selected = [];
-                for (var i = 0; i < tiles.length; i++) {
-                    if (tiles[i].matchAttempt.isSelected) {
+                for (var i = 0; i < self.tiles.length; i++) {
+                    if (self.tiles[i].matchAttempt.isSelected) {
                         selected.push(i);
                     }
                 }
                 return selected;
             };
-            Game.prototype.isTileBlocked = function (tile, tiles) {
-                return tile.isTileBlockedBy(tiles);
+            Game.prototype.isTileBlocked = function (tile) {
+                return tile.isTileBlockedBy(this.tiles);
             };
             return Game;
         }());
@@ -146,6 +144,9 @@ var Application;
                 (function (Tile) {
                     var MatchAttempt = (function () {
                         function MatchAttempt() {
+                            this.isMatched = false;
+                            this.isBlocked = false;
+                            this.isSelected = false;
                         }
                         return MatchAttempt;
                     }());
@@ -175,8 +176,8 @@ var Application;
                 var self = this;
                 var leftFound = false;
                 var rightFound = false;
-                for (var _i = 0, tiles_3 = tiles; _i < tiles_3.length; _i++) {
-                    var tile = tiles_3[_i];
+                for (var _i = 0, tiles_1 = tiles; _i < tiles_1.length; _i++) {
+                    var tile = tiles_1[_i];
                     if (self.isTileBlockedOnTheLeftBy(tile)) {
                         leftFound = true;
                     }
@@ -208,13 +209,13 @@ var Application;
             };
             Tile.prototype.isTileBlockedBy = function (tiles) {
                 var self = this;
-                for (var _i = 0, tiles_4 = tiles; _i < tiles_4.length; _i++) {
-                    var tile = tiles_4[_i];
+                for (var _i = 0, tiles_2 = tiles; _i < tiles_2.length; _i++) {
+                    var tile = tiles_2[_i];
                     if (self.isTileBlockedOnTopBy(tile) || self.isTileBlockedOnTheSideBy(tiles)) {
-                        return true;
+                        return self.matchAttempt.isBlocked = true;
                     }
                 }
-                return false;
+                return self.matchAttempt.isBlocked = false;
             };
             Tile.prototype.canMatch = function (tile) {
                 var self = this;
@@ -269,10 +270,10 @@ var Application;
     (function (Controllers) {
         'use strict';
         var GameListController = (function () {
-            function GameListController($scope, $state, UserService, GameListService, GameService, ApplicationService) {
+            function GameListController($scope, $state, AuthService, GameListService, GameService, ApplicationService) {
                 this.$scope = $scope;
                 this.$state = $state;
-                this.UserService = UserService;
+                this.AuthService = AuthService;
                 this.GameListService = GameListService;
                 this.GameService = GameService;
                 this.ApplicationService = ApplicationService;
@@ -325,10 +326,8 @@ var Application;
                 this.$stateParams = $stateParams;
                 this.$scope = $scope;
                 this.test = "test";
-                this.GameService.tiles(this.GameListService.currentGame.id);
             }
             GameController.prototype.currentGame = function () {
-                return this.GameListService.currentGame;
             };
             GameController.prototype.canStartGame = function () {
                 return true;
@@ -352,10 +351,10 @@ var Application;
     var Controllers;
     (function (Controllers) {
         var NavigationController = (function () {
-            function NavigationController($state, $scope, UserService) {
+            function NavigationController($state, $scope, AuthService) {
                 this.$state = $state;
                 this.$scope = $scope;
-                this.UserService = UserService;
+                this.AuthService = AuthService;
                 this.navigationDictionary = {
                     'index': { title: 'Index', items: this.getItemsWithActive("index") },
                     'login': { title: 'Login', items: this.getItemsWithActive("login") },
@@ -420,6 +419,9 @@ var Application;
                 this.availableGamestates = [];
             }
             ApplicationService.prototype.templates = function (onSuccess, onError) {
+                var fallback = function () { };
+                onSuccess = onSuccess || fallback;
+                onError = onError || fallback;
                 var self = this;
                 return self.request('GET', '/gametemplates/', function (result) {
                     onSuccess(result.data);
@@ -435,10 +437,7 @@ var Application;
                 var self = this;
                 return self.request('GET', '/gamestates', function (result) {
                     onSuccess(result.data);
-                }, function (error) {
-                    console.error(error);
-                    alert("Error, templates could not be retrieved");
-                });
+                }, onError);
             };
             ApplicationService.prototype.request = function (method, url, onSuccess, onError) {
                 var self = this;
@@ -487,10 +486,10 @@ var Application;
     (function (Service) {
         'use strict';
         var GameListService = (function () {
-            function GameListService($http, configuration, UserService) {
+            function GameListService($http, configuration, AuthService) {
                 this.$http = $http;
                 this.configuration = configuration;
-                this.UserService = UserService;
+                this.AuthService = AuthService;
             }
             GameListService.prototype.create = function (template, minPlayers, maxPlayers, onSuccess, onError) {
                 var self = this;
@@ -503,6 +502,9 @@ var Application;
                 }, onError);
             };
             GameListService.prototype.readAll = function (onSuccess, onError) {
+                var fallback = function () { };
+                onSuccess = onSuccess || fallback;
+                onError = onError || fallback;
                 var self = this;
                 return self.request('GET', '/games', null, function (result) {
                     var games = [];
@@ -514,8 +516,11 @@ var Application;
                 }, onError);
             };
             GameListService.prototype.readCreated = function (onSuccess, onError) {
+                var fallback = function () { };
+                onSuccess = onSuccess || fallback;
+                onError = onError || fallback;
                 var self = this;
-                return self.request('GET', '/games?createdBy=' + self.UserService.user.name, null, function (result) {
+                return self.request('GET', '/games?createdBy=' + self.AuthService.user.name, null, function (result) {
                     var games = [];
                     for (var _i = 0, _a = result.data; _i < _a.length; _i++) {
                         var game = _a[_i];
@@ -556,6 +561,9 @@ var Application;
                 this.configuration = configuration;
             }
             GameService.prototype.read = function (id, onSuccess, onError) {
+                var fallback = function () { };
+                onError = onError || fallback;
+                onSuccess = onSuccess || fallback;
                 var self = this;
                 return self.request('GET', '/games/' + id, null, function (result) {
                     onSuccess(new Application.Model.Game(result.data));
@@ -569,9 +577,14 @@ var Application;
             };
             GameService.prototype.join = function (id, onSuccess, onError) {
                 var self = this;
-                return self.request('POST', '/games/' + id + '/players', null, onSuccess, onError);
+                return self.request('POST', '/games/' + id + '/players', null, function (result) {
+                    onSuccess(id);
+                }, onError);
             };
             GameService.prototype.tiles = function (id, onSuccess, onError) {
+                var fallback = function () { };
+                onSuccess = onSuccess || fallback;
+                onError = onError || fallback;
                 var self = this;
                 return self.request('GET', '/games/' + id + '/tiles', null, function (result) {
                     var tiles = [];
@@ -583,6 +596,7 @@ var Application;
                 }, onError);
             };
             GameService.prototype.match = function (id, tile1Id, tile2Id, onSuccess, onError) {
+                console.log('match', tile1Id, tile2Id);
                 var self = this;
                 return self.request('POST', '/games/' + id + '/tiles/matches', { tile1Id: tile1Id, tile2Id: tile2Id }, function (result) {
                     onSuccess();
@@ -641,15 +655,18 @@ var Application;
     (function (Factory) {
         'use strict';
         Factory.$inject = ['UserService'];
-        function HttpInterceptorFactory(UserService) {
+        function HttpInterceptorFactory(AuthService) {
             return {
                 'request': function (config) {
                     if (!(config.url.indexOf('partials') > -1)) {
                         console.log('request made: ' + config.url);
                     }
-                    if (UserService.user && UserService.user.name && UserService.user.token) {
-                        config.headers["x-username"] = UserService.user.name;
-                        config.headers["x-token"] = UserService.user.token;
+                    if (AuthService.user && AuthService.user.name && AuthService.user.token) {
+                        if (!config.headers) {
+                            config.headers = {};
+                        }
+                        config.headers["x-username"] = AuthService.user.name;
+                        config.headers["x-token"] = AuthService.user.token;
                     }
                     return config;
                 }
@@ -664,31 +681,44 @@ var Application;
     (function (Directive) {
         var TileDirective = (function () {
             function TileDirective() {
-                this.template = '<div ng-click="click()" class="tile {{ datasource.tile.suit }}-{{ datasource.tile.name }} {{ getEffects() }}" style="left: {{ datasource.xPos * 25 + (datasource.zPos * 8) }}; top: {{ datasource.yPos * (349/480*50) - (datasource.zPos * 8) }}; z-index: {{ datasource.zPos }}"></div>';
+                this.template = '<div ng-click="click()" class="tile {{ t.tile.suit }}-{{ t.tile.name }} {{ getEffects() }}" style="left: {{ t.xPos * 25 + (t.zPos * 8) }}; top: {{ t.yPos * (349/480*50) - (t.zPos * 8) }}; z-index: {{ t.zPos }}"></div>';
                 this.scope = {
-                    datasource: '='
+                    t: '=',
+                    g: '='
                 };
             }
             TileDirective.prototype.controller = function ($scope, GameService) {
-                var tile = GameService.getTile($scope.datasource._id);
-                tile.matchAttempt.isMatched = false;
-                tile.matchAttempt.isSelected = false;
-                tile.matchAttempt.isBlocked = GameService.isTileBlocked(tile);
+                if ($scope.t.match && $scope.t.match.foundBy) {
+                    $scope.t.matchAttempt.isMatched = true;
+                }
+                else {
+                    $scope.t.matchAttempt.isMatched = false;
+                }
+                $scope.t.matchAttempt.isSelected = false;
+                $scope.t.matchAttempt.isBlocked = $scope.g.isTileBlocked($scope.t);
                 $scope.getEffects = function () {
-                    return tile.matchAttempt.isMatched
+                    return $scope.t.matchAttempt.isMatched
                         ? 'hidden'
-                        : (tile.matchAttempt.isBlocked
+                        : ($scope.t.matchAttempt.isBlocked
                             ? 'blocked'
-                            : (tile.matchAttempt.isSelected
+                            : ($scope.t.matchAttempt.isSelected
                                 ? 'selected'
                                 : ''));
                 };
                 $scope.click = function () {
-                    if (tile.matchAttempt.isBlocked)
+                    console.log($scope.t);
+                    if ($scope.t.matchAttempt.isBlocked)
                         return;
-                    if (!tile.matchAttempt.isSelected && !GameService.canAddMatch(tile))
+                    if (!$scope.t.matchAttempt.isSelected && !$scope.g.canAddMatch())
                         return;
-                    GameService.matchTile(tile);
+                    $scope.g.matchTile($scope.t, function (tile1, tile2) {
+                        GameService.match($scope.g._id, tile1._id, tile2._id, function () {
+                            console.log('match made');
+                        }, function (error) {
+                            alert('error');
+                            console.error(error);
+                        });
+                    });
                 };
             };
             return TileDirective;
@@ -821,7 +851,7 @@ var Application;
                         "viewSidePanel": { templateUrl: "partials/empty.html" },
                         "viewMainPanel": {
                             templateUrl: "partials/index.html",
-                            controller: function () {
+                            controller: function ($http) {
                                 var socket = io('http://mahjongmayhem.herokuapp.com?gameId=575e8feab62cb21100dc6275');
                                 socket.on('start', function () {
                                     console.log('game started');
@@ -847,8 +877,10 @@ var Application;
                         "viewSidePanel": { templateUrl: "partials/empty.html" },
                         "viewMainPanel": {
                             templateUrl: "partials/login.html",
-                            controller: function ($scope, UserService) {
-                                this.UserService = UserService;
+                            controller: function ($scope, AuthService) {
+                                this.authUrl = function () {
+                                    return AuthService.authenticationUrl();
+                                };
                             },
                             controllerAs: "loginCtrl"
                         }
@@ -860,9 +892,15 @@ var Application;
                         "viewSidePanel": { templateUrl: "partials/empty.html" },
                         "viewMainPanel": {
                             templateUrl: "partials/empty.html",
-                            controller: function ($scope, $state, UserService) {
-                                UserService.setUser($state.params['username'], $state.params['token']);
-                                $state.go('allGames');
+                            controller: function ($scope, $state, AuthService) {
+                                if ($state.params['username'] && $state.params['token']) {
+                                    AuthService.setUser($state.params['username'], $state.params['token']);
+                                    $state.go('allGames');
+                                }
+                                else {
+                                    alert('Login failed');
+                                    $state.go('login');
+                                }
                             }
                         }
                     }
@@ -875,48 +913,81 @@ var Application;
                     views: {
                         "viewSidePanel": {
                             templateUrl: "partials/game.html",
-                            controller: function (GameService, GameListService) {
-                                GameService.currentGame = GameListService.currentGame;
-                                this.GameService = GameService;
+                            controller: function (game) {
+                                this.currentGame = game.data;
                             },
-                            controllerAs: 'gameCtrl'
+                            controllerAs: 'gameCtrl',
+                            resolve: {
+                                game: function (GameService, $stateParams) {
+                                    return GameService.read($stateParams.id);
+                                }
+                            }
                         },
                         "viewMainPanel": {
                             templateUrl: 'partials/game-board.html',
-                            controller: 'gameController',
-                            controllerAs: 'gameCtrl'
+                            controller: function (game, tiles) {
+                                this.currentGame = new Application.Model.Game(game.data);
+                                var tileObjects = [];
+                                for (var _i = 0, _a = tiles.data; _i < _a.length; _i++) {
+                                    var tileLiteral = _a[_i];
+                                    tileObjects.push(new Application.Model.Tile(tileLiteral));
+                                }
+                                this.currentGame.tiles = tileObjects;
+                            },
+                            controllerAs: 'gameCtrl',
+                            resolve: {
+                                game: function (GameService, $stateParams) {
+                                    return GameService.read($stateParams.id);
+                                },
+                                tiles: function (GameService, $stateParams) {
+                                    return GameService.tiles($stateParams.id);
+                                }
+                            }
                         }
                     },
-                    resolve: {
-                        game: function (GameListService, $stateParams) {
-                            return GameListService.read($stateParams.id);
-                        }
-                    },
-                    data: {}
+                    data: { reqAuth: true }
                 })
                     .state('board', {
                     url: "/game/{id}/board",
                     views: {
-                        "viewSidePanel": { templateUrl: "partials/game.html" },
-                        "viewMainPanel": { templateUrl: "partials/game-board.html" }
-                    },
-                    resolve: {
-                        game: function (GameListService, $stateParams) {
-                            return GameListService.read($stateParams.id);
+                        "viewSidePanel": {
+                            templateUrl: "partials/game.html",
+                            controller: function (game) {
+                                this.currentGame = game.data;
+                            },
+                            controllerAs: 'gameCtrl',
+                            resolve: {
+                                game: function (GameService, $stateParams) {
+                                    return GameService.read($stateParams.id);
+                                }
+                            }
+                        },
+                        "viewMainPanel": {
+                            templateUrl: 'partials/game-board.html',
+                            controller: function (game, tiles) {
+                                game.data.tiles = tiles.data;
+                                this.currentGame = game.data;
+                            },
+                            controllerAs: 'gameCtrl',
+                            resolve: {
+                                game: function (GameService, $stateParams) {
+                                    return GameService.read($stateParams.id);
+                                },
+                                tiles: function (GameService, $stateParams) {
+                                    return GameService.tiles($stateParams.id);
+                                }
+                            }
                         }
                     },
+                    data: { reqAuth: true }
                 })
                     .state('matched', {
                     url: "/game/{id}/matched",
                     views: {
                         "viewSidePanel": { templateUrl: "partials/empty.html" },
-                        "viewBigPanel": { templateUrl: "partials/matched.html" }
+                        "viewBigPanel": { templateUrl: "partials/empty.html" }
                     },
-                    resolve: {
-                        game: function (GameListService, $stateParams) {
-                            return GameListService.read($stateParams.id);
-                        }
-                    }
+                    data: { reqAuth: true }
                 })
                     .state('view', {
                     url: "/game/{id}/view",
@@ -924,11 +995,7 @@ var Application;
                         "viewSidePanel": { templateUrl: "partials/empty.html" },
                         "viewBigPanel": { templateUrl: "partials/empty.html" }
                     },
-                    resolve: {
-                        game: function (GameListService, $stateParams) {
-                            return GameListService.read($stateParams.id);
-                        }
-                    }
+                    data: { reqAuth: true }
                 });
             };
             Router.prototype.appendListStates = function () {
@@ -938,44 +1005,149 @@ var Application;
                     views: {
                         "viewSidePanel": {
                             templateUrl: "partials/gamelist-controls.html",
-                            controller: 'gameListController',
-                            controllerAs: 'gameList'
+                            controller: function (templates, $state, configuration, GameListService) {
+                                this.templates = templates.data;
+                                this.newGame = {
+                                    template: templates[0],
+                                    minPlayers: 1,
+                                    maxPlayer: 2
+                                };
+                                this.minPlayers = configuration.minPlayers;
+                                this.maxPlayer = configuration.maxPlayers;
+                                this.canCreateGame = function (template, min, max) {
+                                    return true;
+                                };
+                                this.createGame = function (template, min, max) {
+                                    GameListService.create(template, min, max, function (game) {
+                                        $state.go('game', { id: game._id });
+                                    }, function (error) {
+                                        alert('De game kon niet aangemaakt worden, probeer het later opnieuw.');
+                                        console.error(error);
+                                    });
+                                };
+                            },
+                            controllerAs: 'gamesCtrl',
+                            resolve: {
+                                templates: function (ApplicationService) {
+                                    return ApplicationService.templates();
+                                }
+                            }
                         },
                         "viewMainPanel": {
                             templateUrl: "partials/gamelist.html",
-                            controller: 'gameListController',
-                            controllerAs: 'gameList'
+                            controller: function (games, $state, GameService, AuthService) {
+                                this.games = games.data;
+                                this.canJoinGame = function (game) {
+                                    return game.state === 'open'
+                                        && game.players.length < game.maxPlayers
+                                        && (function () {
+                                            for (var _i = 0, _a = game.players; _i < _a.length; _i++) {
+                                                var player = _a[_i];
+                                                if (player.id == AuthService.user.id) {
+                                                    return false;
+                                                }
+                                            }
+                                            return true;
+                                        })();
+                                };
+                                this.joinGame = function (game) {
+                                    GameService.join(game._id, function (id) {
+                                        $state.go('game', { id: id });
+                                    }, function (error) {
+                                        alert('De game kon niet aangemaakt worden, probeer het later opnieuw.');
+                                        console.error(error);
+                                    });
+                                };
+                                this.canStartGame = function (game) {
+                                    return true;
+                                };
+                                this.startGame = function (game) {
+                                    GameService.start(game._id, function (id) {
+                                        $state.go('game', { id: id });
+                                    }, function (error) {
+                                        alert('De game kon niet gestart worden, probeer het later opnieuw.');
+                                        console.error(error);
+                                    });
+                                };
+                            },
+                            controllerAs: 'gamesCtrl',
+                            resolve: {
+                                games: function (GameListService) {
+                                    return GameListService.readAll();
+                                }
+                            },
                         }
                     },
-                    resolve: {
-                        templates: function (ApplicationService) {
-                            return ApplicationService.templates();
-                        },
-                        games: function (GameListService) {
-                            return GameListService.readAll();
-                        }
-                    }
+                    data: { reqAuth: true }
                 })
                     .state('myGames', {
                     url: "/games/me",
                     views: {
                         "viewSidePanel": {
-                            templateUrl: "partials/user.html"
+                            templateUrl: "partials/gamelist-controls.html",
+                            controller: function (templates, $state, configuration, GameListService) {
+                                this.templates = templates;
+                                this.newGame = {
+                                    template: templates[0],
+                                    minPlayers: 1,
+                                    maxPlayer: 2
+                                };
+                                this.minPlayers = configuration.minPlayers;
+                                this.maxPlayer = configuration.maxPlayers;
+                                this.canCreateGame = function (template, min, max) {
+                                    return false;
+                                };
+                                this.createGame = function (template, min, max) {
+                                    GameListService.create(template, min, max, function (game) {
+                                        $state.go('game', { id: game._id });
+                                    }, function (error) {
+                                        alert('De game kon worden gejoind, misschien is deze al vol.');
+                                        console.error(error);
+                                    });
+                                };
+                            },
+                            controllerAs: 'gamesCtrl',
+                            resolve: {
+                                templates: function (ApplicationService) {
+                                    return ApplicationService.templates();
+                                }
+                            }
                         },
                         "viewMainPanel": {
-                            templateUrl: "partials/gamelist-created.html",
-                            controller: 'gameListController',
-                            controllerAs: 'gameList'
+                            templateUrl: "partials/gamelist.html",
+                            controller: function (games, $state, GameService, AuthService) {
+                                this.games = games;
+                                this.canJoinGame = function (game) {
+                                    return game.state === 'open'
+                                        && game.players.length < game.maxPlayers
+                                        && (function () {
+                                            for (var _i = 0, _a = game.players; _i < _a.length; _i++) {
+                                                var player = _a[_i];
+                                                if (player.id == AuthService.user.id) {
+                                                    return false;
+                                                }
+                                            }
+                                            return true;
+                                        })();
+                                };
+                                this.joinGame = function (game) {
+                                    GameService.join(game._id, function (id) {
+                                        $state.go('game', { id: id });
+                                    }, function (error) {
+                                        alert('De game kon worden gejoind, misschien is deze al vol.');
+                                        console.error(error);
+                                    });
+                                };
+                            },
+                            controllerAs: 'gamesCtrl',
+                            resolve: {
+                                games: function (GameListService) {
+                                    return GameListService.readCreated();
+                                }
+                            },
                         }
                     },
-                    resolve: {
-                        templates: function (ApplicationService) {
-                            return ApplicationService.templates();
-                        },
-                        createdGames: function (GameListService) {
-                            return GameListService.readCreated();
-                        }
-                    }
+                    data: { reqAuth: true }
                 });
             };
             return Router;
@@ -1048,8 +1220,6 @@ var Application;
     });
     mahjongMadness.constant('configuration', Application.Constant.ConfigurationFactory);
     mahjongMadness.directive('tile', Application.Directive.TileDirectiveFactory);
-    mahjongMadness.directive('user', Application.Directive.UserDirective.Factory());
-    mahjongMadness.directive('gameitem', Application.Directive.GameItemDirective.Factory());
     mahjongMadness.filter('ownedGames', Application.Filter.OwnedGames.Factory());
     mahjongMadness.service('ApplicationService', Application.Service.ApplicationService);
     mahjongMadness.service('StorageService', Application.Service.StorageService);
