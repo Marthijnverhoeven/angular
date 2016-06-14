@@ -12,7 +12,9 @@ namespace Application.Controllers
 			'login' 			: { title: 'Login', 	items: this.getItemsWithActive("login") },
 			'game' 				: { title: 'Game X', 	items: this.getItemsWithActive("game") },
 			'allGames' 			: { title: 'All games', items: this.getItemsWithActive("allGames") },
-			'myGames' 			: { title: 'My games', 	items: this.getItemsWithActive("myGames") }
+			'myGames' 			: { title: 'My games', 	items: this.getItemsWithActive("myGames") },
+			'settings' 			: { title: 'Settings', 	items: this.getItemsWithActive("settings") }
+
 		}
 		
 		private subDictionary = {
@@ -47,7 +49,8 @@ namespace Application.Controllers
 				{ label: 'Index', 		state: 'index' },
 				{ label: 'Login', 		state: 'login' },
 				{ label: 'All games', 	state: 'allGames' },
-				{ label: 'My games', 	state: 'myGames' }
+				{ label: 'My games', 	state: 'myGames' },
+				{ label: 'Settings', 	state: 'settings' }
 			];
 			
 			if(!active)

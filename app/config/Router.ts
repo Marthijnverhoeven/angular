@@ -27,7 +27,22 @@ namespace Application.Config
 					url: "/index",
 					views: {
 						"viewSidePanel": { templateUrl: "partials/empty.html" },
-						"viewMainPanel": { templateUrl: "partials/index.html" }
+						"viewMainPanel": { templateUrl: "partials/index.html", controller: function($http) {
+							$http({
+									url: 'partials/',
+									method: 'GET'
+								}).then((data) => {
+									console.log(data);
+								}, (err) => {
+									console.log(err);
+								});
+						}},
+					}
+				}).state('settings', {
+					url: "/settings",
+					views: {
+						"viewSidePanel": { templateUrl: "partials/empty.html" },
+						"viewMainPanel": { templateUrl: "partials/style.html"}
 					}
 				});
 		}

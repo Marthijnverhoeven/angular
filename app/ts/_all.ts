@@ -5,11 +5,13 @@
 /// <reference path='../controllers/GameListController.ts' />
 /// <reference path='../controllers/GameController.ts' />
 /// <reference path='../controllers/NavigationController.ts' />
+/// <reference path='../controllers/StyleController.ts' />
 
 /// <reference path='../services/ApplicationService.ts' />
 /// <reference path='../services/GameListService.ts' />
 /// <reference path='../services/GameService.ts' />
 /// <reference path='../services/UserService.ts' />
+/// <reference path='../services/StorageService.ts' />
 
 /// <reference path='../factories/HttpInterceptorFactory.ts' />
 

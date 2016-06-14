@@ -1,11 +1,10 @@
-<html lang="en">
+<html lang="en" ng-app="mahjongMadness" ng-controller="styleController as style">
     <head>
-        <link rel="stylesheet" href="/css/app.css" />
+        <link rel="stylesheet" ng-href="{{ style.currentStyle.url }}" />
         <link rel="stylesheet" href="/css/bootstrap.css" />
     </head>
 
-    <body ng-app="mahjongMadness">
-        
+    <body>
         <div class="container">
             <nav class="navbar navbar-default" ng-controller="navigationController as navigation">
                 <div class="container-fluid">
