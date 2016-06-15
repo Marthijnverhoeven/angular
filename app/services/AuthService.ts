@@ -6,10 +6,9 @@ namespace Application.Service
 	
 	declare type User = Application.Model.User;
 	
-	export class UserService
+	export class AuthService
 	{
-		public user : User = 
-		<User>{
+		public user : User = <User> {
 			name: 'fs.karsodimedjo@student.avans.nl',
 			token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.ImZzLmthcnNvZGltZWRqb0BzdHVkZW50LmF2YW5zLm5sIg.htVG8dEuA4EM89b_HwwLUWh9qv_vPzO_fHRDEFna8qI'
 		};

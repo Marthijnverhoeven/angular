@@ -10,6 +10,9 @@ namespace Application.Constant
 		public baseUrl = "http://localhost:3000";
 		
 		public apiUrl = "http://mahjongmayhem.herokuapp.com";
+		
+		public minPlayers = 1;
+		public maxPlayers = 32;
 	}
 	
 	export var $inject: string[] = [];

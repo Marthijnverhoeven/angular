@@ -1,5 +1,4 @@
 describe("Game List Model Test", function () {
-	var gameController;
 	var gameService;
 	var httpBackend;
 	var scope;
@@ -208,44 +207,46 @@ describe("Game List Model Test", function () {
 		httpBackend = $httpBackend;
 
 		gameListService = $injector.get('GameListService');
-		gameListService.UserService.user.name = "fs.karsodimedjo@student.avans.nl";
+		gameListService.AuthService.user.name = "fs.karsodimedjo@student.avans.nl";
 	}));
-
-	it('should get a specific game', function () {
-		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/games/" + game.id).respond(200, game);
-		httpBackend.expectGET("partials/empty.html").respond(200);
-		httpBackend.expectGET("partials/index.html").respond(200);
-		gameListService.read(game.id);
-		httpBackend.flush();
-
-		var currentGame = gameListService.currentGame;
-
-		expect(currentGame._id).to.equal(game.id);
-	});
 
 	it('should get a list of games', function () {
 		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/games").respond(200, games);
 		httpBackend.expectGET("partials/empty.html").respond(200);
 		httpBackend.expectGET("partials/index.html").respond(200);
-		gameListService.readAll();
+		gameListService.readAll(success, fail);
+
 		httpBackend.flush();
 
-		var allGames = gameListService.allGames;
-		expect(allGames.length).to.equal(2);
+		function success(games) {
+			expect(games.length).to.equal(2);
+		}
+
+		function fail(error) {
+			expect(error).to.be.null;
+			console.log(error);
+		}
 	});
 
 	it('should get a list of games created by me', function () {
-		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/games?createdBy=" + gameListService.UserService.user.name).respond(200, myGames);
+		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/games?createdBy=" + gameListService.AuthService.user.name).respond(200, myGames);
 		httpBackend.expectGET("partials/empty.html").respond(200);
 		httpBackend.expectGET("partials/index.html").respond(200);
-		gameListService.readCreated();
+		gameListService.readCreated(success, fail);
+
 		httpBackend.flush();
 
-		var createdGames = gameListService.createdGames;
-		expect(createdGames.length).to.equal(3);
+		function success(games) {
+			expect(games.length).to.equal(3);
 
-		for(i = 0; i < createdGames.length; i++) {
-			expect(createdGames[i].createdBy._id).to.equal("fs.karsodimedjo@student.avans.nl");
+			for (i = 0; i < games.length; i++) {
+				expect(games[i].createdBy._id).to.equal("fs.karsodimedjo@student.avans.nl");
+			}
+		}
+
+		function fail(error) {
+			expect(error).to.be.null;
+			console.log(error);
 		}
 	});
 });

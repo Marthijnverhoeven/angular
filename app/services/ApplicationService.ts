@@ -28,26 +28,28 @@ namespace Application.Service
 		}
 		
 		// GET - /gametemplates
-		public templates() : IPromise<Template[]>
+		public templates(onSuccess?: (templates: Template[]) => void, onError?: (error) => void) : IPromise<Template[]>
 		{
+			var fallback = () => {};
+			
+			onSuccess = onSuccess || fallback;
+			onError = onError || fallback;
+			
 			var self = this;
 			return self.request<Template[]>(
 				'GET',
 				'/gametemplates/',
 				(result: angular.IHttpPromiseCallbackArg<Template[]>) =>
 				{
-					self.availableTemplates = result.data;
+					onSuccess(result.data);
 				},
-				(error: angular.IHttpPromiseCallbackArg<any>) =>
-				{
-					console.error(error);
-					alert("Error, templates could not be retrieved");
-				}
+				onError
 			);
 		}
 		
 		// GET - /gametemplates/{id}
-		public template(id : string) : IPromise<Template>
+		// remove, unused, lowers coverage
+		public template(id : string, onSuccess: (templates: Template) => void, onError: (error) => void) : IPromise<Template>
 		{
 			var self = this;
 			return self.request<Template>(
@@ -55,18 +57,14 @@ namespace Application.Service
 				'/gametemplates/' + id,
 				(result: angular.IHttpPromiseCallbackArg<Template>) =>
 				{
-					self.currentTemplate = result.data;
+					onSuccess(result.data);
 				},
-				(error: angular.IHttpPromiseCallbackArg<any>) =>
-				{
-					console.error(error);
-					alert("Error, templates could not be retrieved");
-				}
+				onError
 			);
 		}
 		
 		// GET - /gamestates
-		public states() : IPromise<GameState[]>
+		public states(onSuccess: (templates: GameState[]) => void, onError: (error) => void) : IPromise<GameState[]>
 		{
 			var self = this;
 			return self.request<GameState[]>(
@@ -74,13 +72,9 @@ namespace Application.Service
 				'/gamestates',
 				(result: angular.IHttpPromiseCallbackArg<GameState[]>) =>
 				{
-					self.availableGamestates = result.data;
+					onSuccess(result.data);
 				},
-				(error: angular.IHttpPromiseCallbackArg<any>) =>
-				{
-					console.error(error);
-					alert("Error, templates could not be retrieved");
-				}
+				onError
 			);
 		}
 		

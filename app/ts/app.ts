@@ -31,13 +31,13 @@ namespace Application
 	mahjongMadness.config(Application.Config.RouterFactory);
 	mahjongMadness.config(Application.Config.InitializerFactory); 
 	
-	mahjongMadness.run(function($rootScope: ng.IRootScopeService, $state, UserService: Application.Service.UserService){
+	mahjongMadness.run(function($rootScope: ng.IRootScopeService, $state, AuthService: Application.Service.AuthService){
 		$rootScope.$on("$stateChangeStart",
 			function(event, toState, toParams, fromState, fromParams) 
 			{
-				if (toState.data && toState.data.authenticate && !UserService.isLoggedIn())
+				if(toState.data && toState.data.reqAuth && !AuthService.isLoggedIn())
 				{
-					// User isn’t authenticated
+					alert('u\'r nut uthuntucutud, u\'ll bu ruduructud tu lugun.');
 					$state.transitionTo("login");
 					event.preventDefault();
 				}
@@ -48,17 +48,19 @@ namespace Application
 	mahjongMadness.constant('configuration', Application.Constant.ConfigurationFactory); 
 	
 	mahjongMadness.directive('tile', Application.Directive.TileDirectiveFactory);
-	mahjongMadness.directive('user', Application.Directive.UserDirective.Factory());
-	mahjongMadness.directive('gameitem', Application.Directive.GameItemDirective.Factory());
+	// mahjongMadness.directive('user', Application.Directive.UserDirective.Factory());
+	// mahjongMadness.directive('gameitem', Application.Directive.GameItemDirective.Factory());
 	
 	mahjongMadness.filter('ownedGames', Application.Filter.OwnedGames.Factory());
 	
 	mahjongMadness.service('ApplicationService', Application.Service.ApplicationService);
+	mahjongMadness.service('StorageService', Application.Service.StorageService);	
 	mahjongMadness.service('GameListService', Application.Service.GameListService);
-	mahjongMadness.service('UserService', Application.Service.UserService);
+	mahjongMadness.service('AuthService', Application.Service.AuthService);
 	mahjongMadness.service('GameService', Application.Service.GameService);
 	mahjongMadness.service('StorageService', Application.Service.StorageService);
 	
+	mahjongMadness.controller('appController', Application.Controllers.AppController);
 	mahjongMadness.controller('gameListController', Application.Controllers.GameListController);
 	mahjongMadness.controller('gameController', Application.Controllers.GameController);
 	mahjongMadness.controller('navigationController', Application.Controllers.NavigationController);
