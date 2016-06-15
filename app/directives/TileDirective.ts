@@ -52,20 +52,7 @@ namespace Application.Directive
 		};
 		
 		public controller($scope: TileDirectiveScope, GameService: Application.Service.GameService)//, BoardController: any)
-		{
-			// move to tile
-			// after tiles set, recheck on Block and Match
-			if($scope.t.match && $scope.t.match.foundBy)
-			{
-				$scope.t.matchAttempt.isMatched = true;
-			}
-			else 
-			{
-				$scope.t.matchAttempt.isMatched = false;
-			}
-			$scope.t.matchAttempt.isSelected = false;
-			$scope.t.matchAttempt.isBlocked = $scope.g.isTileBlocked($scope.t);
-			
+		{			
 			$scope.getEffects = () : string =>
 			{
 				return $scope.t.matchAttempt.isMatched
@@ -78,23 +65,17 @@ namespace Application.Directive
 			}		
 			$scope.click = () : void =>
 			{
-				console.log($scope.t);
-				
-				if($scope.t.matchAttempt.isBlocked)
-					return;
-				if(!$scope.t.matchAttempt.isSelected && !$scope.g.canAddMatch())
+				if(!$scope.t.canAttemptMatch() || !$scope.g.canAttemptMatch())
 					return;
 				$scope.g.matchTile($scope.t, (tile1: Application.Model.Tile, tile2: Application.Model.Tile) =>
 				{
 					GameService.match($scope.g._id, tile1._id, tile2._id,
 						() =>
-						{
-							console.log('match made');
-						},
+						{ }, // not sure what to do here.
 						(error) =>
 						{
-							alert('error');
-							console.error(error);
+							alert('error @TileDirective @GameService.Match');
+							throw error;
 						}
 					);
 				});
