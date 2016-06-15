@@ -181,15 +181,23 @@ describe("Application Service Test", function () {
 		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/gametemplates/").respond(200, templates);
 		httpBackend.expectGET("partials/empty.html").respond(200);
 		httpBackend.expectGET("partials/index.html").respond(200);
-		applicationService.templates();
+		applicationService.templates(success, fail);
+
 		httpBackend.flush();
+		
+		function success(templates) {
+			var availableTemplates = applicationService.availableTemplates;
 
-		var availableTemplates = applicationService.availableTemplates;
+			expect(templates.length).to.equal(2);
 
-		expect(availableTemplates.length).to.equal(2);
+			for (i = 0; i < templates.length; i++) {
+				expect(templates[i].tiles.length).to.equal(8);
+			}
+		}
 
-		for (i = 0; i < availableTemplates.length; i++) {
-			expect(availableTemplates[i].tiles.length).to.equal(8);
+		function fail(error) {
+			expect(error).to.be.null;
+			console.log(error);
 		}
 	});
 
@@ -197,31 +205,45 @@ describe("Application Service Test", function () {
 		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/gametemplates/" + template.id).respond(200, template);
 		httpBackend.expectGET("partials/empty.html").respond(200);
 		httpBackend.expectGET("partials/index.html").respond(200);
-		applicationService.template(template.id);
+		applicationService.template(template.id, success, fail);
+		
 		httpBackend.flush();
 
-		var currentTemplate = applicationService.currentTemplate;
+		function success(template) {
+			expect(template.tiles.length).to.equal(8);
 
-		expect(currentTemplate.tiles.length).to.equal(8);
-
-		for (i = 0; i < currentTemplate.tiles.length; i++) {
-			expect(currentTemplate.tiles[i].xPos).to.not.be.null;
+			for (i = 0; i < template.tiles.length; i++) {
+				expect(template.tiles[i].xPos).to.not.be.null;
+			}
 		}
+
+		function fail(error) {
+			expect(error).to.be.null;
+			console.log(error);
+		}
+		
 	});
 
 	it('should get a list of gamestates', function () {
 		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/gamestates").respond(200, gamestates);
 		httpBackend.expectGET("partials/empty.html").respond(200);
 		httpBackend.expectGET("partials/index.html").respond(200);
-		applicationService.states();
+		applicationService.states(success, fail);
+
 		httpBackend.flush();
 
-		var availableGamestates = applicationService.availableGamestates;
+		function success(gamestates) {
+			expect(gamestates.length).to.equal(3);
 
-		expect(availableGamestates.length).to.equal(3);
-
-		for (i = 0; i < availableGamestates.length; i++) {
-			expect(availableGamestates[i].state).to.not.be.null;
+			for (i = 0; i < gamestates.length; i++) {
+				expect(gamestates[i].state).to.not.be.null;
+			}
 		}
+
+		function fail(error) {
+			expect(error).to.be.null;
+			console.log(error);
+		}
+		
 	});
 });

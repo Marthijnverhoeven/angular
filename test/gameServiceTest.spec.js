@@ -122,15 +122,21 @@ describe("Game Service Model Test", function () {
 		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/games/575e6a06b62cb21100dc5208/tiles").respond(200, tiles);
 		httpBackend.expectGET("partials/empty.html").respond(200);
 		httpBackend.expectGET("partials/index.html").respond(200);
-		gameService.tiles("575e6a06b62cb21100dc5208");
+		gameService.tiles("575e6a06b62cb21100dc5208", success, fail);
+
 		httpBackend.flush();
 
-		var currentTiles = gameService.currentTiles;
+		function success(tiles) {
+			expect(tiles.length).to.equal(7);
 
-		expect(currentTiles.length).to.equal(7);
+			for (i = 0; i < tiles.length; i++) {
+				expect(tiles[i]._id).to.not.be.null;
+			}
+		}
 
-		for(i = 0; i < currentTiles.length; i++) {
-			expect(currentTiles[i]._id).to.not.be.null;
+		function fail(error) {
+			expect(error).to.be.null;
+			console.log(error);
 		}
 	});
 });
