@@ -89,6 +89,56 @@ namespace Application.Model
 		
 		// FSK
 		
+		public setTiles(tiles: Tile[])
+		{
+			this.tiles = tiles;
+			this.resetBlockedTiles();
+		}
+		
+		public canJoin(user: User) : boolean
+		{
+			var self = this;
+			return self.state === 'open'
+				&& self.players.length < self.maxPlayers
+				&& (() : boolean => {
+					for(var player of self.players)
+					{
+						if(player._id == user.name)
+						{
+							return false;
+						}
+					}
+					return true;
+				})(); 
+		}
+		
+		public canStart(user: User) : boolean
+		{
+			var self = this;
+			return self.state === 'open'
+				&& self.createdBy._id === user.name
+				&& self.players.length >= self.minPlayers;
+		}
+		
+		public addMatchedTile(tile1: Tile, tile2: Tile)
+		{
+			var self = this;
+			for(var i = 0; i< self.tiles.length; i++)
+			{
+				if(self.tiles[i]._id === tile1._id)
+				{
+					self.tiles[i].match = tile1.match;
+					continue;
+				}
+				
+				if(self.tiles[i]._id === tile2._id)
+				{
+					self.tiles[i].match = tile2.match;
+				}
+			}
+			self.resetBlockedTiles();
+		}
+		
 		public matchTile(tile: Tile, onMatch: (tile1: Tile, tile2: Tile) => void) : void
 		{
 			var self = this;
@@ -139,8 +189,9 @@ namespace Application.Model
 			}
 		}
 		
-		public canAddMatch() : boolean
+		public canAttemptMatch() : boolean
 		{
+			// currentPlayere is player, gamestate is cool etc.
 			return this.getSelectedIndice().length < 2;
 		}
 		

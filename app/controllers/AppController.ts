@@ -1,6 +1,6 @@
 /// <reference path="../ts/_all.ts" />
 
-namespace Application.Controllers
+namespace Application.Controller
 {
 	export class AppController
 	{

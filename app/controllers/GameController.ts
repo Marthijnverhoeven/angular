@@ -1,41 +1,20 @@
-namespace Application.Controllers
+/// <reference path="../ts/_all.ts" />
+
+namespace Application.Controller
 {
+	'use strict'
+	
+	// Declarations
+	declare type IResult<T> = angular.IHttpPromiseCallbackArg<T>;
+	
 	export class GameController
 	{
-		private test = "test";
+		public currentGame: Application.Model.Game;
 		
-		constructor(
-			public UserService,
-			public GameListService: Application.Service.GameListService,
-			public GameService: Application.Service.GameService,
-			private $state: angular.ui.IStateService,
-			private $stateParams,
-			private $scope)
+		constructor(game: IResult<Application.Model.Game>,
+			private $stateParams: angular.ui.IStateParamsService)
 		{
-			// this.GameService.tiles(this.GameListService.currentGame.id);
-		}
-		
-		public currentGame()
-		{
-			// return this.GameListService.currentGame;
-		}
-		
-		public canStartGame() : boolean
-		{
-			return true;
-		}
-		
-		public startGame(game: Application.Model.Game) : void
-		{
-			this.GameService.start(game._id,
-				(id) => {
-					this.$state.go('game', { id: id });
-				},
-				(error) => {
-					alert('error @GameController.startGame');
-					console.error(error);
-				}
-			);
+			this.currentGame = new Application.Model.Game(game.data);
 		}
 	}
 }

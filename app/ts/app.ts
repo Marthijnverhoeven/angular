@@ -48,8 +48,6 @@ namespace Application
 	mahjongMadness.constant('configuration', Application.Constant.ConfigurationFactory); 
 	
 	mahjongMadness.directive('tile', Application.Directive.TileDirectiveFactory);
-	// mahjongMadness.directive('user', Application.Directive.UserDirective.Factory());
-	// mahjongMadness.directive('gameitem', Application.Directive.GameItemDirective.Factory());
 	
 	mahjongMadness.filter('ownedGames', Application.Filter.OwnedGames.Factory());
 	
@@ -59,8 +57,11 @@ namespace Application
 	mahjongMadness.service('AuthService', Application.Service.AuthService);
 	mahjongMadness.service('GameService', Application.Service.GameService);
 	
-	mahjongMadness.controller('appController', Application.Controllers.AppController);
-	mahjongMadness.controller('gameListController', Application.Controllers.GameListController);
-	mahjongMadness.controller('gameController', Application.Controllers.GameController);
+	mahjongMadness.controller('appController', Application.Controller.AppController);	
+	mahjongMadness.controller('gameCreateController', Application.Controller.GameCreateController);
+	mahjongMadness.controller('gameBoardController', Application.Controller.GameBoardController);
+	mahjongMadness.controller('gameController', Application.Controller.GameController);
+	mahjongMadness.controller('gamesController', Application.Controller.GamesController);
+	
 	mahjongMadness.controller('navigationController', Application.Controllers.NavigationController);
 }

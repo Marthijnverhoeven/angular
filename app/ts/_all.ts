@@ -1,11 +1,13 @@
-/// <reference path='../models/Game.ts' />
 /// <reference path='../models/Tile.ts' />
 /// <reference path='../models/User.ts' />
+/// <reference path='../models/Game.ts' />
 
 /// <reference path='../controllers/AppController.ts' />
-/// <reference path='../controllers/GameListController.ts' />
-/// <reference path='../controllers/GameController.ts' />
 /// <reference path='../controllers/NavigationController.ts' />
+/// <reference path='../controllers/GamesController.ts' />
+/// <reference path='../controllers/GameCreateController.ts' />
+/// <reference path='../controllers/GameBoardController.ts' />
+/// <reference path='../controllers/GameController.ts' />
 
 /// <reference path='../services/ApplicationService.ts' />
 /// <reference path='../services/StorageService.ts' />
@@ -16,8 +18,6 @@
 /// <reference path='../factories/HttpInterceptorFactory.ts' />
 
 /// <reference path='../directives/TileDirective.ts' />
-/// <reference path='../directives/GameItemDirective.ts' />
-/// <reference path='../directives/UserDirective.ts' />
 
 /// <reference path='../filters/OwnedGames.ts' />
 

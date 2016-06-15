@@ -32,13 +32,21 @@ namespace Application.Model
 		matchAttempt: Application.Model.Tile.MatchAttempt;
 		
 		constructor(literal: any)
-		{
-			this.matchAttempt = <Application.Model.Tile.MatchAttempt>{};
-			
+		{			
 			for(var key of Object.keys(literal))
 			{
 				this[key] = literal[key];
 			}
+			
+			this.matchAttempt = <Application.Model.Tile.MatchAttempt>{};
+			this.matchAttempt.isMatched = (!!this.match && !!this.match.foundBy);
+			this.matchAttempt.isSelected = false;
+			this.matchAttempt.isBlocked = false;
+		}
+		
+		public canAttemptMatch() : boolean
+		{
+			return !this.matchAttempt.isBlocked;
 		}
 		
 		/**

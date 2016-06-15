@@ -33,36 +33,7 @@ namespace Application.Config
 					url: "/index",
 					views: {
 						"viewSidePanel": { templateUrl: "partials/empty.html" },
-						"viewMainPanel":
-						{
-							templateUrl: "partials/index.html",
-							controller: function($http)
-							{
-								var socket = io('http://mahjongmayhem.herokuapp.com?gameId=575e8feab62cb21100dc6275');
-								// start, end, playerJoined, match
-								socket.on('start', () =>
-								{
-									console.log('game started');
-								}).on('end', () =>
-								{
-									console.log('game ended');
-								}).on('playerJoined', (player) =>
-								{
-									console.log('player joined');
-									console.log(player);	
-								}).on('match', (matchedTiles) =>
-								{
-									console.log('match made');
-									console.log(matchedTiles);
-								});
-								
-								// 
-								// $scope.$on('$destroy', () =>
-								// {
-								// 	socket.close();
-								// });
-							} 
-						}
+						"viewMainPanel": { templateUrl: "partials/index.html" }
 					}
 				});
 		}
@@ -120,11 +91,7 @@ namespace Application.Config
 					views: {
 						"viewSidePanel": {
 							templateUrl: "partials/game.html",
-							controller: function(
-								game: IResult<Application.Model.Game>)
-							{
-								this.currentGame = game.data;
-							},
+							controller: 'gameController',
 							controllerAs: 'gameCtrl',
 							resolve: {
 								game: function(GameService: Application.Service.GameService, $stateParams)
@@ -135,19 +102,7 @@ namespace Application.Config
 						},
 						"viewMainPanel": {
 							templateUrl: 'partials/game-board.html',
-							controller: function(
-								game: IResult<Application.Model.Game>,
-								tiles: IResult<Application.Model.Tile[]>)
-							{
-								this.currentGame = new Application.Model.Game(game.data);
-								
-								var tileObjects = []
-								for(var tileLiteral of tiles.data)
-								{
-									tileObjects.push(new Application.Model.Tile(tileLiteral));
-								}
-								this.currentGame.tiles = tileObjects;
-							},
+							controller: 'gameBoardController',
 							controllerAs: 'gameCtrl',
 							resolve: {
 								game: function(GameService: Application.Service.GameService, $stateParams)
@@ -168,28 +123,22 @@ namespace Application.Config
 					views: {
 						"viewSidePanel": {
 							templateUrl: "partials/game.html",
-							controller: function(
-								game: IResult<Application.Model.Game>)
-							{
-								this.currentGame = game.data;
-							},
+							controller: 'gameBoardController', // todo: to GameController
 							controllerAs: 'gameCtrl',
 							resolve: {
 								game: function(GameService: Application.Service.GameService, $stateParams)
 								{
 									return GameService.read($stateParams.id);
+								},
+								tiles: function(GameService: Application.Service.GameService, $stateParams)
+								{
+									return GameService.tiles($stateParams.id);
 								}
 							}
 						},
 						"viewMainPanel": {
 							templateUrl: 'partials/game-board.html',
-							controller: function(
-								game: IResult<Application.Model.Game>,
-								tiles: IResult<Application.Model.Tile[]>)
-							{
-								game.data.tiles = tiles.data;
-								this.currentGame = game.data;
-							},
+							controller: 'gameBoardController',
 							controllerAs: 'gameCtrl',
 							resolve: {
 								game: function(GameService: Application.Service.GameService, $stateParams)
@@ -231,39 +180,7 @@ namespace Application.Config
 					views: {
 						"viewSidePanel": {
 							templateUrl: "partials/gamelist-controls.html",
-							controller: function(
-								templates: IResult<any>, // todo: create model
-								$state: angular.ui.IStateService,
-								configuration: Application.Constant.Configuration,
-								GameListService: Application.Service.GameListService)
-							{
-								this.templates = templates.data;
-								this.newGame = {
-									template: templates[0],
-									minPlayers: 1,
-									maxPlayer: 2
-								}
-								this.minPlayers = configuration.minPlayers;
-								this.maxPlayer = configuration.maxPlayers;
-								this.canCreateGame = function(template: string, min: number, max: number) : boolean
-								{
-									return true;
-								}
-								this.createGame = function(template: string, min: number, max: number) : void
-								{									
-									GameListService.create(template, min, max,
-										(game) =>
-										{
-											$state.go('game', { id: game._id });
-										},
-										(error) =>
-										{
-											alert('De game kon niet aangemaakt worden, probeer het later opnieuw.');
-											console.error(error);
-										}
-									);
-								}
-							},
+							controller: 'gameCreateController',
 							controllerAs: 'gamesCtrl',
 							resolve: {
 								templates: function(ApplicationService: Application.Service.ApplicationService)
@@ -274,61 +191,7 @@ namespace Application.Config
 						},
 						"viewMainPanel": {
 							templateUrl: "partials/gamelist.html",
-							controller: function(
-								games: IResult<Application.Model.Game[]>,
-								$state: angular.ui.IStateService,
-								GameService: Application.Service.GameService,
-								AuthService: Application.Service.AuthService)
-							{								
-								this.games = games.data;
-								this.canJoinGame = function(game: Application.Model.Game) : boolean
-								{
-									return game.state === 'open'
-										&& game.players.length < game.maxPlayers
-										&& (() : boolean => {
-											for(var player of game.players)
-											{
-												if(player.id == AuthService.user.id)
-												{
-													return false;
-												}
-											}
-											return true;
-										})(); 
-								};
-								this.joinGame = function(game: Application.Model.Game) : void
-								{
-									GameService.join(game._id,
-										(id) =>
-										{
-											$state.go('game', { id: id });
-										},
-										(error) =>
-										{
-											alert('De game kon niet aangemaakt worden, probeer het later opnieuw.');
-											console.error(error);
-										}
-									);
-								};
-								this.canStartGame = function(game: Application.Model.Game) : boolean
-								{
-									return true;
-								}
-								this.startGame = function(game: Application.Model.Game)
-								{
-									GameService.start(game._id,
-										(id) =>
-										{
-											$state.go('game', { id: id });
-										},
-										(error) =>
-										{
-											alert('De game kon niet gestart worden, probeer het later opnieuw.');
-											console.error(error);
-										}
-									);
-								}
-							},
+							controller: 'gamesController',
 							controllerAs: 'gamesCtrl',
 							resolve: {
 								games: function(GameListService: Application.Service.GameListService)
@@ -345,39 +208,7 @@ namespace Application.Config
 					views: {
 						"viewSidePanel": {
 							templateUrl: "partials/gamelist-controls.html",
-							controller: function(
-								templates: any, // todo: create model
-								$state: angular.ui.IStateService,
-								configuration: Application.Constant.Configuration,
-								GameListService: Application.Service.GameListService)
-							{
-								this.templates = templates;
-								this.newGame = {
-									template: templates[0],
-									minPlayers: 1,
-									maxPlayer: 2
-								}
-								this.minPlayers = configuration.minPlayers;
-								this.maxPlayer = configuration.maxPlayers;
-								this.canCreateGame = function(template: string, min: number, max: number) : boolean
-								{
-									return false;
-								}
-								this.createGame = function(template: string, min: number, max: number) : void
-								{									
-									GameListService.create(template, min, max,
-										(game) =>
-										{
-											$state.go('game', { id: game._id });
-										},
-										(error) =>
-										{
-											alert('De game kon worden gejoind, misschien is deze al vol.');
-											console.error(error);
-										}
-									);
-								}
-							},
+							controller: 'gameCreateController',
 							controllerAs: 'gamesCtrl',
 							resolve: {
 								templates: function(ApplicationService: Application.Service.ApplicationService)
@@ -388,43 +219,7 @@ namespace Application.Config
 						},
 						"viewMainPanel": {
 							templateUrl: "partials/gamelist.html",
-							controller: function(
-								games: Application.Model.Game[],
-								$state: angular.ui.IStateService,
-								GameService: Application.Service.GameService,
-								AuthService: Application.Service.AuthService)
-							{
-								this.games = games;
-								this.canJoinGame = function(game: Application.Model.Game) : boolean
-								{
-									return game.state === 'open'
-										&& game.players.length < game.maxPlayers
-										&& (() : boolean => {
-											for(var player of game.players)
-											{
-												if(player.id == AuthService.user.id)
-												{
-													return false;
-												}
-											}
-											return true;
-										})(); 
-								};
-								this.joinGame = function(game: Application.Model.Game) : void
-								{
-									GameService.join(game._id,
-										(id) =>
-										{
-											$state.go('game', { id: id });
-										},
-										(error) =>
-										{
-											alert('De game kon worden gejoind, misschien is deze al vol.');
-											console.error(error);
-										}
-									);
-								};
-							},
+							controller: 'gamesController',
 							controllerAs: 'gamesCtrl',
 							resolve: {
 								games: function(GameListService: Application.Service.GameListService)
