@@ -59,7 +59,7 @@ var Application;
                 }
                 return (rightFound && leftFound);
             };
-            Tile.prototype.isTileBlockedOnTheLeftBy = function (tile) {
+            Tile.prototype.isTileBlockedOnTheRightBy = function (tile) {
                 var self = this;
                 if (self.xPos === tile.xPos && self.yPos === tile.yPos && self.zPos === tile.zPos) {
                     return false;
@@ -69,7 +69,7 @@ var Application;
                     && (self.zPos === tile.zPos)
                     && !tile.matchAttempt.isMatched);
             };
-            Tile.prototype.isTileBlockedOnTheRightBy = function (tile) {
+            Tile.prototype.isTileBlockedOnTheLeftBy = function (tile) {
                 var self = this;
                 if (self.xPos === tile.xPos && self.yPos === tile.yPos && self.zPos === tile.zPos) {
                     return false;
@@ -321,7 +321,8 @@ var Application;
                     'login': { title: 'Login', items: this.getItemsWithActive("login") },
                     'game': { title: 'Game X', items: this.getItemsWithActive("game") },
                     'allGames': { title: 'All games', items: this.getItemsWithActive("allGames") },
-                    'myGames': { title: 'My games', items: this.getItemsWithActive("myGames") }
+                    'myGames': { title: 'My games', items: this.getItemsWithActive("myGames") },
+                    'settings': { title: 'Settings', items: this.getItemsWithActive("settings") }
                 };
                 this.subDictionary = {
                     'game': { title: 'Game X', items: this.getItemsWithActive(null) }
@@ -346,7 +347,8 @@ var Application;
                     { label: 'Index', state: 'index' },
                     { label: 'Login', state: 'login' },
                     { label: 'All games', state: 'allGames' },
-                    { label: 'My games', state: 'myGames' }
+                    { label: 'My games', state: 'myGames' },
+                    { label: 'Settings', state: 'settings' }
                 ];
                 if (!active)
                     return items;
@@ -509,6 +511,47 @@ var Application;
 })(Application || (Application = {}));
 var Application;
 (function (Application) {
+    var Controllers;
+    (function (Controllers) {
+        var StyleController = (function () {
+            function StyleController($state, $scope, StorageService) {
+                this.$state = $state;
+                this.$scope = $scope;
+                this.StorageService = StorageService;
+                this.availableStyles = [
+                    { key: "app.css", name: "App", url: "css/app.css" },
+                    { key: "alt.css", name: "Alt", url: "css/alt.css" }
+                ];
+                this.currentStyle = {};
+                this.getCurrentStyle();
+            }
+            StyleController.prototype.getCurrentStyle = function () {
+                var style;
+                if (style = this.StorageService.retrieve("style")) {
+                    this.currentStyle = style;
+                }
+                else {
+                    this.StorageService.store("style", this.availableStyles[0]);
+                }
+            };
+            StyleController.prototype.getAvailableStyles = function () {
+                return this.availableStyles;
+            };
+            StyleController.prototype.setCurrentStyle = function () {
+                for (var i = 0; i < this.availableStyles.length; i++) {
+                    if (this.availableStyles[i].key == this.selectedStyle) {
+                        this.StorageService.store("style", this.availableStyles[i]);
+                        this.currentStyle = this.availableStyles[i];
+                    }
+                }
+            };
+            return StyleController;
+        }());
+        Controllers.StyleController = StyleController;
+    })(Controllers = Application.Controllers || (Application.Controllers = {}));
+})(Application || (Application = {}));
+var Application;
+(function (Application) {
     var Service;
     (function (Service) {
         var ApplicationService = (function () {
@@ -563,6 +606,10 @@ var Application;
                 this.storage = localStorage;
             }
             StorageService.prototype.store = function (key, value) {
+                var item = this.storage.getItem(key);
+                if (!!item) {
+                    this.storage.removeItem(key);
+                }
                 return this.storage.setItem(key, JSON.stringify(value));
             };
             StorageService.prototype.retrieve = function (key) {
@@ -570,7 +617,7 @@ var Application;
                 if (!!item) {
                     return JSON.parse(item);
                 }
-                throw new Error('item does not exist');
+                return null;
             };
             StorageService.prototype.remove = function (key) {
                 return this.storage.removeItem(key);
@@ -879,6 +926,12 @@ var Application;
                         "viewSidePanel": { templateUrl: "partials/empty.html" },
                         "viewMainPanel": { templateUrl: "partials/index.html" }
                     }
+                }).state('settings', {
+                    url: "/settings",
+                    views: {
+                        "viewSidePanel": { templateUrl: "partials/empty.html" },
+                        "viewMainPanel": { templateUrl: "partials/style.html" }
+                    }
                 });
             };
             Router.prototype.appendAuthenticationStates = function () {
@@ -1129,11 +1182,13 @@ var Application;
     mahjongMadness.service('GameListService', Application.Service.GameListService);
     mahjongMadness.service('AuthService', Application.Service.AuthService);
     mahjongMadness.service('GameService', Application.Service.GameService);
+    mahjongMadness.service('StorageService', Application.Service.StorageService);
     mahjongMadness.controller('appController', Application.Controller.AppController);
     mahjongMadness.controller('gameCreateController', Application.Controller.GameCreateController);
     mahjongMadness.controller('gameBoardController', Application.Controller.GameBoardController);
     mahjongMadness.controller('gameController', Application.Controller.GameController);
     mahjongMadness.controller('gamesController', Application.Controller.GamesController);
     mahjongMadness.controller('navigationController', Application.Controllers.NavigationController);
+    mahjongMadness.controller('styleController', Application.Controllers.StyleController);
 })(Application || (Application = {}));
 //# sourceMappingURL=app.js.map
