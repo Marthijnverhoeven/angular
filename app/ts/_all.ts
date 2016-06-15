@@ -16,6 +16,7 @@
 /// <reference path='../services/GameService.ts' />
 /// <reference path='../services/StorageService.ts' />
 /// <reference path='../services/AuthService.ts' />
+/// <reference path='../services/SocketService.ts' />
 
 /// <reference path='../factories/HttpInterceptorFactory.ts' />
 

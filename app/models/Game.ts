@@ -2,24 +2,6 @@
 
 namespace Application.Model
 {	
-	namespace Application.Model.Game
-	{
-		export class Player
-		{
-			_id: string;
-			name: string;
-			__v: number;
-			id: string;
-		}
-		
-		export class Template
-		{
-			_id: string;
-			__v: number;
-			id: string;
-		}
-	}
-	
 	export class Game
 	{
 		_id: string;
@@ -123,17 +105,19 @@ namespace Application.Model
 		public addMatchedTile(tile1: Tile, tile2: Tile)
 		{
 			var self = this;
-			for(var i = 0; i< self.tiles.length; i++)
+			for(var i = 0; i < self.tiles.length; i++)
 			{
 				if(self.tiles[i]._id === tile1._id)
 				{
 					self.tiles[i].match = tile1.match;
+					self.tiles[i].matchAttempt.isMatched = true;
 					continue;
 				}
 				
 				if(self.tiles[i]._id === tile2._id)
 				{
 					self.tiles[i].match = tile2.match;
+					self.tiles[i].matchAttempt.isMatched = true;
 				}
 			}
 			self.resetBlockedTiles();
@@ -224,5 +208,23 @@ namespace Application.Model
 		{
 			return tile.isTileBlockedBy(this.tiles);
 		}
+	}
+}
+
+namespace Application.Model.Game
+{
+	export class Player
+	{
+		_id: string;
+		name: string;
+		__v: number;
+		id: string;
+	}
+	
+	export class Template
+	{
+		_id: string;
+		__v: number;
+		id: string;
 	}
 }

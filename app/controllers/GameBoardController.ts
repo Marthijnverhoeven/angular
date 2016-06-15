@@ -12,29 +12,36 @@ namespace Application.Controller
 	{
 		public currentGame: Application.Model.Game;
 		
-		constructor(game: IResult<Application.Model.Game>,
+		constructor(
+			$scope,
+			game: IResult<Application.Model.Game>,
 			tiles: IResult<Application.Model.Tile[]>,
-			private $stateParams: angular.ui.IStateParamsService)
+			private $stateParams: angular.ui.IStateParamsService,
+			private SocketService: Application.Service.SocketService)
 		{
 			var self = this;
-			var socket = io('http://mahjongmayhem.herokuapp.com?gameId=' + self.$stateParams['id']);
-			// start, end, playerJoined, match
-			socket.on('start', () =>
+			
+			SocketService.connect([self.$stateParams['id']]);
+			SocketService.onStart(() =>
 			{
 				alert('Game started');
 				self.currentGame.state = "playing"
-			}).on('end', () =>
+			});
+			
+			SocketService.onEnd(() =>
 			{
 				alert('Game ended');
 				self.currentGame.state = "finished"
-			}).on('playerJoined', (player) =>
+			})
+			SocketService.onJoined((player) =>
 			{
 				console.log(player);
 				alert('A new competitor appeared (or something)');
 				self.currentGame.players.push(player);
-			}).on('match', (matchedTiles) =>
+			})
+			SocketService.onMatch((matchedTiles) =>
 			{
-				console.log(matchedTiles[0].match.foundBy + ' found a match!');
+				// console.log(matchedTiles[0].match.foundBy + ' found a match!');
 				self.currentGame.addMatchedTile(matchedTiles[0], matchedTiles[1]);
 			});
 			
@@ -47,6 +54,11 @@ namespace Application.Controller
 				tileObjects.push(new Application.Model.Tile(tileLiteral));
 			}
 			this.currentGame.setTiles(tileObjects);
+		}
+		
+		public getCurrentGame()
+		{
+			return this.currentGame;
 		}
 	}
 }

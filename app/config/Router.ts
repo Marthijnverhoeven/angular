@@ -4,10 +4,7 @@ namespace Application.Config
 {
 	'use strict'
 	
-	// Globals
-	declare var io: SocketIOStatic;
-	
-	// Blub
+	// Declarations
 	declare type IResult<T> = angular.IHttpPromiseCallbackArg<T>;
 	
 	export class Router
@@ -129,7 +126,7 @@ namespace Application.Config
 					views: {
 						"viewSidePanel": {
 							templateUrl: "partials/game.html",
-							controller: 'gameBoardController', // todo: to GameController
+							controller: 'gameController', // todo: to GameController
 							controllerAs: 'gameCtrl',
 							resolve: {
 								game: function(GameService: Application.Service.GameService, $stateParams)

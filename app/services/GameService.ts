@@ -97,7 +97,7 @@ namespace Application.Service
 		}
 		
 		// POST - /games/{id}/tiles/matches
-		public match(id : string, tile1Id: string, tile2Id: string, onSuccess: () => void, onError: (error) => void) : IPromise<any> 
+		public match(id : string, tile1Id: string, tile2Id: string, onSuccess: (tiles) => void, onError: (error) => void) : IPromise<any> 
 		{
 			console.log('match', tile1Id, tile2Id);
 			var self = this;
@@ -107,7 +107,7 @@ namespace Application.Service
 				{ tile1Id: tile1Id, tile2Id: tile2Id },
 				(result: angular.IHttpPromiseCallbackArg<any>) => 
 				{
-					onSuccess();
+					onSuccess(result.data);
 				},
 				onError
 			);

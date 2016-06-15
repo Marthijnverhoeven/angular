@@ -10,7 +10,7 @@ namespace Application.Controller
 	
 	export class GameCreateController
 	{
-		public templates: any[];
+		public templates: string[];
 		public newGame: any;
 		public minPlayers: number;
 		public maxPlayers: number;
@@ -21,26 +21,27 @@ namespace Application.Controller
 			private configuration: Application.Constant.Configuration,
 			private GameListService: Application.Service.GameListService)
 		{
-			this.templates = templates.data;
 			this.newGame = {
-				template: templates[0],
+				template: templates.data[0]._id,
 				minPlayers: 1,
-				maxPlayer: 2
+				maxPlayers: 2
 			}
+			this.templates = templates.data;
 			this.minPlayers = configuration.minPlayers;
 			this.maxPlayers = configuration.maxPlayers;
 		}
 		
-		public canCreateGame(template: string, min: number, max: number) : boolean
+		public canCreateGame() : boolean
 		{
-			return template != null
-				&& min <= max;
+			return this.newGame.template != null
+				&& this.newGame.minPlayers <= this.newGame.maxPlayers;
 		}
 		
-		public createGame(template: string, min: number, max: number) : void
+		public createGame() : void
 		{					
 			var self = this;				
-			self.GameListService.create(template, min, max,
+			console.log(this.newGame.template);
+			self.GameListService.create(this.newGame.template, this.newGame.minPlayers, this.newGame.maxPlayers,
 				(game) =>
 				{
 					self.$state.go('game', { id: game._id });
