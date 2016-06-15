@@ -31,10 +31,14 @@ namespace Application
 	mahjongMadness.config(Application.Config.RouterFactory);
 	mahjongMadness.config(Application.Config.InitializerFactory); 
 	
-	mahjongMadness.run(function($rootScope: ng.IRootScopeService, $state, AuthService: Application.Service.AuthService){
+	mahjongMadness.run(function($rootScope: ng.IRootScopeService, $state, AuthService: Application.Service.AuthService, SocketService: Application.Service.SocketService){
 		$rootScope.$on("$stateChangeStart",
 			function(event, toState, toParams, fromState, fromParams) 
 			{
+				// Force disconnect sockets
+				SocketService.disconnect();
+				
+				// Check authorization;
 				if(toState.data && toState.data.reqAuth && !AuthService.isLoggedIn())
 				{
 					alert('u\'r nut uthuntucutud, u\'ll bu ruduructud tu lugun.');
@@ -54,6 +58,7 @@ namespace Application
 	mahjongMadness.service('ApplicationService', Application.Service.ApplicationService);
 	mahjongMadness.service('StorageService', Application.Service.StorageService);	
 	mahjongMadness.service('GameListService', Application.Service.GameListService);
+	mahjongMadness.service('SocketService', Application.Service.SocketService);
 	mahjongMadness.service('AuthService', Application.Service.AuthService);
 	mahjongMadness.service('GameService', Application.Service.GameService);
 	mahjongMadness.service('StorageService', Application.Service.StorageService);

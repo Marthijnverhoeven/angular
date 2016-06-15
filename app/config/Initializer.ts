@@ -12,8 +12,6 @@ namespace Application.Config
 		{
 			// initialize interceptors
 			$httpProvider.interceptors.push('httpRequestInterceptor');
-			
-			// io.
 		}
 	}
 	

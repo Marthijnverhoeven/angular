@@ -16,6 +16,6 @@
 		<input class="form-control" type="number" min="{{ gamesCtrl.minPlayers }}" max="{{ gamesCtrl.maxPlayers }}" name="maxPlayers" ng-model="gamesCtrl.newGame.maxPlayers" />
 	</div>
 	<button class="btn btn-primary"
-		ng-disabled="!gameList.canCreateGame(newGame.template, newGame.minPlayers, newGame.maxPlayers)" 
-		ng-click="gameList.createGame(newGame.template, newGame.minPlayers, newGame.maxPlayers)">Nieuw game</button>
+		ng-disabled="!gamesCtrl.canCreateGame()" 
+		ng-click="gamesCtrl.createGame()">Nieuw game</button>
 </div>
