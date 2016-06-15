@@ -4,9 +4,9 @@ namespace Application.Model
 	{
 		export class MatchAttempt
 		{
-			isMatched: boolean;
-			isBlocked: boolean;
-			isSelected: boolean;
+			isMatched: boolean = false;
+			isBlocked: boolean = false;
+			isSelected: boolean = false;
 		}
 	}
 	
@@ -126,11 +126,12 @@ namespace Application.Model
 			var self = this;
 			for(var tile of tiles)
 			{
-				if(self.isTileBlockedOnTopBy(tile) || self.isTileBlockedOnTheSideBy(tiles)) {
-					return true;
+				if(self.isTileBlockedOnTopBy(tile) || self.isTileBlockedOnTheSideBy(tiles))
+				{
+					return self.matchAttempt.isBlocked = true;
 				}
 			}
-			return false;
+			return self.matchAttempt.isBlocked = false;
 		}
 		
 		public canMatch(tile: Tile) : boolean

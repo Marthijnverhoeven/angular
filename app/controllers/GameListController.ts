@@ -6,7 +6,8 @@ namespace Application.Controllers
 	
 	// Services
 	declare type GameListService = Application.Service.GameListService;
-	declare type UserService = Application.Service.UserService;
+	declare type GameService = Application.Service.GameService;
+	declare type AuthService = Application.Service.AuthService;
 	declare type ApplicationService = Application.Service.ApplicationService;
 	
 	// Models
@@ -21,17 +22,35 @@ namespace Application.Controllers
 		constructor(
 			private $scope,
 			private $state: angular.ui.IStateService,
-			public UserService: UserService,
+			public AuthService: AuthService,
 			public GameListService: GameListService,
+			public GameService: GameService,
 			public ApplicationService: ApplicationService)
 		{
-			console.log('ctor gamelistctrl');
-			
 			this.$scope.newGame = {
 				template: ApplicationService.availableTemplates[0]._id,
 				minPlayers: 2,
 				maxPlayers: 4
 			};
+		}
+		
+		public canJoinGame(game: Game) : boolean
+		{
+			return true;
+		}
+		
+		public joinGame(game: Game) : void
+		{
+			this.GameService.join(game._id,
+				() =>
+				{
+					alert('Joined');
+				},
+				(error) =>
+				{
+					alert('error');
+				}
+			);
 		}
 		
 		public canCreateGame(template : string, minPlayers : number, maxPlayers : number)
@@ -42,15 +61,16 @@ namespace Application.Controllers
 		
 		public createGame(template : string, minPlayers : number, maxPlayers : number) : void
 		{
-			console.log(
-				template,
-				minPlayers,
-				maxPlayers
+			this.GameListService.create(template, minPlayers, maxPlayers, 
+				(data) =>
+				{
+					this.$state.go('view', { id: data._id });
+				},
+				(error) => 
+				{
+					alert(error);
+				}
 			);
-			
-			this.GameListService.create(template, minPlayers, maxPlayers);
-			this.$state.go('state', { id: 'somehting' });
-			// todo: make request
 		}
 		
 		// public openGame(game: Application.Models.Game)
