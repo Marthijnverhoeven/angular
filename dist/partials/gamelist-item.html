@@ -5,15 +5,16 @@
 		<button type="button" ng-disabled="!gamesCtrl.canJoinGame(game)" ng-click="gamesCtrl.joinGame(game)" class="btn btn-primary">Meedoen</button>
 		<button type="button" ng-disabled="!gamesCtrl.canStartGame(game)" ng-click="gamesCtrl.startGame(game)" class="btn btn-primary">Starten</button>
 	</div>
-	<h5>Created By: {{ game.createdBy.name }} </h5><br/>
+	<h5>Gemaakt door: {{ game.createdBy.name }}</h5><br/>
 	<p>
 		Template: {{ game.gameTemplate._id }}<br />
-		State: {{ game.state }}<br />
-		Min players: {{ game.minPlayers }}<br />
-		Max players: {{ game.maxPlayers }}<br />
+		Status: {{ game.state }}<br />
+		Minimum spelers: {{ game.minPlayers }}<br />
+		Maximum spelers {{ game.maxPlayers }}<br />
+		<small>id: {{ game.id }}</small>
 	</p>
 	<ul class="list-group">
-		<li class="list-group-item active"><h4>Current players ({{ game.players.length }})</h4></li>
+		<li class="list-group-item active"><h4>Huidige spelers ({{ game.players.length }})</h4></li>
 		<li class="list-group-item" ng-repeat="player in game.players">{{ player.name }}</li>
 	</ul>
 </li>

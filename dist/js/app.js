@@ -204,7 +204,6 @@ var Application;
             Game.prototype.matchTile = function (tile, onMatch) {
                 var self = this;
                 if (tile.matchAttempt.isSelected) {
-                    console.log('unselecting');
                     tile.matchAttempt.isSelected = false;
                     return;
                 }
@@ -215,17 +214,14 @@ var Application;
                         var tile1 = self.tiles[selected[0]];
                         var tile2 = self.tiles[selected[1]];
                         if (tile1.canMatch(tile2)) {
-                            console.log('match');
                             onMatch(tile1, tile2);
                             self.resetBlockedTiles();
                             return;
                         }
-                        console.log('no match');
                         tile1.matchAttempt.isSelected = false;
                         tile2.matchAttempt.isSelected = false;
                         return;
                     }
-                    console.log('misc');
                     tile.matchAttempt.isSelected = true;
                     return;
                 }
@@ -239,15 +235,6 @@ var Application;
             };
             Game.prototype.canAttemptMatch = function (user) {
                 var self = this;
-                console.log(self.getSelectedIndice().length < 2, self.state === 'playing', (function () {
-                    for (var _i = 0, _a = self.players; _i < _a.length; _i++) {
-                        var player = _a[_i];
-                        if (player._id == user.name) {
-                            return true;
-                        }
-                    }
-                    return false;
-                })());
                 return self.getSelectedIndice().length < 2
                     && self.state === 'playing'
                     && (function () {
@@ -311,9 +298,17 @@ var Application;
     var Controller;
     (function (Controller) {
         var AppController = (function () {
-            function AppController(configuration) {
+            function AppController(configuration, AuthService) {
                 this.configuration = configuration;
+                this.AuthService = AuthService;
             }
+            AppController.prototype.authUrl = function () {
+                return this.AuthService.authenticationUrl();
+            };
+            ;
+            AppController.prototype.isLoggedIn = function () {
+                return this.AuthService.isLoggedIn();
+            };
             AppController.prototype.getMinPlayers = function () {
                 return this.configuration.minPlayers;
             };
@@ -336,37 +331,36 @@ var Application;
                 this.AuthService = AuthService;
                 this.navigationDictionary = {
                     'index': { title: 'Index', items: this.getItemsWithActive("index") },
-                    'login': { title: 'Login', items: this.getItemsWithActive("login") },
-                    'game': { title: 'Game X', items: this.getItemsWithActive("game") },
-                    'allGames': { title: 'All games', items: this.getItemsWithActive("allGames") },
-                    'myGames': { title: 'My games', items: this.getItemsWithActive("myGames") },
-                    'settings': { title: 'Settings', items: this.getItemsWithActive("settings") }
+                    'allGames': { title: 'Overzicht', items: this.getItemsWithActive("allGames") },
+                    'myGames': { title: 'Eigen spellen', items: this.getItemsWithActive("myGames") },
+                    'settings': { title: 'Instellingen', items: this.getItemsWithActive("settings") },
+                    'game': { title: 'Spel', items: this.getItemsWithActive(null) },
+                    'login': { title: 'Login', items: this.getItemsWithActive(null) },
+                    'logout': { title: 'Logout', items: this.getItemsWithActive(null) }
                 };
-                this.subDictionary = {
-                    'game': { title: 'Game X', items: this.getItemsWithActive(null) }
-                };
-                console.log('nav ctor');
                 var self = this;
-                this.title = 'Error';
+                this.title = 'Geen titel beschikbaar';
                 this.menuitems = [];
                 $scope.currState = $state;
                 $scope.$watch('currState.current.name', function (newValue, oldValue) {
                     if (newValue !== undefined && !!newValue) {
                         var nav = self.navigationDictionary[newValue];
                         if (!!nav) {
-                            self.title = nav.title || 'Error';
+                            self.title = nav.title || 'Geen titel beschikbaar';
                             self.menuitems = nav.items || [];
                         }
                     }
                 });
             }
+            NavigationController.prototype.isLoggedIn = function () {
+                return this.AuthService.isLoggedIn();
+            };
             NavigationController.prototype.getItemsWithActive = function (active) {
                 var items = [
                     { label: 'Index', state: 'index' },
-                    { label: 'Login', state: 'login' },
-                    { label: 'All games', state: 'allGames' },
-                    { label: 'My games', state: 'myGames' },
-                    { label: 'Settings', state: 'settings' }
+                    { label: 'Overzicht', state: 'allGames' },
+                    { label: 'Eigen spellen', state: 'myGames' },
+                    { label: 'Instellingen', state: 'settings' }
                 ];
                 if (!active)
                     return items;
@@ -394,18 +388,50 @@ var Application;
     (function (Controller) {
         'use strict';
         var GamesController = (function () {
-            function GamesController(games, title, $state, GameService, AuthService) {
+            function GamesController(games, title, fromCreatedBy, $scope, $state, AuthService, GameService, GameListService, ParameterReaderService) {
                 this.title = title;
+                this.fromCreatedBy = fromCreatedBy;
+                this.$scope = $scope;
                 this.$state = $state;
-                this.GameService = GameService;
                 this.AuthService = AuthService;
+                this.GameService = GameService;
+                this.GameListService = GameListService;
+                this.ParameterReaderService = ParameterReaderService;
+                this.filter = {};
+                this.states = ['playing', 'finished', 'open'];
+                this.setGames(games);
+                this.filter['pageIndex'] = 0;
+            }
+            GamesController.prototype.RetrieveGames = function () {
+                var self = this;
+                var params = this.ParameterReaderService.getParams(self.filter);
+                if (self.fromCreatedBy) {
+                    params.push({ name: "createdBy", value: self.AuthService.user.name });
+                }
+                return this.GameListService.readAll(params, function (games) {
+                    self.games = games;
+                }, function (error) {
+                    alert('De lijst van spellen kon niet worden opgehaald, probeer het zo opnieuw.');
+                    throw error;
+                });
+            };
+            GamesController.prototype.getGame = function (id) {
+                for (var _i = 0, _a = this.games; _i < _a.length; _i++) {
+                    var game = _a[_i];
+                    if (game.id == id) {
+                        return game;
+                    }
+                }
+                return null;
+            };
+            GamesController.prototype.setGames = function (games) {
                 var gameObjects = [];
                 for (var _i = 0, _a = games.data; _i < _a.length; _i++) {
                     var game = _a[_i];
                     gameObjects.push(new Application.Model.Game(game));
                 }
                 this.games = gameObjects;
-            }
+            };
             GamesController.prototype.canOpenGame = function (game) {
                 return game.state !== 'open';
             };
@@ -430,7 +456,8 @@ var Application;
             ;
             GamesController.prototype.canStartGame = function (game) {
                 var self = this;
-                return game.canStart(self.AuthService.user);
+                var startable = game.canStart(self.AuthService.user);
+                return startable;
             };
             GamesController.prototype.startGame = function (game) {
                 var self = this;
@@ -440,6 +467,22 @@ var Application;
                     alert('De game kon niet gestart worden, probeer het later opnieuw.');
                     console.error(error);
                 });
+            };
+            GamesController.prototype.canPrevious = function () {
+                return this.filter['pageIndex'] - 1 >= 0;
+            };
+            GamesController.prototype.toPrevious = function () {
+                this.filter['pageIndex']--;
+                console.log(this.filter);
+                this.RetrieveGames();
+            };
+            GamesController.prototype.canNext = function () {
+                return this.games.length > 0;
+            };
+            GamesController.prototype.toNext = function () {
+                this.filter['pageIndex']++;
+                console.log(this.filter);
+                this.RetrieveGames();
             };
             return GamesController;
         }());
@@ -473,7 +516,7 @@ var Application;
                 var self = this;
                 console.log(this.newGame.template);
                 self.GameListService.create(this.newGame.template, this.newGame.minPlayers, this.newGame.maxPlayers, function (game) {
-                    self.$state.go('myGames', { id: game._id });
+                    self.$state.go(self.$state.current, {}, { reload: true });
                 }, function (error) {
                     alert('De game kon niet aangemaakt worden, probeer het later opnieuw.');
                     console.error(error);
@@ -530,19 +573,18 @@ var Application;
                 this.currentGame.setTiles(tileObjects);
                 SocketService.connect([self.$stateParams['id']]);
                 SocketService.onStart(function () {
-                    alert('Game started');
+                    alert('Game started.');
                     self.currentGame.state = "playing";
                 });
                 SocketService.onEnd(function () {
-                    alert('Game ended');
+                    alert('Game ended.');
                     self.currentGame.state = "finished";
                 });
-                SocketService.onJoined(function (player) {
-                    console.log(player);
-                    alert('A new competitor appeared (or something)');
+                SocketService.onJoined(function (id, player) {
+                    alert('A new competitor appeared.');
                     self.currentGame.players.push(player);
                 });
-                SocketService.onMatch(function (matchedTiles) {
+                SocketService.onMatch(function (id, matchedTiles) {
                     self.currentGame.addMatchedTile(matchedTiles[0], matchedTiles[1]);
                 });
             }
@@ -584,6 +626,7 @@ var Application;
                 ];
                 this.currentStyle = {};
                 this.getCurrentStyle();
+                this.selectedStyle = this.currentStyle.key;
             }
             StyleController.prototype.getCurrentStyle = function () {
                 var style;
@@ -708,12 +751,26 @@ var Application;
                     onSuccess(new Application.Model.Game(result.data));
                 }, onError);
             };
-            GameListService.prototype.readAll = function (onSuccess, onError) {
+            GameListService.prototype.readAll = function (args, onSuccess, onError) {
                 var fallback = function () { };
                 onSuccess = onSuccess || fallback;
                 onError = onError || fallback;
+                var argumentString = "";
+                if (args != null) {
+                    for (var i = 0; i < args.length; i++) {
+                        if (i != 0) {
+                            argumentString += "&";
+                        }
+                        else {
+                            argumentString += "?";
+                        }
+                        argumentString += args[i].name;
+                        argumentString += "=";
+                        argumentString += args[i].value;
+                    }
+                }
                 var self = this;
-                return self.request('GET', '/games', null, function (result) {
+                return self.request('GET', '/games' + argumentString, null, function (result) {
                     var games = [];
                     for (var _i = 0, _a = result.data; _i < _a.length; _i++) {
                         var game = _a[_i];
@@ -849,7 +906,7 @@ var Application;
                 this.user.token = token;
             };
             AuthService.prototype.isLoggedIn = function () {
-                return this.user.name && this.user.token;
+                return !!this.user.name && !!this.user.token;
             };
             return AuthService;
         }());
@@ -863,51 +920,91 @@ var Application;
         'use strict';
         var SocketService = (function () {
             function SocketService() {
-                this.connections = [];
+                this.connections = {};
             }
             SocketService.prototype.connect = function (ids) {
                 this.disconnect();
                 for (var _i = 0, ids_1 = ids; _i < ids_1.length; _i++) {
                     var id = ids_1[_i];
-                    this.connections.push(io('http://mahjongmayhem.herokuapp.com?gameId=' + id));
+                    this.connections[id] = io('http://mahjongmayhem.herokuapp.com?gameId=' + id);
                 }
             };
             SocketService.prototype.disconnect = function () {
-                if (this.connections.length > 0) {
-                    for (var _i = 0, _a = this.connections; _i < _a.length; _i++) {
-                        var socket = _a[_i];
-                        socket.close();
+                if (Object.keys(this.connections).length > 0) {
+                    for (var key in this.connections) {
+                        this.connections[key].close();
                     }
-                    this.connections = [];
+                    this.connections = {};
                 }
             };
             SocketService.prototype.onStart = function (handler) {
-                for (var _i = 0, _a = this.connections; _i < _a.length; _i++) {
-                    var socket = _a[_i];
-                    socket.on('start', handler);
+                for (var key in this.connections) {
+                    this.connections[key].on('start', function () {
+                        handler(key);
+                    });
                 }
             };
             SocketService.prototype.onEnd = function (handler) {
-                for (var _i = 0, _a = this.connections; _i < _a.length; _i++) {
-                    var socket = _a[_i];
-                    socket.on('end', handler);
+                for (var key in this.connections) {
+                    this.connections[key].on('end', function () {
+                        handler(key);
+                    });
                 }
             };
             SocketService.prototype.onJoined = function (handler) {
-                for (var _i = 0, _a = this.connections; _i < _a.length; _i++) {
-                    var socket = _a[_i];
-                    socket.on('playerJoined', handler);
+                for (var key in this.connections) {
+                    this.connections[key].on('playerJoined', function (player) {
+                        handler(key, player);
+                    });
                 }
             };
             SocketService.prototype.onMatch = function (handler) {
-                for (var _i = 0, _a = this.connections; _i < _a.length; _i++) {
-                    var socket = _a[_i];
-                    socket.on('match', handler);
+                for (var key in this.connections) {
+                    this.connections[key].on('match', function (tiles) {
+                        handler(key, tiles);
+                    });
                 }
             };
             return SocketService;
         }());
         Service.SocketService = SocketService;
+    })(Service = Application.Service || (Application.Service = {}));
+})(Application || (Application = {}));
+var Application;
+(function (Application) {
+    var Service;
+    (function (Service) {
+        'use strict';
+        var ParameterReaderService = (function () {
+            function ParameterReaderService(configuration, $stateParams) {
+                this.configuration = configuration;
+                this.$stateParams = $stateParams;
+            }
+            ParameterReaderService.prototype.getParams = function (data) {
+                var self = this;
+                var params = [];
+                data = data || self.$stateParams;
+                params.push({ name: "pageSize", value: self.configuration.pageSize + '' });
+                if (data["pageIndex"] != undefined) {
+                    params.push({ name: "pageIndex", value: data["pageIndex"] });
+                }
+                if (data["createdBy"] != undefined) {
+                    params.push({ name: "createdBy", value: data["createdBy"] });
+                }
+                if (data["player"] != undefined) {
+                    params.push({ name: "player", value: data["player"] });
+                }
+                if (data["gameTemplate"] != undefined) {
+                    params.push({ name: "gameTemplate", value: data["gameTemplate"] });
+                }
+                if (data["state"] != undefined) {
+                    params.push({ name: "state", value: data["state"] });
+                }
+                return params;
+            };
+            return ParameterReaderService;
+        }());
+        Service.ParameterReaderService = ParameterReaderService;
     })(Service = Application.Service || (Application.Service = {}));
 })(Application || (Application = {}));
 var Application;
@@ -919,8 +1016,8 @@ var Application;
         function HttpInterceptorFactory(AuthService) {
             return {
                 'request': function (config) {
-                    if (!(config.url.indexOf('partials') > -1)) {
-                        console.log('request made: ' + config.url);
+                    if (config.url.indexOf('partials') <= -1) {
+                        console.log('request @' + config.url);
                     }
                     if (AuthService.user && AuthService.user.name && AuthService.user.token) {
                         if (!config.headers) {
@@ -949,7 +1046,9 @@ var Application;
                 };
             }
             TileDirective.prototype.controller = function ($scope, $stateParams, GameService, SocketService, AuthService) {
-                SocketService.onMatch(function (matchedTiles) { console.log('applying dat shit'); $scope.$apply(); });
+                SocketService.onMatch(function () {
+                    $scope.$apply();
+                });
                 $scope.getEffects = function () {
                     return $scope.t.matchAttempt.isMatched
                         ? 'hidden'
@@ -1083,8 +1182,7 @@ var Application;
                 }).state('settings', {
                     url: "/settings",
                     views: {
-                        "viewSidePanel": { templateUrl: "partials/empty.html" },
-                        "viewMainPanel": { templateUrl: "partials/style.html" }
+                        "viewBigPanel": { templateUrl: "partials/style.html" }
                     }
                 });
             };
@@ -1102,6 +1200,18 @@ var Application;
                                 };
                             },
                             controllerAs: "loginCtrl"
+                        }
+                    }
+                })
+                    .state('logout', {
+                    url: "/logout",
+                    views: {
+                        "viewMainPanel": {
+                            templateUrl: "partials/empty.html",
+                            controller: function ($state, AuthService) {
+                                AuthService.user = {};
+                                $state.go('index');
+                            }
                         }
                     }
                 })
@@ -1192,6 +1302,16 @@ var Application;
                     url: "/game/{id}/history",
                     views: {
                         "viewSidePanel": {
+                            templateUrl: "partials/game.html",
+                            controller: 'gameController',
+                            controllerAs: 'gameCtrl',
+                            resolve: {
+                                game: function (GameService, $stateParams) {
+                                    return GameService.read($stateParams.id);
+                                }
+                            }
+                        },
+                        "viewMainPanel": {
                             templateUrl: "partials/game-history.html",
                             controller: 'gameHistoryController',
                             controllerAs: 'gameHistoryCtrl',
@@ -1203,15 +1323,7 @@ var Application;
                                     return GameService.tiles($stateParams.id);
                                 }
                             }
-                        },
-                    },
-                    data: { reqAuth: true }
-                })
-                    .state('view', {
-                    url: "/game/{id}/view",
-                    views: {
-                        "viewSidePanel": { templateUrl: "partials/empty.html" },
-                        "viewBigPanel": { templateUrl: "partials/empty.html" }
+                        }
                     },
                     data: { reqAuth: true }
                 });
@@ -1236,10 +1348,12 @@ var Application;
                             controller: 'gamesController',
                             controllerAs: 'gamesCtrl',
                             resolve: {
-                                games: function (GameListService) {
-                                    return GameListService.readAll();
+                                games: function (GameListService, ParameterReaderService) {
+                                    var params = ParameterReaderService.getParams();
+                                    return GameListService.readAll(params);
                                 },
-                                title: function () { return 'All games'; }
+                                title: function () { return 'Overzicht'; },
+                                fromCreatedBy: function () { return false; }
                             },
                         }
                     },
@@ -1266,7 +1380,8 @@ var Application;
                                 games: function (GameListService) {
                                     return GameListService.readCreated();
                                 },
-                                title: function () { return 'My games'; }
+                                title: function () { return 'Eigen spellen'; },
+                                fromCreatedBy: function () { return true; }
                             },
                         }
                     },
@@ -1346,6 +1461,7 @@ var Application;
     mahjongMadness.directive('tile', Application.Directive.TileDirectiveFactory);
     mahjongMadness.filter('matchedTiles', Application.Filter.MatchedTilesFactory);
     mahjongMadness.filter('filterForPlayer', Application.Filter.FilterForPlayerFactory);
+    mahjongMadness.service('ParameterReaderService', Application.Service.ParameterReaderService);
     mahjongMadness.service('ApplicationService', Application.Service.ApplicationService);
     mahjongMadness.service('StorageService', Application.Service.StorageService);
     mahjongMadness.service('GameListService', Application.Service.GameListService);

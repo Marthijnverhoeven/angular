@@ -2,8 +2,8 @@
     <div class="form-group">
         <label for="theme">Thema:</label>
         <select name="theme" class="form-control" ng-model="style.selectedStyle">
-        <option ng-repeat="s in style.availableStyles" value="{{s.key}}">{{s.name}}</option>
-    </select>
-        <button class="btn btn-success" ng-click="style.setCurrentStyle()">Save</button>
+            <option ng-repeat="s in style.availableStyles" value="{{s.key}}">{{s.name}}</option>
+        </select>
     </div>
+    <button class="btn btn-primary" ng-click="style.setCurrentStyle()">Opslaan</button>
 </div>

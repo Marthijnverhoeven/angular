@@ -35,19 +35,20 @@ namespace Application.Service {
 		}
 
 		// GET - /games
-		public readAll(args?: [{ name: string, value: string }], onSuccess?: (games: Game[]) => void, onError?: (error) => void): angular.IPromise<Game[]> {
+		public readAll(args?: { name: string, value: string }[], onSuccess?: (games: Game[]) => void, onError?: (error) => void): angular.IPromise<Game[]>
+		{	
 			var fallback = () => { };
 
 			onSuccess = onSuccess || fallback;
 			onError = onError || fallback;
 
-
 			var argumentString: string = "";
-			if (!args == null) {
+			if (args != null) {
 				for (var i = 0; i < args.length; i++) {
 					if (i != 0) {
 						argumentString += "&";
-					} else {
+					}
+					else {
 						argumentString += "?";
 					}
 					argumentString += args[i].name;

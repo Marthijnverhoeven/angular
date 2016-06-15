@@ -35,8 +35,7 @@ namespace Application.Config
 				}).state('settings', {
 					url: "/settings",
 					views: {
-						"viewSidePanel": { templateUrl: "partials/empty.html" },
-						"viewMainPanel": { templateUrl: "partials/style.html"}
+						"viewBigPanel": { templateUrl: "partials/style.html"}
 					}
 				});
 		}
@@ -57,6 +56,18 @@ namespace Application.Config
 								};
 							},
 							controllerAs: "loginCtrl"
+						}
+					}
+				})
+				.state('logout', {
+					url: "/logout",
+					views: {
+						"viewMainPanel": {
+							templateUrl: "partials/empty.html",
+							controller: function($state: angular.ui.IStateService, AuthService: Application.Service.AuthService) {
+								AuthService.user = <Application.Model.User>{};
+								$state.go('index');
+							}
 						}
 					}
 				})
@@ -161,6 +172,17 @@ namespace Application.Config
 					url: "/game/{id}/history",
 					views: {
 						"viewSidePanel": {
+							templateUrl: "partials/game.html",
+							controller: 'gameController',
+							controllerAs: 'gameCtrl',
+							resolve: {
+								game: function(GameService: Application.Service.GameService, $stateParams)
+								{
+									return GameService.read($stateParams.id);
+								}
+							}
+						},
+						"viewMainPanel": {
 							templateUrl: "partials/game-history.html",
 							controller: 'gameHistoryController',
 							controllerAs: 'gameHistoryCtrl',
@@ -174,33 +196,10 @@ namespace Application.Config
 									return GameService.tiles($stateParams.id);
 								}
 							}
-						},
-						// "viewBigPanel": {
-						// 	templateUrl: 'partials/game-board.html',
-						// 	controller: 'gameBoardController',
-						// 	controllerAs: 'gameCtrl',
-						// 	resolve: {
-						// 		game: function(GameService: Application.Service.GameService, $stateParams)
-						// 		{
-						// 			return GameService.read($stateParams.id);
-						// 		},
-						// 		tiles: function(GameService: Application.Service.GameService, $stateParams)
-						// 		{
-						// 			return GameService.tiles($stateParams.id);
-						// 		}
-						// 	}
-						// }
+						}
 					},
 					data: { reqAuth: true }
 				})
-				.state('view', { // todo: substate
-					url: "/game/{id}/view",
-					views: {
-						"viewSidePanel": { templateUrl: "partials/empty.html" },
-						"viewBigPanel": { templateUrl: "partials/empty.html" }
-					},
-					data: { reqAuth: true }
-				});
 		}
 		
 		private appendListStates() : void
@@ -225,43 +224,15 @@ namespace Application.Config
 							controller: 'gamesController',
 							controllerAs: 'gamesCtrl',
 							resolve: {
-								games: function(GameListService: Application.Service.GameListService, $stateParams: angular.ui.IStateParamsService)
+								games: function(
+									GameListService: Application.Service.GameListService,
+									ParameterReaderService: Application.Service.ParameterReaderService)
 								{
-									var params: [{name: string, value: string}];
-
-									if($stateParams["pageSize"] != undefined)
-									{
-										params.push({name: "pageSize", value: $stateParams["pageSize"]});
-									}
-
-									if($stateParams["pageIndex"] != undefined)
-									{
-										params.push({name: "pageIndex", value: $stateParams["pageIndex"]});
-									}
-									
-									if($stateParams["createdBy"] != undefined)
-									{
-										params.push({name: "createdBy", value: $stateParams["createdBy"]});
-									}
-
-									if($stateParams["player"] != undefined)
-									{
-										params.push({name: "player", value: $stateParams["player"]});
-									}
-
-									if($stateParams["gameTemplate"] != undefined)
-									{
-										params.push({name: "gameTemplate", value: $stateParams["gameTemplate"]});
-									}
-
-									if($stateParams["state"] != undefined)
-									{
-										params.push({name: "state", value: $stateParams["state"]});
-									}
-
+									var params = ParameterReaderService.getParams();
 									return GameListService.readAll(params);
 								},
-								title: () => { return 'All games'; }
+								title: () => { return 'Overzicht'; },
+								fromCreatedBy: () => { return false; }
 							},
 						}
 					},
@@ -290,7 +261,8 @@ namespace Application.Config
 								{
 									return GameListService.readCreated();
 								},
-								title: () => { return 'My games'; }
+								title: () => { return 'Eigen spellen'; },
+								fromCreatedBy: () => { return true; }
 							},
 						}
 					},

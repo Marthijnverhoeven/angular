@@ -32,24 +32,21 @@ namespace Application.Controller
 			SocketService.connect([self.$stateParams['id']]);
 			SocketService.onStart(() =>
 			{
-				alert('Game started');
+				alert('Game started.');
 				self.currentGame.state = "playing"
 			});
-			
 			SocketService.onEnd(() =>
 			{
-				alert('Game ended');
+				alert('Game ended.');
 				self.currentGame.state = "finished"
 			})
-			SocketService.onJoined((player) =>
+			SocketService.onJoined((id, player) =>
 			{
-				console.log(player);
-				alert('A new competitor appeared (or something)');
+				alert('A new competitor appeared.');
 				self.currentGame.players.push(player);
 			})
-			SocketService.onMatch((matchedTiles) =>
+			SocketService.onMatch((id, matchedTiles) =>
 			{
-				// console.log(matchedTiles[0].match.foundBy + ' found a match!');
 				self.currentGame.addMatchedTile(matchedTiles[0], matchedTiles[1]);
 			});
 		}

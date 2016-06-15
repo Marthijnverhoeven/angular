@@ -1,7 +1,7 @@
 <div id="view-game-history">
 	<!-- gameHistoryCtrl -->
 	<div class="form-group">
-		<label for="players">Player</label>
+		<label for="players">Speler</label>
 		<select name="players" class="form-control" ng-model="gameHistoryCtrl.selectedPlayer">
 			<option value="">Geen filter</option>
 			<option ng-repeat="player in gameHistoryCtrl.currentGame.players">{{ player._id }}</option>

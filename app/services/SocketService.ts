@@ -9,11 +9,11 @@ namespace Application.Service
 	
 	export class SocketService
 	{
-		private connections: SocketIO.Server[];
+		private connections: { [key: string]: SocketIO.Server };
 		
 		constructor()
 		{
-			this.connections = [];
+			this.connections = {};
 		}
 		
 		public connect(ids: string[]) : void
@@ -21,51 +21,63 @@ namespace Application.Service
 			this.disconnect();
 			for(var id of ids)
 			{
-				this.connections.push(io('http://mahjongmayhem.herokuapp.com?gameId=' + id));
+				this.connections[id] = io('http://mahjongmayhem.herokuapp.com?gameId=' + id);
 			}
 		}
 		
 		public disconnect() : void
 		{
-			if(this.connections.length > 0)
+			if(Object.keys(this.connections).length > 0)
 			{
-				for(var socket of this.connections)
+				for(var key in this.connections)
 				{
-					socket.close();
+					this.connections[key].close();
 				}
-				this.connections = [];
+				this.connections = {};
 			}
 		}
 		
-		public onStart(handler: () => void)
+		public onStart(handler: (id: string) => void)
 		{
-			for(var socket of this.connections)
+			for(var key in this.connections)
 			{
-				socket.on('start', handler);
+				this.connections[key].on('start', () =>
+				{
+					handler(key);
+				});
 			}
 		}
 		
-		public onEnd(handler: () => void)
+		public onEnd(handler: (id: string) => void)
 		{
-			for(var socket of this.connections)
+			for(var key in this.connections)
 			{
-				socket.on('end', handler);
+				this.connections[key].on('end', () =>
+				{
+					handler(key);
+				});
 			}
 		}
 		
-		public onJoined(handler: (player: Application.Model.Game.Player) => void)
+		public onJoined(handler: (id: string, player: Application.Model.Game.Player) => void)
 		{
-			for(var socket of this.connections)
+			for(var key in this.connections)
 			{
-				socket.on('playerJoined', handler);
+				this.connections[key].on('playerJoined', (player: Application.Model.Game.Player) =>
+				{
+					handler(key, player);
+				});
 			}
 		}
 		
-		public onMatch(handler: (tiles: Application.Model.Tile[]) => void)
+		public onMatch(handler: (id: string, tiles: Application.Model.Tile[]) => void)
 		{
-			for(var socket of this.connections)
+			for(var key in this.connections)
 			{
-				socket.on('match', handler);
+				this.connections[key].on('match', (tiles: Application.Model.Tile[]) =>
+				{
+					handler(key, tiles);
+				});
 			}
 		}
 	}

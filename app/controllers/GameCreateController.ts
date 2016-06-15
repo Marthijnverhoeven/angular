@@ -44,7 +44,8 @@ namespace Application.Controller
 			self.GameListService.create(this.newGame.template, this.newGame.minPlayers, this.newGame.maxPlayers,
 				(game) =>
 				{
-					self.$state.go('myGames');
+					// self.$state.go('myGames'); 
+					self.$state.go(self.$state.current, {}, {reload: true});
 				},
 				(error) =>
 				{

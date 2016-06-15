@@ -8,25 +8,19 @@ namespace Application.Controllers
 		private menuitems : any[];
 		
 		private navigationDictionary = {
-			'index' 			: { title: 'Index', 	items: this.getItemsWithActive("index") },
-			'login' 			: { title: 'Login', 	items: this.getItemsWithActive("login") },
-			'game' 				: { title: 'Game X', 	items: this.getItemsWithActive("game") },
-			'allGames' 			: { title: 'All games', items: this.getItemsWithActive("allGames") },
-			'myGames' 			: { title: 'My games', 	items: this.getItemsWithActive("myGames") },
-			'settings' 			: { title: 'Settings', 	items: this.getItemsWithActive("settings") }
-
-		}
-		
-		private subDictionary = {
-			'game' 				: { title: 'Game X', 	items: this.getItemsWithActive(null) }
+			'index' 			: { title: 'Index', 			items: this.getItemsWithActive("index") },
+			'allGames' 			: { title: 'Overzicht', 		items: this.getItemsWithActive("allGames") },
+			'myGames' 			: { title: 'Eigen spellen', 	items: this.getItemsWithActive("myGames") },
+			'settings' 			: { title: 'Instellingen', 		items: this.getItemsWithActive("settings") },
+			'game' 				: { title: 'Spel', 				items: this.getItemsWithActive(null) },
+			'login' 			: { title: 'Login', 			items: this.getItemsWithActive(null) },
+			'logout'			: { title: 'Logout', 			items: this.getItemsWithActive(null) }
 		}
 		
 		constructor(private $state, private $scope, public AuthService: Application.Service.AuthService)
 		{
-			console.log('nav ctor');
 			var self = this;
-			
-			this.title = 'Error';
+			this.title = 'Geen titel beschikbaar';
 			this.menuitems = [];
 			
 			$scope.currState = $state;
@@ -36,21 +30,25 @@ namespace Application.Controllers
 					var nav = self.navigationDictionary[newValue];
 					if(!!nav)
 					{
-						self.title = nav.title || 'Error';
+						self.title = nav.title || 'Geen titel beschikbaar';
 						self.menuitems = nav.items || [];
 					}
 				}
 			});
 		}
 		
+		public isLoggedIn() : boolean
+		{
+			return this.AuthService.isLoggedIn();
+		}
+		
 		private getItemsWithActive(active : string) : any[]
 		{
 			var items : any[] = [
-				{ label: 'Index', 		state: 'index' },
-				{ label: 'Login', 		state: 'login' },
-				{ label: 'All games', 	state: 'allGames' },
-				{ label: 'My games', 	state: 'myGames' },
-				{ label: 'Settings', 	state: 'settings' }
+				{ label: 'Index', 			state: 'index' },
+				{ label: 'Overzicht', 		state: 'allGames' },
+				{ label: 'Eigen spellen', 	state: 'myGames' },
+				{ label: 'Instellingen', 	state: 'settings' }
 			];
 			
 			if(!active)

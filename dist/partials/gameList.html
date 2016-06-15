@@ -1,4 +1,16 @@
 <div>
+	<div>
+		<h4>Filter</h4>
+		<div class="form-group">
+			<label for="states">Status</label>
+			<select name="states" class="form-control" ng-model="gamesCtrl.filter.state">
+				<option value="">Geen filter</option>
+				<option ng-repeat="state in gamesCtrl.states">{{ state }}</option>
+			</select>
+		</div>
+		<button class="btn btn-primary" ng-click="gamesCtrl.RetrieveGames()">Filteren</button>
+	</div>
+	</div>
 	<h3>{{ gamesCtrl.title }}</h3>
 	<ul class="list-group">		
 		<ng-include
@@ -6,4 +18,9 @@
 			ng-repeat="game in gamesCtrl.games">
 		</ng-include>
 	</ul>
+	<div class="btn-group" role="group" aria-label="...">
+		<button ng-click="gamesCtrl.toPrevious()" ng-disabled="!gamesCtrl.canPrevious()" type="button" class="btn btn-default">Vorige</button>
+		<button ng-disabled="true" type="button" class="btn btn-default">{{ gamesCtrl.filter.pageIndex }}</button>
+		<button ng-click="gamesCtrl.toNext()" ng-disabled="!gamesCtrl.canNext()" type="button" class="btn btn-default">Volgende</button>
+	</div>
 </div>

@@ -1,13 +1,13 @@
 <div class="view-game">
-	<h4>Created by: {{ gameCtrl.currentGame.createdBy.name }}</h4>
+	<h4>Gemaakt door: {{ gameCtrl.currentGame.createdBy.name }}</h4>
 	<p>
 		Template: {{ gameCtrl.currentGame.gameTemplate._id }}<br />
-		State: {{ gameCtrl.currentGame.state }}<br />
-		Min players: {{ gameCtrl.currentGame.minPlayers }}<br />
-		Max players: {{ gameCtrl.currentGame.maxPlayers }}<br />
+		Status: {{ gameCtrl.currentGame.state }}<br />
+		Minimum spelers: {{ gameCtrl.currentGame.minPlayers }}<br />
+		Maximum spelers: {{ gameCtrl.currentGame.maxPlayers }}<br />
 	</p>
 	<ul class="list-group">
-		<li class="list-group-item active"><h4>Current players ({{ gameCtrl.currentGame.players.length }})</h4></li>
+		<li class="list-group-item active"><h4>Huidige spelers ({{ gameCtrl.currentGame.players.length }})</h4></li>
 		<li class="list-group-item" ng-repeat="player in gameCtrl.currentGame.players">{{ player.name }}</li>
 	</ul>
 </div>

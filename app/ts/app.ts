@@ -35,6 +35,7 @@ namespace Application
 	mahjongMadness.filter('matchedTiles', Application.Filter.MatchedTilesFactory);
 	mahjongMadness.filter('filterForPlayer', Application.Filter.FilterForPlayerFactory);
 	
+	mahjongMadness.service('ParameterReaderService', Application.Service.ParameterReaderService);
 	mahjongMadness.service('ApplicationService', Application.Service.ApplicationService);
 	mahjongMadness.service('StorageService', Application.Service.StorageService);	
 	mahjongMadness.service('GameListService', Application.Service.GameListService);

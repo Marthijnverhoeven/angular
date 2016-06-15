@@ -13,6 +13,7 @@ namespace Application.Controllers
         constructor(private $state, private $scope, public StorageService: Application.Service.StorageService) {
             this.currentStyle = <any>{};
             this.getCurrentStyle();
+            this.selectedStyle = this.currentStyle.key 
         }
 
         // Gets the current style from storage, if it does not exist, it will select the first one and store it.

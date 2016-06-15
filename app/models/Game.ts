@@ -129,7 +129,6 @@ namespace Application.Model
 			
 			if(tile.matchAttempt.isSelected)
 			{
-				console.log('unselecting');
 				tile.matchAttempt.isSelected = false;
 				return;
 			}
@@ -144,17 +143,14 @@ namespace Application.Model
 					var tile2 = self.tiles[selected[1]];
 					if(tile1.canMatch(tile2))
 					{
-						console.log('match');
 						onMatch(tile1, tile2);
 						self.resetBlockedTiles();
 						return;
 					}
-					console.log('no match');
 					tile1.matchAttempt.isSelected = false;
 					tile2.matchAttempt.isSelected = false;
 					return;
 				}
-				console.log('misc');
 				tile.matchAttempt.isSelected = true;
 				return;
 			}
@@ -172,16 +168,6 @@ namespace Application.Model
 		public canAttemptMatch(user: User) : boolean
 		{
 			var self = this;
-			console.log(self.getSelectedIndice().length < 2, self.state === 'playing', (() : boolean => {
-					for(var player of self.players)
-					{
-						if(player._id == user.name)
-						{
-							return true;
-						}
-					}
-					return false;
-				})());
 			return self.getSelectedIndice().length < 2
 				&& self.state === 'playing'
 				&& (() : boolean => {

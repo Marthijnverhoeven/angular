@@ -29,9 +29,9 @@ namespace Application.Service
 			this.user.token = token;
 		}
 		
-		public isLoggedIn()
+		public isLoggedIn() : boolean
 		{
-			return this.user.name && this.user.token;
+			return !!this.user.name && !!this.user.token;
 		}
 	}
 }

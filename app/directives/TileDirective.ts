@@ -28,7 +28,9 @@ namespace Application.Directive
 			SocketService: Application.Service.SocketService,
 			AuthService: Application.Service.AuthService)
 		{
-			SocketService.onMatch((matchedTiles) => { console.log('applying dat shit'); $scope.$apply(); });
+			SocketService.onMatch(() => {
+				$scope.$apply();
+			});
 						
 			$scope.getEffects = () : string =>
 			{
@@ -53,7 +55,7 @@ namespace Application.Directive
 							tile2.matchAttempt.isMatched = true;
 							tile1.matchAttempt.isSelected = false;
 							tile2.matchAttempt.isSelected = false;
-						}, // lol useless
+						},
 						(error) =>
 						{
 							alert('Een van deze tiles is al weg.');
