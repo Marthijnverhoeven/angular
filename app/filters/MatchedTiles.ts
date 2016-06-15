@@ -15,7 +15,7 @@ namespace Application.Filter
 				var filtered = [];
 				for(var tile of tiles)
 				{
-					if(tile.match && tile.match.foundBy || tile.matchAttempt.isMatched)
+					if((tile.match && tile.match.foundBy) || (tile.matchAttempt && tile.matchAttempt.isMatched))
 					{
 						filtered.push(tile);
 					}

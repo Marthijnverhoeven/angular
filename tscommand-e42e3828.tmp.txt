@@ -1,0 +1,1 @@
+"D:\Documents\GitHub\angular\app\ts\app.ts" --sourcemap --removeComments --target ES5 --out dist/js/app.js

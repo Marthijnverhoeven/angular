@@ -147,7 +147,6 @@ describe("Game Service Model Test", function () {
 
 	it('should get a specific game', function () {
 		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/games/" + myGame.id).respond(200, myGame);
-		httpBackend.expectGET("partials/empty.html").respond(200);
 		httpBackend.expectGET("partials/index.html").respond(200);
 		gameService.read(myGame.id, success, fail);
 
@@ -165,7 +164,6 @@ describe("Game Service Model Test", function () {
 
 	it('should get tiles from a specific game', function () {
 		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/games/" + myGame.id +"/tiles").respond(200, tiles);
-		httpBackend.expectGET("partials/empty.html").respond(200);
 		httpBackend.expectGET("partials/index.html").respond(200);
 		gameService.tiles(myGame.id, success, fail);
 

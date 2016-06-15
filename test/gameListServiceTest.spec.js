@@ -212,7 +212,6 @@ describe("Game List Model Test", function () {
 
 	it('should get a list of games', function () {
 		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/games").respond(200, games);
-		httpBackend.expectGET("partials/empty.html").respond(200);
 		httpBackend.expectGET("partials/index.html").respond(200);
 		gameListService.readAll(null, success, fail);
 
@@ -230,7 +229,6 @@ describe("Game List Model Test", function () {
 
 	it('should get a list of games created by me', function () {
 		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/games?createdBy=" + gameListService.AuthService.user.name).respond(200, myGames);
-		httpBackend.expectGET("partials/empty.html").respond(200);
 		httpBackend.expectGET("partials/index.html").respond(200);
 		gameListService.readCreated(success, fail);
 

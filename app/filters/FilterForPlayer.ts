@@ -13,10 +13,7 @@ namespace Application.Filter
 			return function(tiles: Application.Model.Tile[], player: any)
 			{
 				if(player == undefined || !player)
-					{
-						console.log('returning tiles');
-						return tiles;
-					}
+					return tiles;
 				var filtered = [];
 				
 				for (var tile of tiles)

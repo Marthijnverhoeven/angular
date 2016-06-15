@@ -34,7 +34,7 @@ namespace Application.Controller
 		{
 			return i % 2 == 0
 				? '' // 0, 2, 4
-				: 'margin-right: 10px;' // 1, 3, 5
+				: 'margin-right: 20px;' // 1, 3, 5
 		}
 	}
 }

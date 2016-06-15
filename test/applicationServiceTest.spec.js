@@ -178,7 +178,6 @@ describe("Application Service Test", function () {
 
 	it('should get all game templates', function () {
 		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/gametemplates/").respond(200, templates);
-		httpBackend.expectGET("partials/empty.html").respond(200);
 		httpBackend.expectGET("partials/index.html").respond(200);
 		applicationService.templates(success, fail);
 
@@ -202,7 +201,6 @@ describe("Application Service Test", function () {
 
 	it('should get a specific game template', function () {
 		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/gametemplates/" + template.id).respond(200, template);
-		httpBackend.expectGET("partials/empty.html").respond(200);
 		httpBackend.expectGET("partials/index.html").respond(200);
 		applicationService.template(template.id, success, fail);
 		
@@ -225,7 +223,6 @@ describe("Application Service Test", function () {
 
 	it('should get a list of gamestates', function () {
 		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/gamestates").respond(200, gamestates);
-		httpBackend.expectGET("partials/empty.html").respond(200);
 		httpBackend.expectGET("partials/index.html").respond(200);
 		applicationService.states(success, fail);
 

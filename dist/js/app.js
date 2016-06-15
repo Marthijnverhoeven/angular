@@ -548,7 +548,7 @@ var Application;
             GameHistoryController.prototype.onEven = function (i) {
                 return i % 2 == 0
                     ? ''
-                    : 'margin-right: 10px;';
+                    : 'margin-right: 20px;';
             };
             return GameHistoryController;
         }());
@@ -1103,7 +1103,7 @@ var Application;
                     var filtered = [];
                     for (var _i = 0, tiles_3 = tiles; _i < tiles_3.length; _i++) {
                         var tile = tiles_3[_i];
-                        if (tile.match && tile.match.foundBy || tile.matchAttempt.isMatched) {
+                        if ((tile.match && tile.match.foundBy) || (tile.matchAttempt && tile.matchAttempt.isMatched)) {
                             filtered.push(tile);
                         }
                     }
