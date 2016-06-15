@@ -225,9 +225,41 @@ namespace Application.Config
 							controller: 'gamesController',
 							controllerAs: 'gamesCtrl',
 							resolve: {
-								games: function(GameListService: Application.Service.GameListService)
+								games: function(GameListService: Application.Service.GameListService, $stateParams: angular.ui.IStateParamsService)
 								{
-									return GameListService.readAll();
+									var params: [{name: string, value: string}];
+
+									if($stateParams["pageSize"] != undefined)
+									{
+										params.push({name: "pageSize", value: $stateParams["pageSize"]});
+									}
+
+									if($stateParams["pageIndex"] != undefined)
+									{
+										params.push({name: "pageIndex", value: $stateParams["pageIndex"]});
+									}
+									
+									if($stateParams["createdBy"] != undefined)
+									{
+										params.push({name: "createdBy", value: $stateParams["createdBy"]});
+									}
+
+									if($stateParams["player"] != undefined)
+									{
+										params.push({name: "player", value: $stateParams["player"]});
+									}
+
+									if($stateParams["gameTemplate"] != undefined)
+									{
+										params.push({name: "gameTemplate", value: $stateParams["gameTemplate"]});
+									}
+
+									if($stateParams["state"] != undefined)
+									{
+										params.push({name: "state", value: $stateParams["state"]});
+									}
+
+									return GameListService.readAll(params);
 								},
 								title: () => { return 'All games'; }
 							},
