@@ -1,5 +1,4 @@
 describe("Game List Model Test", function () {
-	var gameController;
 	var gameService;
 	var httpBackend;
 	var scope;
@@ -210,18 +209,6 @@ describe("Game List Model Test", function () {
 		gameListService = $injector.get('GameListService');
 		gameListService.AuthService.user.name = "fs.karsodimedjo@student.avans.nl";
 	}));
-
-	/*it('should get a specific game', function () {
-		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/games/" + game.id).respond(200, game);
-		httpBackend.expectGET("partials/empty.html").respond(200);
-		httpBackend.expectGET("partials/index.html").respond(200);
-		gameListService.read(game.id);
-		httpBackend.flush();
-
-		var currentGame = gameListService.currentGame;
-
-		expect(currentGame._id).to.equal(game.id);
-	});*/
 
 	it('should get a list of games', function () {
 		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/games").respond(200, games);

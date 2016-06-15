@@ -1,5 +1,4 @@
 describe("Application Service Test", function () {
-	var gameController;
 	var gameService;
 	var httpBackend;
 	var scope;

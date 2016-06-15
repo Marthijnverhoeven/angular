@@ -1,11 +1,38 @@
 describe("Game Service Model Test", function () {
-	var gameController;
 	var gameService;
 	var httpBackend;
 	var scope;
 	var gameListService;
 
 	// test data
+	var myGame = {
+		"_id": "575e6a06b62cb21100dc5208",
+		"createdBy": {
+			"_id": "jwa.vermeulen@student.avans.nl",
+			"name": "Joost Vermeulen",
+			"__v": 0
+		},
+		"createdOn": "2016-06-13T08:08:38.860Z",
+		"gameTemplate": {
+			"_id": "Rooster",
+			"__v": 0,
+			"id": "Rooster"
+		},
+		"__v": 0,
+		"startedOn": "2016-06-13T08:08:48.394Z",
+		"players": [
+			{
+				"_id": "jwa.vermeulen@student.avans.nl",
+				"name": "Joost Vermeulen",
+				"__v": 0
+			}
+		],
+		"maxPlayers": 1,
+		"minPlayers": 1,
+		"state": "playing",
+		"id": "575e6a06b62cb21100dc5208"
+	};
+
 	var tiles = [
 		{
 			"xPos": 15,
@@ -118,11 +145,29 @@ describe("Game Service Model Test", function () {
 		gameService = $injector.get('GameService');
 	}));
 
-	it('should get tiles from a specific game', function () {
-		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/games/575e6a06b62cb21100dc5208/tiles").respond(200, tiles);
+	it('should get a specific game', function () {
+		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/games/" + myGame.id).respond(200, myGame);
 		httpBackend.expectGET("partials/empty.html").respond(200);
 		httpBackend.expectGET("partials/index.html").respond(200);
-		gameService.tiles("575e6a06b62cb21100dc5208", success, fail);
+		gameService.read(myGame.id, success, fail);
+
+		httpBackend.flush();
+
+		function success(game) {
+			expect(game._id).to.equal(myGame.id);
+		}
+
+		function fail(error) {
+			expect(error).to.be.null;
+			console.log(error);
+		}
+	});
+
+	it('should get tiles from a specific game', function () {
+		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/games/" + myGame.id +"/tiles").respond(200, tiles);
+		httpBackend.expectGET("partials/empty.html").respond(200);
+		httpBackend.expectGET("partials/index.html").respond(200);
+		gameService.tiles(myGame.id, success, fail);
 
 		httpBackend.flush();
 
