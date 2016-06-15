@@ -64,6 +64,12 @@ namespace Application.Config
 							} 
 						}
 					}
+				}).state('settings', {
+					url: "/settings",
+					views: {
+						"viewSidePanel": { templateUrl: "partials/empty.html" },
+						"viewMainPanel": { templateUrl: "partials/style.html"}
+					}
 				});
 		}
 		
