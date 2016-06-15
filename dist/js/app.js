@@ -603,7 +603,8 @@ var Application;
     (function (Controller) {
         'use strict';
         var GameController = (function () {
-            function GameController(game, $stateParams) {
+            function GameController(game, $state, $stateParams) {
+                this.$state = $state;
                 this.$stateParams = $stateParams;
                 this.currentGame = new Application.Model.Game(game.data);
             }
@@ -613,6 +614,11 @@ var Application;
             GameController.prototype.canSeeHistory = function () {
                 return this.currentGame.state === 'playing'
                     || this.currentGame.state === 'finished';
+            };
+            GameController.prototype.isActive = function (state) {
+                return this.$state.current.name === state
+                    ? 'active'
+                    : '';
             };
             return GameController;
         }());
@@ -1132,10 +1138,8 @@ var Application;
             }
             FilterForPlayer.prototype.filter = function () {
                 return function (tiles, player) {
-                    if (player == undefined || !player) {
-                        console.log('returning tiles');
+                    if (player == undefined || !player)
                         return tiles;
-                    }
                     var filtered = [];
                     for (var _i = 0, tiles_4 = tiles; _i < tiles_4.length; _i++) {
                         var tile = tiles_4[_i];
@@ -1297,7 +1301,7 @@ var Application;
                     },
                     data: { reqAuth: true }
                 })
-                    .state('created', {
+                    .state('games.me', {
                     url: "/me",
                     templateUrl: "partials/gamelist.html",
                     controller: 'gamesController',

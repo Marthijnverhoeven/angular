@@ -1,7 +1,11 @@
 // variables
 @import "variables/alt";
 
+// globals
+@import "globals/tiles";
+
 // pages
 @import "pages/view-game";
 @import "pages/view-board";
+@import "pages/view-history";
 @import "colorizer";

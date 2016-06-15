@@ -12,6 +12,7 @@ namespace Application.Controller
 		public currentGame: Application.Model.Game;
 		
 		constructor(game: IResult<Application.Model.Game>,
+			private $state: angular.ui.IStateService,
 			private $stateParams: angular.ui.IStateParamsService)
 		{
 			this.currentGame = new Application.Model.Game(game.data);
@@ -22,10 +23,17 @@ namespace Application.Controller
 			return this.currentGame.state !== 'open';
 		}
 		
-		public canSeeHistory() : boolean
+		public canSeeHistory() : boolean 
 		{
 			return this.currentGame.state === 'playing'
 				|| this.currentGame.state === 'finished';
+		}
+		
+		public isActive(state: string)
+		{
+			return this.$state.current.name === state
+				? 'active'
+				: '';
 		}
 	}
 }

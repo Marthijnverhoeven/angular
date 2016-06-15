@@ -165,7 +165,7 @@ namespace Application.Config
 					},
 					data: { reqAuth: true }
 				})
-				.state('created', {
+				.state('games.me', {
 					url: "/me",
 					templateUrl: "partials/gamelist.html",
 					controller: 'gamesController',

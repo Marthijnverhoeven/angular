@@ -11,8 +11,14 @@
 			<li class="list-group-item active"><h4>Huidige spelers ({{ gameCtrl.currentGame.players.length }})</h4></li>
 			<li class="list-group-item" ng-repeat="player in gameCtrl.currentGame.players">{{ player.name }}</li>
 		</ul>
-		<button class="btn btn-primary" ui-sref=".board" 	ng-disabled="!gameCtrl.canOpenGame()">Bord</button>
-		<button class="btn btn-primary" ui-sref=".history" 	ng-disabled="!gameCtrl.canSeeHistory()">Historie</button>
+		
+		
+		
+		<ul class="nav nav-tabs">
+            <!--<li class="active"><a href="#alle" data-toggle="tab">Alle</a></li>-->
+            <li class="tablinks {{ gameCtrl.isActive('game.board') }}"><a ui-sref=".board" ng-disabled="!gameCtrl.canOpenGame()">Bord</a></li>
+            <li class="tablinks {{ gameCtrl.isActive('game.history') }}"><a ui-sref=".history" ng-disabled="!gameCtrl.canSeeHistory()">Historie</a></li>
+        </ul>
 	</div>
 </div>
 <div class="col-lg-7" ui-view></div>

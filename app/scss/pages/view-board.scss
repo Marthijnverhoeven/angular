@@ -10,10 +10,10 @@
 
 #view-game-board {
 	position: relative;
-	height: 600px;
+	height: 700px; 
 	.tile {
 		position: absolute;
-		@include filter-transition();
+		@include filter-transition(); 
 		
 		&:hover:not(.blocked) {
 			margin-top: $tileHoverMargin;

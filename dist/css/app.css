@@ -144,7 +144,7 @@
 
 #view-game-board {
   position: relative;
-  height: 600px; }
+  height: 700px; }
   #view-game-board .tile {
     position: absolute;
     -webkit-transition: -webkit-filter 0.3s ease-in-out, margin 0.3s ease-in-out;
