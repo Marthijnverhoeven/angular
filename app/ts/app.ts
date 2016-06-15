@@ -43,7 +43,7 @@ namespace Application
 				}
 			}
 		)
-	});
+	}); 
 	
 	mahjongMadness.constant('configuration', Application.Constant.ConfigurationFactory); 
 	

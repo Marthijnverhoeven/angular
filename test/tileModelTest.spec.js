@@ -38,21 +38,25 @@ describe("Tile Model Test", function() {
 		tile1.xPos = 10;
 		tile1.yPos = 10;
 		tile1.zPos = 1;
+		tile1.matchAttempt.isMatched = false;
 
 		var tile2 = new Application.Model.Tile({});
 		tile2.xPos = 8;
 		tile2.yPos = 11;
 		tile2.zPos = 1;
+		tile2.matchAttempt.isMatched = false;
 
 		var tile3 = new Application.Model.Tile({});
 		tile3.xPos = 12;
 		tile3.yPos = 9;
 		tile3.zPos = 1;
+		tile3.matchAttempt.isMatched = false;
 
 		var tile4 = new Application.Model.Tile({});
 		tile4.xPos = 8;
 		tile4.yPos = 10;
 		tile4.zPos = 2;
+		tile4.matchAttempt.isMatched = false;
 
 		var tiles = [tile1, tile2, tile3, tile4];
 
