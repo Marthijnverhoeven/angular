@@ -8,11 +8,13 @@ namespace Application.Controllers
 		private menuitems : any[];
 		
 		private navigationDictionary = {
+			// state				// title					// active item
 			'index' 			: { title: 'Index', 			items: this.getItemsWithActive("index") },
-			'allGames' 			: { title: 'Overzicht', 		items: this.getItemsWithActive("allGames") },
-			'myGames' 			: { title: 'Eigen spellen', 	items: this.getItemsWithActive("myGames") },
+			'games.all' 		: { title: 'Overzicht', 		items: this.getItemsWithActive("games.all") },
+			'games.me' 			: { title: 'Eigen spellen', 	items: this.getItemsWithActive("games.me") },
 			'settings' 			: { title: 'Instellingen', 		items: this.getItemsWithActive("settings") },
-			'game' 				: { title: 'Spel', 				items: this.getItemsWithActive(null) },
+			'game.board' 		: { title: 'Spel', 				items: this.getItemsWithActive(null) },
+			'game.history' 		: { title: 'Spel', 				items: this.getItemsWithActive(null) },
 			'login' 			: { title: 'Login', 			items: this.getItemsWithActive(null) },
 			'logout'			: { title: 'Logout', 			items: this.getItemsWithActive(null) }
 		}
@@ -46,8 +48,8 @@ namespace Application.Controllers
 		{
 			var items : any[] = [
 				{ label: 'Index', 			state: 'index' },
-				{ label: 'Overzicht', 		state: 'allGames' },
-				{ label: 'Eigen spellen', 	state: 'myGames' },
+				{ label: 'Overzicht', 		state: 'games.all' },
+				{ label: 'Eigen spellen', 	state: 'games.me' },
 				{ label: 'Instellingen', 	state: 'settings' }
 			];
 			

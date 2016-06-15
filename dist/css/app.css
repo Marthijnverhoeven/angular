@@ -136,25 +136,30 @@
     background-image: url(../images/tiles.png);
     background-position: 0px -2819.81551px; }
 
-.view-game {
+#view-game {
   color: black;
   font-size: 1.2em;
-  font-weight: strong; }
+  font-weight: strong;
+  margin-bottom: 20px; }
 
-#board {
-  position: relative; }
-  #board .tile {
+#view-game-board {
+  position: relative;
+  height: 600px; }
+  #view-game-board .tile {
     position: absolute;
     -webkit-transition: -webkit-filter 0.3s ease-in-out, margin 0.3s ease-in-out;
     transition: filter 0.3s ease-in-out, margin 0.3s ease-in-out; }
-    #board .tile:hover:not(.blocked) {
+    #view-game-board .tile:hover:not(.blocked) {
       margin-top: 5px; }
-    #board .tile.selected {
+    #view-game-board .tile.selected {
       -webkit-filter: invert(100%);
       filter: invert(100%); }
-    #board .tile.blocked {
+    #view-game-board .tile.blocked {
       -webkit-filter: invert(20%);
       filter: invert(20%); }
+
+#view-game-history {
+  height: 600px; }
 
 body {
   background-color: lightblue !important;

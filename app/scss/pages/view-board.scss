@@ -8,8 +8,9 @@
 			transition: filter 0.3s ease-in-out, margin 0.3s ease-in-out;
 }
 
-#board {
+#view-game-board {
 	position: relative;
+	height: 600px;
 	.tile {
 		position: absolute;
 		@include filter-transition();

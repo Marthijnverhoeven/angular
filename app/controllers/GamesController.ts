@@ -117,7 +117,7 @@ namespace Application.Controller
 			self.GameService.start(game._id,
 				(id) =>
 				{
-					self.$state.go('game', { id: id });
+					self.$state.go('game.board', { id: id });
 				},
 				(error) =>
 				{

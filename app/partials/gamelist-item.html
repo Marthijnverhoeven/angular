@@ -1,7 +1,7 @@
 <li class="list-group-item">
 	<div>
-		<a ng-disabled="!gamesCtrl.canOpenGame(game)" ui-sref="game({ id: game._id })" class="btn btn-primary">Openen</a>
-		<a ng-disabled="!gamesCtrl.canSeeHistory(game)" ui-sref="history({ id: game._id })" class="btn btn-primary">Historie</a>
+		<a ng-disabled="!gamesCtrl.canOpenGame(game)" ui-sref="game.board({ id: game._id })" class="btn btn-primary">Openen</a>
+		<a ng-disabled="!gamesCtrl.canSeeHistory(game)" ui-sref="game.history({ id: game._id })" class="btn btn-primary">Historie</a>
 		<button type="button" ng-disabled="!gamesCtrl.canJoinGame(game)" ng-click="gamesCtrl.joinGame(game)" class="btn btn-primary">Meedoen</button>
 		<button type="button" ng-disabled="!gamesCtrl.canStartGame(game)" ng-click="gamesCtrl.startGame(game)" class="btn btn-primary">Starten</button>
 	</div>

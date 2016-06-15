@@ -16,5 +16,16 @@ namespace Application.Controller
 		{
 			this.currentGame = new Application.Model.Game(game.data);
 		}
+		
+		public canOpenGame() : boolean
+		{
+			return this.currentGame.state !== 'open';
+		}
+		
+		public canSeeHistory() : boolean
+		{
+			return this.currentGame.state === 'playing'
+				|| this.currentGame.state === 'finished';
+		}
 	}
 }

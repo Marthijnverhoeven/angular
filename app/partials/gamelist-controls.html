@@ -1,21 +1,24 @@
-<div>
-	<h3>Nieuw spel</h3>
-		
-	<div class="form-group">
-		<label for="template">Template</label>
-		<select name="template" class="form-control" ng-model="gamesCtrl.newGame.template">
-			<option ng-repeat="template in gamesCtrl.templates">{{ template._id }}</option>
-		</select>
+<div class="col-lg-3 col-lg-offset-1">
+	<div>
+		<h3>Nieuw spel</h3>
+			
+		<div class="form-group">
+			<label for="template">Template</label>
+			<select name="template" class="form-control" ng-model="gamesCtrl.newGame.template">
+				<option ng-repeat="template in gamesCtrl.templates">{{ template._id }}</option>
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="minPlayers">Minimum spelers</label>
+			<input class="form-control" type="number" min="{{ gamesCtrl.minPlayers }}" max="{{ gamesCtrl.maxPlayers }}" name="minPlayers" ng-model="gamesCtrl.newGame.minPlayers" />
+		</div>
+		<div class="form-group">
+			<label for="maxPlayers">Maximum spelers</label>
+			<input class="form-control" type="number" min="{{ gamesCtrl.minPlayers }}" max="{{ gamesCtrl.maxPlayers }}" name="maxPlayers" ng-model="gamesCtrl.newGame.maxPlayers" />
+		</div>
+		<button class="btn btn-primary"
+			ng-disabled="!gamesCtrl.canCreateGame()" 
+			ng-click="gamesCtrl.createGame()">Nieuw spel</button>
 	</div>
-	<div class="form-group">
-		<label for="minPlayers">Minimum spelers</label>
-		<input class="form-control" type="number" min="{{ gamesCtrl.minPlayers }}" max="{{ gamesCtrl.maxPlayers }}" name="minPlayers" ng-model="gamesCtrl.newGame.minPlayers" />
-	</div>
-	<div class="form-group">
-		<label for="maxPlayers">Maximum spelers</label>
-		<input class="form-control" type="number" min="{{ gamesCtrl.minPlayers }}" max="{{ gamesCtrl.maxPlayers }}" name="maxPlayers" ng-model="gamesCtrl.newGame.maxPlayers" />
-	</div>
-	<button class="btn btn-primary"
-		ng-disabled="!gamesCtrl.canCreateGame()" 
-		ng-click="gamesCtrl.createGame()">Nieuw spel</button>
 </div>
+<div class="col-lg-7" ui-view></div>

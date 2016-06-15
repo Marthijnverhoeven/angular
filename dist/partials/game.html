@@ -1,13 +1,19 @@
-<div class="view-game">
-	<h4>Gemaakt door: {{ gameCtrl.currentGame.createdBy.name }}</h4>
-	<p>
-		Template: {{ gameCtrl.currentGame.gameTemplate._id }}<br />
-		Status: {{ gameCtrl.currentGame.state }}<br />
-		Minimum spelers: {{ gameCtrl.currentGame.minPlayers }}<br />
-		Maximum spelers: {{ gameCtrl.currentGame.maxPlayers }}<br />
-	</p>
-	<ul class="list-group">
-		<li class="list-group-item active"><h4>Huidige spelers ({{ gameCtrl.currentGame.players.length }})</h4></li>
-		<li class="list-group-item" ng-repeat="player in gameCtrl.currentGame.players">{{ player.name }}</li>
-	</ul>
+<div class="col-lg-3 col-lg-offset-1">
+	<div id="view-game">
+		<h4>Gemaakt door: {{ gameCtrl.currentGame.createdBy.name }}</h4>
+		<p>
+			Template: {{ gameCtrl.currentGame.gameTemplate._id }}<br />
+			Status: {{ gameCtrl.currentGame.state }}<br />
+			Minimum spelers: {{ gameCtrl.currentGame.minPlayers }}<br />
+			Maximum spelers: {{ gameCtrl.currentGame.maxPlayers }}<br />
+			Winnaar: {{ gameCtrl.getWinner() }}
+		</p>
+		<ul class="list-group">
+			<li class="list-group-item active"><h4>Huidige spelers ({{ gameCtrl.currentGame.players.length }})</h4></li>
+			<li class="list-group-item" ng-repeat="player in gameCtrl.currentGame.players">{{ player.name }}</li>
+		</ul>
+		<button class="btn btn-primary" ui-sref=".board" 	ng-disabled="!gameCtrl.canOpenGame()">Bord</button>
+		<button class="btn btn-primary" ui-sref=".history" 	ng-disabled="!gameCtrl.canSeeHistory()">Historie</button>
+	</div>
 </div>
+<div class="col-lg-7" ui-view></div>

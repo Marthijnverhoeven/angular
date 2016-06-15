@@ -331,10 +331,11 @@ var Application;
                 this.AuthService = AuthService;
                 this.navigationDictionary = {
                     'index': { title: 'Index', items: this.getItemsWithActive("index") },
-                    'allGames': { title: 'Overzicht', items: this.getItemsWithActive("allGames") },
-                    'myGames': { title: 'Eigen spellen', items: this.getItemsWithActive("myGames") },
+                    'games.all': { title: 'Overzicht', items: this.getItemsWithActive("games.all") },
+                    'games.me': { title: 'Eigen spellen', items: this.getItemsWithActive("games.me") },
                     'settings': { title: 'Instellingen', items: this.getItemsWithActive("settings") },
-                    'game': { title: 'Spel', items: this.getItemsWithActive(null) },
+                    'game.board': { title: 'Spel', items: this.getItemsWithActive(null) },
+                    'game.history': { title: 'Spel', items: this.getItemsWithActive(null) },
                     'login': { title: 'Login', items: this.getItemsWithActive(null) },
                     'logout': { title: 'Logout', items: this.getItemsWithActive(null) }
                 };
@@ -358,8 +359,8 @@ var Application;
             NavigationController.prototype.getItemsWithActive = function (active) {
                 var items = [
                     { label: 'Index', state: 'index' },
-                    { label: 'Overzicht', state: 'allGames' },
-                    { label: 'Eigen spellen', state: 'myGames' },
+                    { label: 'Overzicht', state: 'games.all' },
+                    { label: 'Eigen spellen', state: 'games.me' },
                     { label: 'Instellingen', state: 'settings' }
                 ];
                 if (!active)
@@ -462,7 +463,7 @@ var Application;
             GamesController.prototype.startGame = function (game) {
                 var self = this;
                 self.GameService.start(game._id, function (id) {
-                    self.$state.go('game', { id: id });
+                    self.$state.go('game.board', { id: id });
                 }, function (error) {
                     alert('De game kon niet gestart worden, probeer het later opnieuw.');
                     console.error(error);
@@ -606,6 +607,13 @@ var Application;
                 this.$stateParams = $stateParams;
                 this.currentGame = new Application.Model.Game(game.data);
             }
+            GameController.prototype.canOpenGame = function () {
+                return this.currentGame.state !== 'open';
+            };
+            GameController.prototype.canSeeHistory = function () {
+                return this.currentGame.state === 'playing'
+                    || this.currentGame.state === 'finished';
+            };
             return GameController;
         }());
         Controller.GameController = GameController;
@@ -892,10 +900,7 @@ var Application;
         var AuthService = (function () {
             function AuthService(configuration) {
                 this.configuration = configuration;
-                this.user = {
-                    name: 'fs.karsodimedjo@student.avans.nl',
-                    token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.ImZzLmthcnNvZGltZWRqb0BzdHVkZW50LmF2YW5zLm5sIg.htVG8dEuA4EM89b_HwwLUWh9qv_vPzO_fHRDEFna8qI'
-                };
+                this.user = {};
             }
             AuthService.prototype.authenticationUrl = function () {
                 var callback = encodeURIComponent(this.configuration.baseUrl + this.configuration.authCallback);
@@ -1175,62 +1180,43 @@ var Application;
                 this.$stateProvider
                     .state('index', {
                     url: "/index",
-                    views: {
-                        "viewSidePanel": { templateUrl: "partials/empty.html" },
-                        "viewMainPanel": { templateUrl: "partials/index.html" }
-                    }
+                    templateUrl: "partials/index.html"
                 }).state('settings', {
                     url: "/settings",
-                    views: {
-                        "viewBigPanel": { templateUrl: "partials/style.html" }
-                    }
+                    templateUrl: "partials/style.html"
                 });
             };
             Router.prototype.appendAuthenticationStates = function () {
                 this.$stateProvider
                     .state('login', {
                     url: "/login",
-                    views: {
-                        "viewSidePanel": { templateUrl: "partials/empty.html" },
-                        "viewMainPanel": {
-                            templateUrl: "partials/login.html",
-                            controller: function ($scope, AuthService) {
-                                this.authUrl = function () {
-                                    return AuthService.authenticationUrl();
-                                };
-                            },
-                            controllerAs: "loginCtrl"
-                        }
-                    }
+                    templateUrl: "partials/login.html",
+                    controller: function ($scope, AuthService) {
+                        this.authUrl = function () {
+                            return AuthService.authenticationUrl();
+                        };
+                    },
+                    controllerAs: "loginCtrl"
                 })
                     .state('logout', {
                     url: "/logout",
-                    views: {
-                        "viewMainPanel": {
-                            templateUrl: "partials/empty.html",
-                            controller: function ($state, AuthService) {
-                                AuthService.user = {};
-                                $state.go('index');
-                            }
-                        }
+                    templateUrl: "partials/empty.html",
+                    controller: function ($state, AuthService) {
+                        AuthService.user = {};
+                        $state.go('index');
                     }
                 })
                     .state('authentication', {
                     url: "/authCallback?username&token",
-                    views: {
-                        "viewSidePanel": { templateUrl: "partials/empty.html" },
-                        "viewMainPanel": {
-                            templateUrl: "partials/empty.html",
-                            controller: function ($scope, $state, AuthService) {
-                                if ($state.params['username'] && $state.params['token']) {
-                                    AuthService.setUser($state.params['username'], $state.params['token']);
-                                    $state.go('allGames');
-                                }
-                                else {
-                                    alert('Login failed');
-                                    $state.go('login');
-                                }
-                            }
+                    templateUrl: "partials/empty.html",
+                    controller: function ($scope, $state, AuthService) {
+                        if ($state.params['username'] && $state.params['token']) {
+                            AuthService.setUser($state.params['username'], $state.params['token']);
+                            $state.go('games.all');
+                        }
+                        else {
+                            alert('Login failed');
+                            $state.go('login');
                         }
                     }
                 });
@@ -1239,90 +1225,43 @@ var Application;
                 this.$stateProvider
                     .state('game', {
                     url: "/game/{id}",
-                    views: {
-                        "viewSidePanel": {
-                            templateUrl: "partials/game.html",
-                            controller: 'gameController',
-                            controllerAs: 'gameCtrl',
-                            resolve: {
-                                game: function (GameService, $stateParams) {
-                                    return GameService.read($stateParams.id);
-                                }
-                            }
-                        },
-                        "viewMainPanel": {
-                            templateUrl: 'partials/game-board.html',
-                            controller: 'gameBoardController',
-                            controllerAs: 'gameCtrl',
-                            resolve: {
-                                game: function (GameService, $stateParams) {
-                                    return GameService.read($stateParams.id);
-                                },
-                                tiles: function (GameService, $stateParams) {
-                                    return GameService.tiles($stateParams.id);
-                                }
-                            }
+                    abstract: true,
+                    templateUrl: "partials/game.html",
+                    controller: 'gameController',
+                    controllerAs: 'gameCtrl',
+                    resolve: {
+                        game: function (GameService, $stateParams) {
+                            return GameService.read($stateParams.id);
                         }
                     },
                     data: { reqAuth: true }
                 })
-                    .state('board', {
-                    url: "/game/{id}/board",
-                    views: {
-                        "viewSidePanel": {
-                            templateUrl: "partials/game.html",
-                            controller: 'gameController',
-                            controllerAs: 'gameCtrl',
-                            resolve: {
-                                game: function (GameService, $stateParams) {
-                                    return GameService.read($stateParams.id);
-                                },
-                                tiles: function (GameService, $stateParams) {
-                                    return GameService.tiles($stateParams.id);
-                                }
-                            }
+                    .state('game.board', {
+                    url: "/board",
+                    templateUrl: 'partials/game-board.html',
+                    controller: 'gameBoardController',
+                    controllerAs: 'gameCtrl',
+                    resolve: {
+                        game: function (GameService, $stateParams) {
+                            return GameService.read($stateParams.id);
                         },
-                        "viewMainPanel": {
-                            templateUrl: 'partials/game-board.html',
-                            controller: 'gameBoardController',
-                            controllerAs: 'gameCtrl',
-                            resolve: {
-                                game: function (GameService, $stateParams) {
-                                    return GameService.read($stateParams.id);
-                                },
-                                tiles: function (GameService, $stateParams) {
-                                    return GameService.tiles($stateParams.id);
-                                }
-                            }
+                        tiles: function (GameService, $stateParams) {
+                            return GameService.tiles($stateParams.id);
                         }
                     },
                     data: { reqAuth: true }
                 })
-                    .state('history', {
-                    url: "/game/{id}/history",
-                    views: {
-                        "viewSidePanel": {
-                            templateUrl: "partials/game.html",
-                            controller: 'gameController',
-                            controllerAs: 'gameCtrl',
-                            resolve: {
-                                game: function (GameService, $stateParams) {
-                                    return GameService.read($stateParams.id);
-                                }
-                            }
+                    .state('game.history', {
+                    url: "/history",
+                    templateUrl: "partials/game-history.html",
+                    controller: 'gameHistoryController',
+                    controllerAs: 'gameHistoryCtrl',
+                    resolve: {
+                        game: function (GameService, $stateParams) {
+                            return GameService.read($stateParams.id);
                         },
-                        "viewMainPanel": {
-                            templateUrl: "partials/game-history.html",
-                            controller: 'gameHistoryController',
-                            controllerAs: 'gameHistoryCtrl',
-                            resolve: {
-                                game: function (GameService, $stateParams) {
-                                    return GameService.read($stateParams.id);
-                                },
-                                tiles: function (GameService, $stateParams) {
-                                    return GameService.tiles($stateParams.id);
-                                }
-                            }
+                        tiles: function (GameService, $stateParams) {
+                            return GameService.tiles($stateParams.id);
                         }
                     },
                     data: { reqAuth: true }
@@ -1330,60 +1269,45 @@ var Application;
             };
             Router.prototype.appendListStates = function () {
                 this.$stateProvider
-                    .state('allGames', {
+                    .state('games', {
                     url: "/games",
-                    views: {
-                        "viewSidePanel": {
-                            templateUrl: "partials/gamelist-controls.html",
-                            controller: 'gameCreateController',
-                            controllerAs: 'gamesCtrl',
-                            resolve: {
-                                templates: function (ApplicationService) {
-                                    return ApplicationService.templates();
-                                }
-                            }
-                        },
-                        "viewMainPanel": {
-                            templateUrl: "partials/gamelist.html",
-                            controller: 'gamesController',
-                            controllerAs: 'gamesCtrl',
-                            resolve: {
-                                games: function (GameListService, ParameterReaderService) {
-                                    var params = ParameterReaderService.getParams();
-                                    return GameListService.readAll(params);
-                                },
-                                title: function () { return 'Overzicht'; },
-                                fromCreatedBy: function () { return false; }
-                            },
+                    abstract: true,
+                    templateUrl: "partials/gamelist-controls.html",
+                    controller: 'gameCreateController',
+                    controllerAs: 'gamesCtrl',
+                    resolve: {
+                        templates: function (ApplicationService) {
+                            return ApplicationService.templates();
                         }
                     },
                     data: { reqAuth: true }
                 })
-                    .state('myGames', {
-                    url: "/games/me",
-                    views: {
-                        "viewSidePanel": {
-                            templateUrl: "partials/gamelist-controls.html",
-                            controller: 'gameCreateController',
-                            controllerAs: 'gamesCtrl',
-                            resolve: {
-                                templates: function (ApplicationService) {
-                                    return ApplicationService.templates();
-                                }
-                            }
+                    .state('games.all', {
+                    url: "/all",
+                    templateUrl: "partials/gamelist.html",
+                    controller: 'gamesController',
+                    controllerAs: 'gamesCtrl',
+                    resolve: {
+                        games: function (GameListService, ParameterReaderService) {
+                            var params = ParameterReaderService.getParams();
+                            return GameListService.readAll(params);
                         },
-                        "viewMainPanel": {
-                            templateUrl: "partials/gamelist.html",
-                            controller: 'gamesController',
-                            controllerAs: 'gamesCtrl',
-                            resolve: {
-                                games: function (GameListService) {
-                                    return GameListService.readCreated();
-                                },
-                                title: function () { return 'Eigen spellen'; },
-                                fromCreatedBy: function () { return true; }
-                            },
-                        }
+                        title: function () { return 'Overzicht'; },
+                        fromCreatedBy: function () { return false; }
+                    },
+                    data: { reqAuth: true }
+                })
+                    .state('created', {
+                    url: "/me",
+                    templateUrl: "partials/gamelist.html",
+                    controller: 'gamesController',
+                    controllerAs: 'gamesCtrl',
+                    resolve: {
+                        games: function (GameListService) {
+                            return GameListService.readCreated();
+                        },
+                        title: function () { return 'Eigen spellen'; },
+                        fromCreatedBy: function () { return true; }
                     },
                     data: { reqAuth: true }
                 });
