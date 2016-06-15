@@ -648,12 +648,26 @@ var Application;
                     onSuccess(new Application.Model.Game(result.data));
                 }, onError);
             };
-            GameListService.prototype.readAll = function (onSuccess, onError) {
+            GameListService.prototype.readAll = function (args, onSuccess, onError) {
                 var fallback = function () { };
                 onSuccess = onSuccess || fallback;
                 onError = onError || fallback;
+                var argumentString = "";
+                if (!args == null) {
+                    for (var i = 0; i < args.length; i++) {
+                        if (i != 0) {
+                            argumentString += "&";
+                        }
+                        else {
+                            argumentString += "?";
+                        }
+                        argumentString += args[i].name;
+                        argumentString += "=";
+                        argumentString += args[i].value;
+                    }
+                }
                 var self = this;
-                return self.request('GET', '/games', null, function (result) {
+                return self.request('GET', '/games' + argumentString, null, function (result) {
                     var games = [];
                     for (var _i = 0, _a = result.data; _i < _a.length; _i++) {
                         var game = _a[_i];

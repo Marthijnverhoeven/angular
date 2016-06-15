@@ -214,7 +214,7 @@ describe("Game List Model Test", function () {
 		httpBackend.expectGET("http://mahjongmayhem.herokuapp.com/games").respond(200, games);
 		httpBackend.expectGET("partials/empty.html").respond(200);
 		httpBackend.expectGET("partials/index.html").respond(200);
-		gameListService.readAll(success, fail);
+		gameListService.readAll(null, success, fail);
 
 		httpBackend.flush();
 

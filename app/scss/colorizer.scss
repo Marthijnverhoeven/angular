@@ -1,0 +1,20 @@
+body {
+    background-color: $backgroundColor !important;
+    font-size: $fontSize !important;
+}
+
+.btn-primary {
+    color: $buttonTextColor !important;
+    background-color: $buttonBackgroundColor !important;
+    border-color: $buttonBorderColor !important;
+}
+
+.list-group-item.active {
+    background-color: $listGroupItemBackgroundColor !important;
+    border-color: $listGroupItemBorderColor !important;
+}
+
+.btn-success {
+    background-color: $successColor !important;
+    border-color: $successBorderColor !important;
+}

@@ -1,7 +1,9 @@
 <div class="col-lg-12">
-    <h1>{{ style.currentStyle }}</h1>
-    <select ng-model="style.selectedStyle">
+    <div class="form-group">
+        <label for="theme">Thema:</label>
+        <select name="theme" class="form-control" ng-model="style.selectedStyle">
         <option ng-repeat="s in style.availableStyles" value="{{s.key}}">{{s.name}}</option>
     </select>
-    <button class="btn btn-success" ng-click="style.setCurrentStyle()">Save</button>
+        <button class="btn btn-success" ng-click="style.setCurrentStyle()">Save</button>
+    </div>
 </div>

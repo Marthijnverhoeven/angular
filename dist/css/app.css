@@ -1,6 +1,8 @@
-body {
-  background-color: blue !important;
-}
+.view-game {
+  color: black;
+  font-size: 1.2em;
+  font-weight: strong; }
+
 #board {
   position: relative; }
   #board .tile {
@@ -151,5 +153,22 @@ body {
     #board .tile.wind-west {
       background-image: url(../images/tiles.png);
       background-position: 0px -2819.81551px; }
+
+body {
+  background-color: lightblue !important;
+  font-size: 1.2em !important; }
+
+.btn-primary {
+  color: #fff !important;
+  background-color: #337ab7 !important;
+  border-color: #2e6da4 !important; }
+
+.list-group-item.active {
+  background-color: #337ab7 !important;
+  border-color: #2e6da4 !important; }
+
+.btn-success {
+  background-color: #5cb85c !important;
+  border-color: #4cae4c !important; }
 
 /*# sourceMappingURL=app.css.map */
