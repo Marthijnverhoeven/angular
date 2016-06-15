@@ -1,155 +1,159 @@
-body {
-  background-color: blue !important;
-}
+.tile {
+  width: 50px;
+  height: 68.77599px;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  -webkit-box-shadow: 5px -8px 3px 0px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: 5px -8px 3px 0px rgba(0, 0, 0, 0.4);
+  -ms-moz-box-shadow: 5px -8px 3px 0px rgba(0, 0, 0, 0.4);
+  -o-moz-box-shadow: 5px -8px 3px 0px rgba(0, 0, 0, 0.4);
+  box-shadow: 5px -8px 3px 0px rgba(0, 0, 0, 0.4);
+  display: inline-block; }
+  .tile.bamboo-1 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px 0px; }
+  .tile.character-1 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -618.98389px; }
+  .tile.circle-1 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -1237.96778px; }
+  .tile.bamboo-2 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -68.77599px; }
+  .tile.character-2 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -687.75988px; }
+  .tile.circle-2 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -1306.74377px; }
+  .tile.bamboo-3 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -137.55198px; }
+  .tile.character-3 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -756.53587px; }
+  .tile.circle-3 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -1375.51976px; }
+  .tile.bamboo-4 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -206.32796px; }
+  .tile.character-4 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -825.31186px; }
+  .tile.circle-4 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -1444.29575px; }
+  .tile.bamboo-5 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -275.10395px; }
+  .tile.character-5 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -894.08784px; }
+  .tile.circle-5 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -1513.07174px; }
+  .tile.bamboo-6 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -343.87994px; }
+  .tile.character-6 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -962.86383px; }
+  .tile.circle-6 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -1581.84772px; }
+  .tile.bamboo-7 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -412.65593px; }
+  .tile.character-7 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -1031.63982px; }
+  .tile.circle-7 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -1650.62371px; }
+  .tile.bamboo-8 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -481.43192px; }
+  .tile.character-8 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -1100.41581px; }
+  .tile.circle-8 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -1719.3997px; }
+  .tile.bamboo-9 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -550.2079px; }
+  .tile.character-9 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -1169.1918px; }
+  .tile.circle-9 {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -1788.17569px; }
+  .tile.dragon-green {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -1856.95168px; }
+  .tile.dragon-red {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -1925.72766px; }
+  .tile.dragon-white {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -1994.50365px; }
+  .tile.flower-bamboo {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -2063.27964px; }
+  .tile.flower-chrysantememum {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -2132.05563px; }
+  .tile.flower-orchid {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -2200.83162px; }
+  .tile.flower-plum {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -2269.6076px; }
+  .tile.season-autumn {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -2338.38359px; }
+  .tile.season-spring {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -2407.15958px; }
+  .tile.season-summer {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -2475.93557px; }
+  .tile.season-winter {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -2544.71156px; }
+  .tile.wind-east {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -2613.48754px; }
+  .tile.wind-north {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -2682.26353px; }
+  .tile.wind-south {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -2751.03952px; }
+  .tile.wind-west {
+    background-image: url(../images/tiles.png);
+    background-position: 0px -2819.81551px; }
+
+.view-game {
+  color: black;
+  font-size: 1em;
+  font-weight: strong; }
+
 #board {
   position: relative; }
   #board .tile {
-    -webkit-transition: -webkit-filter 0.3s ease-in-out, margin 0.3s ease-in-out;
-    transition: filter 0.3s ease-in-out, margin 0.3s ease-in-out;
     position: absolute;
-    width: 50px;
-    height: 68.77599px;
-    background-size: 100%;
-    background-repeat: no-repeat;
-    -webkit-box-shadow: 5px -8px 3px 0px rgba(0, 0, 0, 0.4);
-    -moz-box-shadow: 5px -8px 3px 0px rgba(0, 0, 0, 0.4);
-    -ms-moz-box-shadow: 5px -8px 3px 0px rgba(0, 0, 0, 0.4);
-    -o-moz-box-shadow: 5px -8px 3px 0px rgba(0, 0, 0, 0.4);
-    box-shadow: 5px -8px 3px 0px rgba(0, 0, 0, 0.4);
-    display: inline-block; }
+    -webkit-transition: -webkit-filter 0.3s ease-in-out, margin 0.3s ease-in-out;
+    transition: filter 0.3s ease-in-out, margin 0.3s ease-in-out; }
     #board .tile:hover:not(.blocked) {
-      margin-top: 3px; }
+      margin-top: 5px; }
     #board .tile.selected {
       -webkit-filter: invert(100%);
       filter: invert(100%); }
     #board .tile.blocked {
       -webkit-filter: invert(20%);
       filter: invert(20%); }
-    #board .tile.bamboo-1 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px 0px; }
-    #board .tile.character-1 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -618.98389px; }
-    #board .tile.circle-1 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -1237.96778px; }
-    #board .tile.bamboo-2 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -68.77599px; }
-    #board .tile.character-2 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -687.75988px; }
-    #board .tile.circle-2 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -1306.74377px; }
-    #board .tile.bamboo-3 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -137.55198px; }
-    #board .tile.character-3 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -756.53587px; }
-    #board .tile.circle-3 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -1375.51976px; }
-    #board .tile.bamboo-4 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -206.32796px; }
-    #board .tile.character-4 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -825.31186px; }
-    #board .tile.circle-4 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -1444.29575px; }
-    #board .tile.bamboo-5 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -275.10395px; }
-    #board .tile.character-5 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -894.08784px; }
-    #board .tile.circle-5 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -1513.07174px; }
-    #board .tile.bamboo-6 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -343.87994px; }
-    #board .tile.character-6 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -962.86383px; }
-    #board .tile.circle-6 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -1581.84772px; }
-    #board .tile.bamboo-7 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -412.65593px; }
-    #board .tile.character-7 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -1031.63982px; }
-    #board .tile.circle-7 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -1650.62371px; }
-    #board .tile.bamboo-8 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -481.43192px; }
-    #board .tile.character-8 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -1100.41581px; }
-    #board .tile.circle-8 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -1719.3997px; }
-    #board .tile.bamboo-9 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -550.2079px; }
-    #board .tile.character-9 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -1169.1918px; }
-    #board .tile.circle-9 {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -1788.17569px; }
-    #board .tile.dragon-green {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -1856.95168px; }
-    #board .tile.dragon-red {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -1925.72766px; }
-    #board .tile.dragon-white {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -1994.50365px; }
-    #board .tile.flower-bamboo {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -2063.27964px; }
-    #board .tile.flower-chrysantememum {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -2132.05563px; }
-    #board .tile.flower-orchid {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -2200.83162px; }
-    #board .tile.flower-plum {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -2269.6076px; }
-    #board .tile.season-autumn {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -2338.38359px; }
-    #board .tile.season-spring {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -2407.15958px; }
-    #board .tile.season-summer {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -2475.93557px; }
-    #board .tile.season-winter {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -2544.71156px; }
-    #board .tile.wind-east {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -2613.48754px; }
-    #board .tile.wind-north {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -2682.26353px; }
-    #board .tile.wind-south {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -2751.03952px; }
-    #board .tile.wind-west {
-      background-image: url(../images/tiles.png);
-      background-position: 0px -2819.81551px; }
 
 /*# sourceMappingURL=app.css.map */

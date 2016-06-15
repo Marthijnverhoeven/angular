@@ -1,0 +1,65 @@
+@mixin tile-ify($index, $offset) {
+  	background-image: $url;
+	background-position: 0px #{$tileHeight / $tileDivider * ($index - 1 + $offset) * -1};
+}
+
+@mixin box-shadow($shadowColor) {
+	-webkit-box-shadow 	: 5px -8px 3px 0px $shadowColor;
+	-moz-box-shadow 	: 5px -8px 3px 0px $shadowColor;
+	-ms-moz-box-shadow  : 5px -8px 3px 0px $shadowColor;
+	-o-moz-box-shadow 	: 5px -8px 3px 0px $shadowColor;
+	box-shadow 			: 5px -8px 3px 0px $shadowColor;
+}
+
+.tile {
+	width: #{$tileWidth / $tileDivider};
+	height: #{$tileHeight / $tileDivider};
+	background-size: 100%;
+	background-repeat: no-repeat;
+	
+	@include box-shadow($tileShadowColor);
+	
+	display: inline-block;
+	@for $i from 1 through 9 {
+		&.bamboo-#{$i} {
+			@include tile-ify($i, 0);
+		}
+		&.character-#{$i} {
+			@include tile-ify($i, 9);
+		}
+		&.circle-#{$i} {
+			@include tile-ify($i, 18);
+		}
+	}
+	$colors: 'green' 'red' 'white';
+	@for $i from 1 through length($colors) {
+		$c: nth($colors, $i);
+		&.dragon-#{$c} {
+			@include tile-ify($i, 27);
+		}
+	}
+
+	$flowers: bamboo chrysantememum 'orchid' 'plum';
+	@for $i from 1 through length($flowers) {
+		$c: nth($flowers, $i);
+		&.flower-#{$c} {
+			@include tile-ify($i, 30);
+		}
+	}
+
+	$seasons: autumn spring summer winter;
+	@for $i from 1 through length($seasons) {
+		$c: nth($seasons, $i);
+		&.season-#{$c} {
+			@include tile-ify($i, 34);
+		}
+	}
+
+	$directions: east north south west;
+	@for $i from 1 through length($directions) {
+		$c: nth($directions, $i);
+		&.wind-#{$c} {
+			@include tile-ify($i, 38);
+		}
+	}
+}

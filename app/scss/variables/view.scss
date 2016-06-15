@@ -1,2 +1,11 @@
-$fontColor: red;
+$fontColor: black;
 $fontSize: 1em;
+
+$targetWidth: 50px;
+$url: url(../images/tiles.png);
+
+$tileWidth: 348.959px;
+$tileHeight: 480px;
+$tileDivider: $tileWidth / $targetWidth;
+$tileShadowColor: rgba(0,0,0,0.4);
+$tileHoverMargin: 5px;

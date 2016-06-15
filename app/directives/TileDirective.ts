@@ -21,11 +21,15 @@ namespace Application.Directive
 			g: '=',
 		};
 		
-		public controller($scope: TileDirectiveScope, $stateParams: angular.ui.IStateParamsService, GameService: Application.Service.GameService, SocketService: Application.Service.SocketService)
+		public controller(
+			$scope: TileDirectiveScope,
+			$stateParams: angular.ui.IStateParamsService,
+			GameService: Application.Service.GameService,
+			SocketService: Application.Service.SocketService,
+			AuthService: Application.Service.AuthService)
 		{
 			SocketService.onMatch((matchedTiles) => { console.log('applying dat shit'); $scope.$apply(); });
-			
-			// $scope.g.addMatchedTile(tiles[0], tiles[1]);					
+						
 			$scope.getEffects = () : string =>
 			{
 				return $scope.t.matchAttempt.isMatched
@@ -38,17 +42,23 @@ namespace Application.Directive
 			}		
 			$scope.click = () : void =>
 			{
-				if(!$scope.t.canAttemptMatch() || !$scope.g.canAttemptMatch())
+				if(!$scope.t.canAttemptMatch() || !$scope.g.canAttemptMatch(AuthService.user))
 					return;
 				$scope.g.matchTile($scope.t, (tile1: Application.Model.Tile, tile2: Application.Model.Tile) =>
 				{
 					GameService.match($scope.g._id, tile1._id, tile2._id,
 						(tiles) =>
-						{ }, // lol useless
+						{
+							tile1.matchAttempt.isMatched = true;
+							tile2.matchAttempt.isMatched = true;
+							tile1.matchAttempt.isSelected = false;
+							tile2.matchAttempt.isSelected = false;
+						}, // lol useless
 						(error) =>
 						{
-							alert('error @TileDirective @GameService.Match');
-							throw error;
+							alert('Een van deze tiles is al weg.');
+							tile1.matchAttempt.isSelected = false;
+							tile2.matchAttempt.isSelected = false;
 						}
 					);
 				});

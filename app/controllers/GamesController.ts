@@ -12,8 +12,11 @@ namespace Application.Controller
 	{
 		public games: Application.Model.Game[];
 		
+		public selected
+		
 		constructor(
 			games: IResult<Application.Model.Game[]>,
+			public title: string,
 			private $state: angular.ui.IStateService,
 			private GameService: Application.Service.GameService,
 			private AuthService: Application.Service.AuthService)
@@ -24,6 +27,17 @@ namespace Application.Controller
 				gameObjects.push(new Application.Model.Game(game));
 			}
 			this.games = gameObjects;
+		}
+		
+		public canOpenGame(game: Application.Model.Game) : boolean
+		{
+			return game.state !== 'open';
+		}
+		
+		public canSeeHistory(game: Application.Model.Game) : boolean
+		{
+			return game.state === 'playing'
+				|| game.state === 'finished';
 		}
 		
 		public canJoinGame(game: Application.Model.Game) : boolean
@@ -38,7 +52,7 @@ namespace Application.Controller
 			self.GameService.join(game._id,
 				(id) =>
 				{
-					self.$state.go('game', { id: id });
+					game.players.push(<Application.Model.Game.Player>{ _id: self.AuthService.user.name, name: self.AuthService.user.name });
 				},
 				(error) =>
 				{

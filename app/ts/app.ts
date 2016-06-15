@@ -5,27 +5,6 @@ namespace Application
 	'use strict';
 	let mahjongMadness = angular.module('mahjongMadness', ['ui.router', 'ngRoute']);
 	
-	console.log('TEST');
-	
-	
-	
-	// mahjongMadness.factory('httpRequestInterceptor', 
-	// 	function (UserService, configuration) { 
-	// 		return { 
-	// 			request: function (config) {
-	// 				if (UserService.username && UserService.token) {
-	// 					config.headers["x-username"] = UserService.username
-	// 					config.headers["x-token"] = UserService.token;
-	// 				}
-	// 				// config.url = configuration.apiUrl + config.url;
-	// 				return config;
-	// 			}
-	// 		}
-	// 	}
-	// );
-
-	// mahjongMadness.config(function ($httpProvider) { $httpProvider.interceptors.push('httpRequestInterceptor'); });
-	
 	mahjongMadness.factory('httpRequestInterceptor', Application.Factory.HttpInterceptorFactory);
 	
 	mahjongMadness.config(Application.Config.RouterFactory);
@@ -53,7 +32,8 @@ namespace Application
 	
 	mahjongMadness.directive('tile', Application.Directive.TileDirectiveFactory);
 	
-	mahjongMadness.filter('ownedGames', Application.Filter.OwnedGames.Factory());
+	mahjongMadness.filter('matchedTiles', Application.Filter.MatchedTilesFactory);
+	mahjongMadness.filter('filterForPlayer', Application.Filter.FilterForPlayerFactory);
 	
 	mahjongMadness.service('ApplicationService', Application.Service.ApplicationService);
 	mahjongMadness.service('StorageService', Application.Service.StorageService);	
@@ -63,7 +43,8 @@ namespace Application
 	mahjongMadness.service('GameService', Application.Service.GameService);
 	mahjongMadness.service('StorageService', Application.Service.StorageService);
 	
-	mahjongMadness.controller('appController', Application.Controller.AppController);	
+	mahjongMadness.controller('appController', Application.Controller.AppController);
+	mahjongMadness.controller('gameHistoryController', Application.Controller.GameHistoryController);
 	mahjongMadness.controller('gameCreateController', Application.Controller.GameCreateController);
 	mahjongMadness.controller('gameBoardController', Application.Controller.GameBoardController);
 	mahjongMadness.controller('gameController', Application.Controller.GameController);

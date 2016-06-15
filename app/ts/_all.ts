@@ -6,6 +6,7 @@
 /// <reference path='../controllers/NavigationController.ts' />
 /// <reference path='../controllers/GamesController.ts' />
 /// <reference path='../controllers/GameCreateController.ts' />
+/// <reference path='../controllers/GameHistoryController.ts' />
 /// <reference path='../controllers/GameBoardController.ts' />
 /// <reference path='../controllers/GameController.ts' />
 /// <reference path='../controllers/StyleController.ts' />
@@ -22,7 +23,8 @@
 
 /// <reference path='../directives/TileDirective.ts' />
 
-/// <reference path='../filters/OwnedGames.ts' />
+/// <reference path='../filters/MatchedTiles.ts' />
+/// <reference path='../filters/FilterForPlayer.ts' />
 
 /// <reference path='../config/Router.ts' />
 /// <reference path='../config/Initializer.ts' />

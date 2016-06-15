@@ -145,10 +145,6 @@ namespace Application.Model
 					if(tile1.canMatch(tile2))
 					{
 						console.log('match');
-						tile1.matchAttempt.isMatched = true;
-						tile2.matchAttempt.isMatched = true;
-						tile1.matchAttempt.isSelected = false;
-						tile2.matchAttempt.isSelected = false;
 						onMatch(tile1, tile2);
 						self.resetBlockedTiles();
 						return;
@@ -173,10 +169,31 @@ namespace Application.Model
 			}
 		}
 		
-		public canAttemptMatch() : boolean
+		public canAttemptMatch(user: User) : boolean
 		{
-			// currentPlayere is player, gamestate is cool etc.
-			return this.getSelectedIndice().length < 2;
+			var self = this;
+			console.log(self.getSelectedIndice().length < 2, self.state === 'playing', (() : boolean => {
+					for(var player of self.players)
+					{
+						if(player._id == user.name)
+						{
+							return true;
+						}
+					}
+					return false;
+				})());
+			return self.getSelectedIndice().length < 2
+				&& self.state === 'playing'
+				&& (() : boolean => {
+					for(var player of self.players)
+					{
+						if(player._id == user.name)
+						{
+							return true;
+						}
+					}
+					return false;
+				})();
 		}
 		
 		public getTile(id: string) : Tile

@@ -1,0 +1,12 @@
+<div id="view-game-history">
+	<!-- gameHistoryCtrl -->
+	<div class="form-group">
+		<label for="players">Player</label>
+		<select name="players" class="form-control" ng-model="gameHistoryCtrl.selectedPlayer">
+			<option value="">Geen filter</option>
+			<option ng-repeat="player in gameHistoryCtrl.currentGame.players">{{ player._id }}</option>
+		</select>
+	</div>
+	
+	<div ng-repeat="t in gameHistoryCtrl.currentGame.tiles | matchedTiles | filterForPlayer: gameHistoryCtrl.selectedPlayer" class="tile {{ t.tile.suit }}-{{ t.tile.name }}" style="{{ gameHistoryCtrl.onEven($index) }}"></div>
+</div>

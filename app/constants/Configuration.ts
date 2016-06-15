@@ -13,6 +13,8 @@ namespace Application.Constant
 		
 		public minPlayers = 1;
 		public maxPlayers = 32;
+		
+		public pageSize = 20;
 	}
 	
 	export var $inject: string[] = [];

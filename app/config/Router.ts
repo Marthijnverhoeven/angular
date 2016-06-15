@@ -89,7 +89,7 @@ namespace Application.Config
 		private appendGameStates() : void
 		{
 			this.$stateProvider
-				.state('game', { // done
+				.state('game', {
 					url: "/game/{id}",
 					views: {
 						"viewSidePanel": {
@@ -157,11 +157,39 @@ namespace Application.Config
 					},
 					data: { reqAuth: true }
 				})
-				.state('matched', { // todo: substate
-					url: "/game/{id}/matched",
+				.state('history', {
+					url: "/game/{id}/history",
 					views: {
-						"viewSidePanel": { templateUrl: "partials/empty.html" },
-						"viewBigPanel": { templateUrl: "partials/empty.html" }
+						"viewSidePanel": {
+							templateUrl: "partials/game-history.html",
+							controller: 'gameHistoryController',
+							controllerAs: 'gameHistoryCtrl',
+							resolve: {
+								game: function(GameService: Application.Service.GameService, $stateParams)
+								{
+									return GameService.read($stateParams.id);
+								},
+								tiles: function(GameService: Application.Service.GameService, $stateParams)
+								{
+									return GameService.tiles($stateParams.id);
+								}
+							}
+						},
+						// "viewBigPanel": {
+						// 	templateUrl: 'partials/game-board.html',
+						// 	controller: 'gameBoardController',
+						// 	controllerAs: 'gameCtrl',
+						// 	resolve: {
+						// 		game: function(GameService: Application.Service.GameService, $stateParams)
+						// 		{
+						// 			return GameService.read($stateParams.id);
+						// 		},
+						// 		tiles: function(GameService: Application.Service.GameService, $stateParams)
+						// 		{
+						// 			return GameService.tiles($stateParams.id);
+						// 		}
+						// 	}
+						// }
 					},
 					data: { reqAuth: true }
 				})
@@ -200,7 +228,8 @@ namespace Application.Config
 								games: function(GameListService: Application.Service.GameListService)
 								{
 									return GameListService.readAll();
-								}
+								},
+								title: () => { return 'All games'; }
 							},
 						}
 					},
@@ -228,7 +257,8 @@ namespace Application.Config
 								games: function(GameListService: Application.Service.GameListService)
 								{
 									return GameListService.readCreated();
-								}
+								},
+								title: () => { return 'My games'; }
 							},
 						}
 					},

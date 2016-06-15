@@ -20,6 +20,14 @@ namespace Application.Controller
 			private SocketService: Application.Service.SocketService)
 		{
 			var self = this;
+			this.currentGame = new Application.Model.Game(game.data);
+								
+			var tileObjects = []
+			for(var tileLiteral of tiles.data)
+			{
+				tileObjects.push(new Application.Model.Tile(tileLiteral));
+			}
+			this.currentGame.setTiles(tileObjects);
 			
 			SocketService.connect([self.$stateParams['id']]);
 			SocketService.onStart(() =>
@@ -44,16 +52,6 @@ namespace Application.Controller
 				// console.log(matchedTiles[0].match.foundBy + ' found a match!');
 				self.currentGame.addMatchedTile(matchedTiles[0], matchedTiles[1]);
 			});
-			
-			
-			this.currentGame = new Application.Model.Game(game.data);
-								
-			var tileObjects = []
-			for(var tileLiteral of tiles.data)
-			{
-				tileObjects.push(new Application.Model.Tile(tileLiteral));
-			}
-			this.currentGame.setTiles(tileObjects);
 		}
 		
 		public getCurrentGame()

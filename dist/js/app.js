@@ -216,10 +216,6 @@ var Application;
                         var tile2 = self.tiles[selected[1]];
                         if (tile1.canMatch(tile2)) {
                             console.log('match');
-                            tile1.matchAttempt.isMatched = true;
-                            tile2.matchAttempt.isMatched = true;
-                            tile1.matchAttempt.isSelected = false;
-                            tile2.matchAttempt.isSelected = false;
                             onMatch(tile1, tile2);
                             self.resetBlockedTiles();
                             return;
@@ -241,8 +237,28 @@ var Application;
                     tile.isTileBlockedBy(self.tiles);
                 }
             };
-            Game.prototype.canAttemptMatch = function () {
-                return this.getSelectedIndice().length < 2;
+            Game.prototype.canAttemptMatch = function (user) {
+                var self = this;
+                console.log(self.getSelectedIndice().length < 2, self.state === 'playing', (function () {
+                    for (var _i = 0, _a = self.players; _i < _a.length; _i++) {
+                        var player = _a[_i];
+                        if (player._id == user.name) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })());
+                return self.getSelectedIndice().length < 2
+                    && self.state === 'playing'
+                    && (function () {
+                        for (var _i = 0, _a = self.players; _i < _a.length; _i++) {
+                            var player = _a[_i];
+                            if (player._id == user.name) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    })();
             };
             Game.prototype.getTile = function (id) {
                 for (var _i = 0, _a = this.tiles; _i < _a.length; _i++) {
@@ -378,7 +394,8 @@ var Application;
     (function (Controller) {
         'use strict';
         var GamesController = (function () {
-            function GamesController(games, $state, GameService, AuthService) {
+            function GamesController(games, title, $state, GameService, AuthService) {
+                this.title = title;
                 this.$state = $state;
                 this.GameService = GameService;
                 this.AuthService = AuthService;
@@ -389,6 +406,13 @@ var Application;
                 }
                 this.games = gameObjects;
             }
+            GamesController.prototype.canOpenGame = function (game) {
+                return game.state !== 'open';
+            };
+            GamesController.prototype.canSeeHistory = function (game) {
+                return game.state === 'playing'
+                    || game.state === 'finished';
+            };
             GamesController.prototype.canJoinGame = function (game) {
                 var self = this;
                 return game.canJoin(self.AuthService.user);
@@ -397,7 +421,7 @@ var Application;
             GamesController.prototype.joinGame = function (game) {
                 var self = this;
                 self.GameService.join(game._id, function (id) {
-                    self.$state.go('game', { id: id });
+                    game.players.push({ _id: self.AuthService.user.name, name: self.AuthService.user.name });
                 }, function (error) {
                     alert('De game kon niet aangemaakt worden, probeer het later opnieuw.');
                     console.error(error);
@@ -449,7 +473,7 @@ var Application;
                 var self = this;
                 console.log(this.newGame.template);
                 self.GameListService.create(this.newGame.template, this.newGame.minPlayers, this.newGame.maxPlayers, function (game) {
-                    self.$state.go('game', { id: game._id });
+                    self.$state.go('myGames', { id: game._id });
                 }, function (error) {
                     alert('De game kon niet aangemaakt worden, probeer het later opnieuw.');
                     console.error(error);
@@ -465,11 +489,45 @@ var Application;
     var Controller;
     (function (Controller) {
         'use strict';
+        var GameHistoryController = (function () {
+            function GameHistoryController(game, tiles, $filter) {
+                this.$filter = $filter;
+                var self = this;
+                this.currentGame = new Application.Model.Game(game.data);
+                var tileObjects = [];
+                for (var _i = 0, _a = tiles.data; _i < _a.length; _i++) {
+                    var tileLiteral = _a[_i];
+                    tileObjects.push(new Application.Model.Tile(tileLiteral));
+                }
+                this.currentGame.setTiles(tileObjects);
+            }
+            GameHistoryController.prototype.onEven = function (i) {
+                return i % 2 == 0
+                    ? ''
+                    : 'margin-right: 10px;';
+            };
+            return GameHistoryController;
+        }());
+        Controller.GameHistoryController = GameHistoryController;
+    })(Controller = Application.Controller || (Application.Controller = {}));
+})(Application || (Application = {}));
+var Application;
+(function (Application) {
+    var Controller;
+    (function (Controller) {
+        'use strict';
         var GameBoardController = (function () {
             function GameBoardController($scope, game, tiles, $stateParams, SocketService) {
                 this.$stateParams = $stateParams;
                 this.SocketService = SocketService;
                 var self = this;
+                this.currentGame = new Application.Model.Game(game.data);
+                var tileObjects = [];
+                for (var _i = 0, _a = tiles.data; _i < _a.length; _i++) {
+                    var tileLiteral = _a[_i];
+                    tileObjects.push(new Application.Model.Tile(tileLiteral));
+                }
+                this.currentGame.setTiles(tileObjects);
                 SocketService.connect([self.$stateParams['id']]);
                 SocketService.onStart(function () {
                     alert('Game started');
@@ -487,13 +545,6 @@ var Application;
                 SocketService.onMatch(function (matchedTiles) {
                     self.currentGame.addMatchedTile(matchedTiles[0], matchedTiles[1]);
                 });
-                this.currentGame = new Application.Model.Game(game.data);
-                var tileObjects = [];
-                for (var _i = 0, _a = tiles.data; _i < _a.length; _i++) {
-                    var tileLiteral = _a[_i];
-                    tileObjects.push(new Application.Model.Tile(tileLiteral));
-                }
-                this.currentGame.setTiles(tileObjects);
             }
             GameBoardController.prototype.getCurrentGame = function () {
                 return this.currentGame;
@@ -897,7 +948,7 @@ var Application;
                     g: '=',
                 };
             }
-            TileDirective.prototype.controller = function ($scope, $stateParams, GameService, SocketService) {
+            TileDirective.prototype.controller = function ($scope, $stateParams, GameService, SocketService, AuthService) {
                 SocketService.onMatch(function (matchedTiles) { console.log('applying dat shit'); $scope.$apply(); });
                 $scope.getEffects = function () {
                     return $scope.t.matchAttempt.isMatched
@@ -909,12 +960,18 @@ var Application;
                                 : ''));
                 };
                 $scope.click = function () {
-                    if (!$scope.t.canAttemptMatch() || !$scope.g.canAttemptMatch())
+                    if (!$scope.t.canAttemptMatch() || !$scope.g.canAttemptMatch(AuthService.user))
                         return;
                     $scope.g.matchTile($scope.t, function (tile1, tile2) {
-                        GameService.match($scope.g._id, tile1._id, tile2._id, function (tiles) { }, function (error) {
-                            alert('error @TileDirective @GameService.Match');
-                            throw error;
+                        GameService.match($scope.g._id, tile1._id, tile2._id, function (tiles) {
+                            tile1.matchAttempt.isMatched = true;
+                            tile2.matchAttempt.isMatched = true;
+                            tile1.matchAttempt.isSelected = false;
+                            tile2.matchAttempt.isSelected = false;
+                        }, function (error) {
+                            alert('Een van deze tiles is al weg.');
+                            tile1.matchAttempt.isSelected = false;
+                            tile2.matchAttempt.isSelected = false;
                         });
                     });
                 };
@@ -933,36 +990,69 @@ var Application;
     var Filter;
     (function (Filter) {
         'use strict';
-        var OwnedGames = (function () {
-            function OwnedGames() {
+        var MatchedTiles = (function () {
+            function MatchedTiles() {
                 this.$inject = [];
             }
-            OwnedGames.prototype.filter = function () {
-                return function (games, userId) {
-                    console.log(games, userId);
+            MatchedTiles.prototype.filter = function () {
+                return function (tiles) {
                     var filtered = [];
-                    if (userId && games) {
-                        for (var _i = 0, games_1 = games; _i < games_1.length; _i++) {
-                            var game = games_1[_i];
-                            if (game.createdBy.id === userId) {
-                                filtered.push(game);
-                            }
+                    for (var _i = 0, tiles_3 = tiles; _i < tiles_3.length; _i++) {
+                        var tile = tiles_3[_i];
+                        if (tile.match && tile.match.foundBy || tile.matchAttempt.isMatched) {
+                            filtered.push(tile);
                         }
                     }
-                    return userId
-                        ? filtered
-                        : games;
+                    return filtered;
                 };
             };
-            OwnedGames.Factory = function () {
-                var instance = new OwnedGames();
-                var filter = instance.filter;
-                filter['$inject'] = [];
-                return filter;
-            };
-            return OwnedGames;
+            return MatchedTiles;
         }());
-        Filter.OwnedGames = OwnedGames;
+        Filter.MatchedTiles = MatchedTiles;
+        Filter.MatchedTilesFactory = (function () {
+            var instance = new MatchedTiles();
+            var filter = instance.filter;
+            filter['$inject'] = [];
+            return filter;
+        })();
+    })(Filter = Application.Filter || (Application.Filter = {}));
+})(Application || (Application = {}));
+var Application;
+(function (Application) {
+    var Filter;
+    (function (Filter) {
+        'use strict';
+        var FilterForPlayer = (function () {
+            function FilterForPlayer() {
+                this.$inject = [];
+            }
+            FilterForPlayer.prototype.filter = function () {
+                return function (tiles, player) {
+                    if (player == undefined || !player) {
+                        console.log('returning tiles');
+                        return tiles;
+                    }
+                    var filtered = [];
+                    for (var _i = 0, tiles_4 = tiles; _i < tiles_4.length; _i++) {
+                        var tile = tiles_4[_i];
+                        if (tile.match.foundBy == player) {
+                            console.log('found by', player);
+                            filtered.push(tile);
+                        }
+                    }
+                    console.log('returning filtered', player);
+                    return filtered;
+                };
+            };
+            return FilterForPlayer;
+        }());
+        Filter.FilterForPlayer = FilterForPlayer;
+        Filter.FilterForPlayerFactory = (function () {
+            var instance = new FilterForPlayer();
+            var filter = instance.filter;
+            filter['$inject'] = [];
+            return filter;
+        })();
     })(Filter = Application.Filter || (Application.Filter = {}));
 })(Application || (Application = {}));
 var Application;
@@ -1098,11 +1188,22 @@ var Application;
                     },
                     data: { reqAuth: true }
                 })
-                    .state('matched', {
-                    url: "/game/{id}/matched",
+                    .state('history', {
+                    url: "/game/{id}/history",
                     views: {
-                        "viewSidePanel": { templateUrl: "partials/empty.html" },
-                        "viewBigPanel": { templateUrl: "partials/empty.html" }
+                        "viewSidePanel": {
+                            templateUrl: "partials/game-history.html",
+                            controller: 'gameHistoryController',
+                            controllerAs: 'gameHistoryCtrl',
+                            resolve: {
+                                game: function (GameService, $stateParams) {
+                                    return GameService.read($stateParams.id);
+                                },
+                                tiles: function (GameService, $stateParams) {
+                                    return GameService.tiles($stateParams.id);
+                                }
+                            }
+                        },
                     },
                     data: { reqAuth: true }
                 })
@@ -1137,7 +1238,8 @@ var Application;
                             resolve: {
                                 games: function (GameListService) {
                                     return GameListService.readAll();
-                                }
+                                },
+                                title: function () { return 'All games'; }
                             },
                         }
                     },
@@ -1163,7 +1265,8 @@ var Application;
                             resolve: {
                                 games: function (GameListService) {
                                     return GameListService.readCreated();
-                                }
+                                },
+                                title: function () { return 'My games'; }
                             },
                         }
                     },
@@ -1211,6 +1314,7 @@ var Application;
                 this.apiUrl = "http://mahjongmayhem.herokuapp.com";
                 this.minPlayers = 1;
                 this.maxPlayers = 32;
+                this.pageSize = 20;
             }
             return Configuration;
         }());
@@ -1225,7 +1329,6 @@ var Application;
 (function (Application) {
     'use strict';
     var mahjongMadness = angular.module('mahjongMadness', ['ui.router', 'ngRoute']);
-    console.log('TEST');
     mahjongMadness.factory('httpRequestInterceptor', Application.Factory.HttpInterceptorFactory);
     mahjongMadness.config(Application.Config.RouterFactory);
     mahjongMadness.config(Application.Config.InitializerFactory);
@@ -1241,7 +1344,8 @@ var Application;
     });
     mahjongMadness.constant('configuration', Application.Constant.ConfigurationFactory);
     mahjongMadness.directive('tile', Application.Directive.TileDirectiveFactory);
-    mahjongMadness.filter('ownedGames', Application.Filter.OwnedGames.Factory());
+    mahjongMadness.filter('matchedTiles', Application.Filter.MatchedTilesFactory);
+    mahjongMadness.filter('filterForPlayer', Application.Filter.FilterForPlayerFactory);
     mahjongMadness.service('ApplicationService', Application.Service.ApplicationService);
     mahjongMadness.service('StorageService', Application.Service.StorageService);
     mahjongMadness.service('GameListService', Application.Service.GameListService);
@@ -1250,6 +1354,7 @@ var Application;
     mahjongMadness.service('GameService', Application.Service.GameService);
     mahjongMadness.service('StorageService', Application.Service.StorageService);
     mahjongMadness.controller('appController', Application.Controller.AppController);
+    mahjongMadness.controller('gameHistoryController', Application.Controller.GameHistoryController);
     mahjongMadness.controller('gameCreateController', Application.Controller.GameCreateController);
     mahjongMadness.controller('gameBoardController', Application.Controller.GameBoardController);
     mahjongMadness.controller('gameController', Application.Controller.GameController);
