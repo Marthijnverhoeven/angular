@@ -13,6 +13,10 @@ namespace Application.Service
 		
 		public store(key: string, value: Object) : void
 		{
+           	var item = this.storage.getItem(key);
+            if(!!item) {
+                this.storage.removeItem(key);
+            }
 			return this.storage.setItem(key, JSON.stringify(value));
 		}
 		
@@ -23,7 +27,8 @@ namespace Application.Service
 			{
 				return JSON.parse(item);
 			}
-			throw new Error('item does not exist');
+            return null;
+			//throw new Error('item does not exist');
 		}
 		
 		public remove(key: string) : void

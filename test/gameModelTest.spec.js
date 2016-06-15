@@ -1,4 +1,4 @@
-describe("TileModel", function() {
+describe("Game Model Test", function() {
 	it('should check an array of tiles', function(){
 		var game1 = new Application.Model.Game({});
 

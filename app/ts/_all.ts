@@ -8,11 +8,13 @@
 /// <reference path='../controllers/GameCreateController.ts' />
 /// <reference path='../controllers/GameBoardController.ts' />
 /// <reference path='../controllers/GameController.ts' />
+/// <reference path='../controllers/StyleController.ts' />
 
 /// <reference path='../services/ApplicationService.ts' />
 /// <reference path='../services/StorageService.ts' />
 /// <reference path='../services/GameListService.ts' />
 /// <reference path='../services/GameService.ts' />
+/// <reference path='../services/StorageService.ts' />
 /// <reference path='../services/AuthService.ts' />
 
 /// <reference path='../factories/HttpInterceptorFactory.ts' />

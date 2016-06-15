@@ -56,6 +56,7 @@ namespace Application
 	mahjongMadness.service('GameListService', Application.Service.GameListService);
 	mahjongMadness.service('AuthService', Application.Service.AuthService);
 	mahjongMadness.service('GameService', Application.Service.GameService);
+	mahjongMadness.service('StorageService', Application.Service.StorageService);
 	
 	mahjongMadness.controller('appController', Application.Controller.AppController);	
 	mahjongMadness.controller('gameCreateController', Application.Controller.GameCreateController);
@@ -64,4 +65,5 @@ namespace Application
 	mahjongMadness.controller('gamesController', Application.Controller.GamesController);
 	
 	mahjongMadness.controller('navigationController', Application.Controllers.NavigationController);
+	mahjongMadness.controller('styleController', Application.Controllers.StyleController);
 }

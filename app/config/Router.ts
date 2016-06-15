@@ -35,6 +35,12 @@ namespace Application.Config
 						"viewSidePanel": { templateUrl: "partials/empty.html" },
 						"viewMainPanel": { templateUrl: "partials/index.html" }
 					}
+				}).state('settings', {
+					url: "/settings",
+					views: {
+						"viewSidePanel": { templateUrl: "partials/empty.html" },
+						"viewMainPanel": { templateUrl: "partials/style.html"}
+					}
 				});
 		}
 		

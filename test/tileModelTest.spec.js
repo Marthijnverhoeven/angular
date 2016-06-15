@@ -1,4 +1,4 @@
-describe("TileModel", function() {
+describe("Tile Model Test", function() {
 	it('should check top', function(){
 		//console.log(Application.Model.Tile);
 
@@ -54,14 +54,25 @@ describe("TileModel", function() {
 		tile4.yPos = 10;
 		tile4.zPos = 2;
 
-		//Expecting tile1 being blocked on the side by tile 2
-		expect(tile1.isTileBlockedOnTheSideBy(tile2)).to.be.true;
+		var tiles = [tile1, tile2, tile3, tile4];
 
-		//Expecting tile1 being blocked on the side by tile 3
-		expect(tile1.isTileBlockedOnTheSideBy(tile3)).to.be.true;
+		//Expecting tile1 to be blocked on the left by tile2
+		expect(tile1.isTileBlockedOnTheLeftBy(tile2)).to.be.true;
 
-		//Expecting tile1 not being blocked on the side by tile 4
-		expect(tile1.isTileBlockedOnTheSideBy(tile4)).to.be.false;
+		//Expecting tile1 to not be blocked on the right by tile2
+		expect(tile1.isTileBlockedOnTheRightBy(tile2)).to.be.false;
+
+		//Expecting tile1 being blocked on the side by the tiles in the list
+		expect(tile1.isTileBlockedOnTheSideBy(tiles)).to.be.true;
+
+		//Expecting tile1 being blocked on the side by the tiles in the list
+		expect(tile2.isTileBlockedOnTheSideBy(tiles)).to.be.false;
+
+		//Expecting tile1 not being blocked on the side by the tiles in the list
+		expect(tile3.isTileBlockedOnTheSideBy(tiles)).to.be.false;
+
+		//Expecting tile1 not being blocked on the side by the tiles in the list
+		expect(tile4.isTileBlockedOnTheSideBy(tiles)).to.be.false;
 	});
 
 	it('should check an array of tiles', function(){
